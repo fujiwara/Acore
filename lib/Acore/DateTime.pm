@@ -2,15 +2,17 @@ package Acore::DateTime;
 
 use strict;
 use warnings;
-use DateTimeX::Lite;
+use UNIVERSAL::require;
+our $DT_class = "DateTimeX::Lite";
+$DT_class->require;
 
 sub now {
-    DateTimeX::Lite->now();
+    $DT_class->now();
 }
 
 sub new {
     my $class = shift;
-    DateTimeX::Lite->new(@_);
+    $DT_class->new(@_);
 }
 
 sub parse_datetime {
@@ -23,7 +25,7 @@ sub parse_datetime {
 
     my @d = ( $str =~ /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})Z$/ );
     return unless @d;
-    return DateTimeX::Lite->new(
+    return $DT_class->new(
         year   => $d[0],
         month  => $d[1],
         day    => $d[2],

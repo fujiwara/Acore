@@ -24,8 +24,8 @@ BEGIN {
     is $d->content_type => "text/plain", "content_type is set";
     isa_ok $d => "Acore::Document";
     isa_ok $d => "Acore::Document::Struct";
-    isa_ok $d->created_on => "DateTimeX::Lite";
-    isa_ok $d->updated_on => "DateTimeX::Lite";
+    isa_ok $d->created_on => $Acore::DateTime::DT_class;
+    isa_ok $d->updated_on => $Acore::DateTime::DT_class;
 
     is $d->title       => "foo", "title";
     is $d->description => "bar", "description";
