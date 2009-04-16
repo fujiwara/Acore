@@ -1,6 +1,6 @@
 # -*- mode:perl -*-
 use strict;
-use Test::More tests => 28;
+use Test::More tests => 14;
 use Test::Exception;
 use Data::Dumper;
 my $dbh = require t::connect_db;
@@ -29,7 +29,6 @@ BEGIN {
     ok !$ac->authenticate_user({ name => "foo", password => "xxx" });
     my $u2;
     ok $u2 = $ac->authenticate_user({ name => "foo", password => "secret" });
-    diag Dumper $u2;
 }
 
 $dbh->commit;

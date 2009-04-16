@@ -12,14 +12,8 @@ sub init {
 
     $self->{authentications} ||= ["Password"];
     $self->{roles}           ||= ["Reader"];
-    for my $c ( $self->authentications ) {
-        my $class = "Acore::Authentication::$c";
-        $class->require;
-    }
-    for my $c ( $self->roles ) {
-        my $class = "Acore::Role::$c";
-        $class->require;
-    }
+    _auth_class($_)->require for $self->authentications;
+    _role_class($_)->require for $self->roles;
 
     $self;
 }

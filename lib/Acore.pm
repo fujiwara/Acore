@@ -8,8 +8,9 @@ use Acore::Storage;
 use Acore::User;
 use Carp;
 use Data::Structure::Util qw/ unbless /;
+use DateTime;
 
-__PACKAGE__->mk_accessors(qw/ storage /);
+__PACKAGE__->mk_accessors(qw/ storage user_class /);
 
 sub new {
     my $class = shift;
@@ -23,6 +24,7 @@ sub new {
     if ( $args->{setup_db} ) {
         $self->storage->setup();
     }
+    $self->{user_class} ||= "Acore::User";
     $self;
 }
 
@@ -32,7 +34,7 @@ sub authenticate_user {
 
     my $user = $self->storage->user->get( $args->{name} )
         or return;
-    $user = bless $user, "Acore::User";
+    $user = bless $user, $self->user_class;
     $user->init;
     return $user->authenticate($args);
 }
@@ -57,10 +59,15 @@ sub create_user {
     }
     $self->storage->user->put( $args->{name} => $args );
     $user = $self->storage->user->get( $args->{name} );
-    $user = bless $user, "Acore::User";
+    $user = bless $user, $self->user_class;
     $user->init;
     return $user;
 }
+
+sub now {
+    DateTime->now();
+}
+
 
 1;
 __END__
