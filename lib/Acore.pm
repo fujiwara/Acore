@@ -4,12 +4,12 @@ use strict;
 use warnings;
 our $VERSION = '0.01';
 use base qw/ Class::Accessor::Fast /;
+use Acore::DateTime;
 use Acore::Storage;
 use Acore::User;
 use Acore::Document;
 use Carp;
 use Data::Structure::Util qw/ unbless /;
-use DateTime;
 use Clone qw/ clone /;
 
 __PACKAGE__->mk_accessors(qw/ storage user_class /);
@@ -66,10 +66,6 @@ sub create_user {
     return $user;
 }
 
-sub now {
-    DateTime->now();
-}
-
 sub get_document {
     my ($self, $args) = @_;
 
@@ -97,7 +93,7 @@ sub put_document {
     my $doc  = shift;
 
     if ( $doc->id ) {
-        $doc->updated_on( Acore->now() );
+        $doc->updated_on( Acore::DateTime->now() );
         my $obj = $doc->to_object;
         $self->storage->document->put($obj);
         return $doc;

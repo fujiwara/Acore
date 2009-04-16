@@ -17,8 +17,8 @@ BEGIN {
     is $d->path         => "/foo/bar", "path is set";
     is $d->content_type => "text/plain", "content_type is set";
     isa_ok $d => "Acore::Document";
-    isa_ok $d->created_on => "DateTime";
-    isa_ok $d->updated_on => "DateTime";
+    isa_ok $d->created_on => "DateTimeX::Lite";
+    isa_ok $d->updated_on => "DateTimeX::Lite";
 
     my $dt_c = clone($d->created_on);
     my $dt_u = clone($d->updated_on);
@@ -30,8 +30,8 @@ BEGIN {
 
     my $d2 = Acore::Document->from_object($o);
     isa_ok $d2 => "Acore::Document";
-    isa_ok $d2->created_on => "DateTime";
-    isa_ok $d2->updated_on => "DateTime";
+    isa_ok $d2->created_on => "DateTimeX::Lite";
+    isa_ok $d2->updated_on => "DateTimeX::Lite";
 
     is_deeply $d2->created_on => $dt_c, "same datetime object";
     is_deeply $d2->updated_on => $dt_u, "same datetime object";
