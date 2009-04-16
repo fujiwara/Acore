@@ -1,6 +1,6 @@
 # -*- mode:perl -*-
 use strict;
-use Test::More tests => 10;
+use Test::More tests => 11;
 use Data::Dumper;
 use Clone qw/ clone /;
 
@@ -11,14 +11,16 @@ BEGIN {
 
 {
     my $d = Acore::Document::Struct->new({
+        path         => "/bar/baz",
         content_type => "text/plain",
-        title => "foo",
-        description => "bar",
-        body => {
+        title        => "foo",
+        description  => "bar",
+        body         => {
             key1 => "value1",
             key2 => "value2",
-        }
+        },
     });
+    is $d->path         => "/bar/baz", "path is set";
     is $d->content_type => "text/plain", "content_type is set";
     isa_ok $d => "Acore::Document";
     isa_ok $d => "Acore::Document::Struct";

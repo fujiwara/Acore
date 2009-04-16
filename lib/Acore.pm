@@ -6,9 +6,11 @@ our $VERSION = '0.01';
 use base qw/ Class::Accessor::Fast /;
 use Acore::Storage;
 use Acore::User;
+use Acore::Document;
 use Carp;
 use Data::Structure::Util qw/ unbless /;
 use DateTime;
+use Clone qw/ clone /;
 
 __PACKAGE__->mk_accessors(qw/ storage user_class /);
 
@@ -66,6 +68,43 @@ sub create_user {
 
 sub now {
     DateTime->now();
+}
+
+sub get_document {
+    my ($self, $args) = @_;
+
+    my $doc;
+    if ( defined $args->{id} ) {
+        $doc = $self->storage->document->get($args->{id});
+    }
+    elsif ( defined $args->{path} ) {
+        my $view = $self->storage->document->view(
+            "path/all", {
+                key          => $args->{path},
+                include_docs => 1,
+            }
+        )->next;
+        return unless $view;
+        $doc = $view->{document};
+    }
+    return unless $doc;
+
+    return Acore::Document->from_object($doc);
+}
+
+sub put_document {
+    my $self = shift;
+    my $doc  = shift;
+
+    my $obj = $doc->to_object;
+    if ( $doc->id ) {
+        $self->storage->document->put($obj);
+        return $doc;
+    }
+    else {
+        my $id = $self->storage->document->post($obj);
+        return $self->get_document({ id => $id });
+    }
 }
 
 

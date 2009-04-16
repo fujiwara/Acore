@@ -4,9 +4,17 @@ use strict;
 use warnings;
 our $VERSION = '0.01';
 use base qw/ Class::Accessor::Fast /;
-use DBIx::CouchLike;
+use DBIx::CouchLike "0.03";
 
 __PACKAGE__->mk_accessors(qw/ dbh user document /);
+
+our $document_all =<<'_END_OF_CODE_';
+sub {
+    my ($obj, $emit) = @_;
+    $emit->( $obj->{path} => $obj->{updated_on} );
+}
+_END_OF_CODE_
+;
 
 sub new {
     my $class = shift;
@@ -27,6 +35,13 @@ sub setup {
     my $self = shift;
     $self->user->create_table();
     $self->document->create_table();
+    $self->document->post( "_design/path", {
+        views => {
+            all => {
+                map => $document_all,
+            },
+        },
+    });
 }
 
 1;
