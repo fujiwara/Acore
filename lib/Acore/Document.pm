@@ -41,8 +41,8 @@ sub to_object {
     my $self = shift;
     my $obj  = clone $self;
 
-    $obj->{created_on} = $DT_format->format_datetime($obj->{created_on});
-    $obj->{updated_on} = $DT_format->format_datetime($obj->{updated_on});
+    $obj->{created_on} = $DT_format->format_datetime( $obj->created_on );
+    $obj->{updated_on} = $DT_format->format_datetime( $obj->updated_on );
     $obj->{_class}     = ref $self;
     unbless $obj;
 

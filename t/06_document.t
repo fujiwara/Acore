@@ -1,6 +1,6 @@
 # -*- mode:perl -*-
 use strict;
-use Test::More tests => 18;
+use Test::More tests => 19;
 use Test::Exception;
 use Data::Dumper;
 my $dbh = require t::connect_db;
@@ -44,6 +44,11 @@ BEGIN {
     isa_ok $_ => "Acore::Document" for @docs;
     is_deeply $docs[0] => $doc;
     is_deeply $docs[1] => $doc4;
+
+    my $updated_on  = $docs[0]->updated_on;
+    sleep 1;
+    my $updated_doc = $ac->put_document($docs[0]);
+    ok $updated_doc->updated_on > $updated_on, "update timestamp";
 }
 
 $dbh->commit;

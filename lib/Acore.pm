@@ -96,12 +96,14 @@ sub put_document {
     my $self = shift;
     my $doc  = shift;
 
-    my $obj = $doc->to_object;
     if ( $doc->id ) {
+        $doc->updated_on( Acore->now() );
+        my $obj = $doc->to_object;
         $self->storage->document->put($obj);
         return $doc;
     }
     else {
+        my $obj = $doc->to_object;
         my $id = $self->storage->document->post($obj);
         return $self->get_document({ id => $id });
     }
