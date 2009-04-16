@@ -1,6 +1,6 @@
 # -*- mode:perl -*-
 use strict;
-use Test::More tests => 14;
+use Test::More tests => 18;
 use Test::Exception;
 use Data::Dumper;
 my $dbh = require t::connect_db;
@@ -35,6 +35,15 @@ BEGIN {
 
     ok ! $ac->get_document({ path => "not_found" });
     ok ! $ac->get_document({ id   => 0 });
+
+    my $doc4 = $ac->put_document( Acore::Document->new({
+        path => "/foo/boo",
+        body => "This is a document boo.",
+    }) );
+    my @docs = $ac->search_documents({ path => "/foo/" });
+    isa_ok $_ => "Acore::Document" for @docs;
+    is_deeply $docs[0] => $doc;
+    is_deeply $docs[1] => $doc4;
 }
 
 $dbh->commit;
