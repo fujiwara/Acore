@@ -115,9 +115,9 @@ sub search_documents {
     my $itr = $self->storage->document->view(
         "path/all" => {
             key_like     => $args->{path} . "%",
-            include_docs => 1,
             limit        => $args->{limit},
             offfset      => $args->{offset},
+            include_docs => 1,
         });
     my @docs = map { Acore::Document->from_object( $_->{document} ) }
         $itr->all;

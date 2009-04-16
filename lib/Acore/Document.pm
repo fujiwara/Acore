@@ -30,6 +30,9 @@ for my $name (qw/ created_on updated_on /) {
                     ? $value
                     : $DT_format->parse_datetime($value);
         }
+        unless ( blessed $self->{$name} ) {
+            $self->{$name} = $DT_format->parse_datetime($self->{$name});
+        }
         $self->{$name};
     }
 }
@@ -37,19 +40,18 @@ for my $name (qw/ created_on updated_on /) {
 sub to_object {
     my $self = shift;
     my $obj  = clone $self;
+
     $obj->{created_on} = $DT_format->format_datetime($obj->{created_on});
     $obj->{updated_on} = $DT_format->format_datetime($obj->{updated_on});
     $obj->{_class}     = ref $self;
     unbless $obj;
+
     return $obj;
 }
 
 sub from_object {
     my $class = shift;
     my $obj   = shift;
-
-    $obj->{created_on} = $DT_format->parse_datetime($obj->{created_on});
-    $obj->{updated_on} = $DT_format->parse_datetime($obj->{updated_on});
     return bless $obj, $obj->{_class} || $class;
 }
 
