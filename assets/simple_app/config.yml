@@ -1,0 +1,5 @@
+root: assets/simple_app
+dsn:
+  - dbi:SQLite:dbname=assets/simple_app/data.sqlite
+  -
+  -
