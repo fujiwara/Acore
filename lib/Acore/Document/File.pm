@@ -10,11 +10,15 @@ __PACKAGE__->mk_accessors(qw/ file_path /);
 
 sub AUTOLOAD {
     my $self   = shift;
-    my $method = $1 if $AUTOLOAD =~ /::(\w+)$/;
-
+    my $method = $AUTOLOAD =~ /::(\w+)$/ ? $1 : undef;
     return unless defined $method;
 
-    Path::Class::file( $self->{file_path} )->$method(@_);
+    no strict "refs";
+    *{"$method"} = sub {
+        my $that = shift;
+        Path::Class::file( $that->{file_path} )->$method(@_);
+    };
+    $self->$method(@_);
 }
 
 sub DESTROY {}
