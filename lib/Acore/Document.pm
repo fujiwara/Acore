@@ -6,6 +6,7 @@ use base qw/ Class::Accessor::Fast /;
 use Clone qw/ clone /;
 use Scalar::Util qw/ blessed /;
 use Data::Structure::Util qw/ unbless /;
+use UNIVERSAL::require;
 
 __PACKAGE__->mk_accessors(qw/ path content_type /);
 
@@ -51,6 +52,7 @@ sub to_object {
 sub from_object {
     my $class = shift;
     my $obj   = shift;
+    $obj->{_class}->require;
     return bless $obj, $obj->{_class} || $class;
 }
 
@@ -61,6 +63,13 @@ sub new {
     $self->{$_} ||= Acore::DateTime->now()
         for qw/ created_on updated_on /;
     $self;
+}
+
+sub as_string {
+    my $self = shift;
+    require Data::Dumper;
+    local $Data::Dumper::Indent = 1;
+    return Data::Dumper::Dumper($self);
 }
 
 1;

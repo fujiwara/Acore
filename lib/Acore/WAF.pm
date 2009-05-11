@@ -70,30 +70,32 @@ sub handle_request {
     return $self->response;
 }
 
-sub before_dispatch {}
-sub after_dispatch {}
-
 sub dispatch {
     my ( $self ) = @_;
 
     my $path = $ENV{PATH_INFO} || $self->req->path;
-    my ($controller, @args)
-        = grep /./, split("/", $path);
+    $path =~ s{^/}{}g;
+    my ($controller, @args) = split("/", $path);
     $controller ||= "index";
     $self->stash->{args} = \@args;
 
+    my $res = $self->response;
     if ( my $sub = $self->can("dispatch_${controller}") ) {
-        my $response = $sub->($self);
-        return $response;
+        return $sub->($self);
     }
     else {
-        $self->res->status(404);
-        $self->res->body("not found");
+        $self->serve_acore_document("/$path")
+            or do {
+                $res->status(404);
+                $res->body("Not found.");
+            };
     }
 }
 
 sub prepare_acore {
     my $self = shift;
+
+    return if $self->acore;
     require Acore;
     require DBI;
     my $dbh  = DBI->connect( @{ $self->config->{dsn} } )
@@ -111,11 +113,32 @@ sub dispatch_static {
     $self->serve_static_file($file);
 }
 
+sub serve_acore_document {
+    my ( $self, $path ) = @_;
+
+    $self->log( debug => "serving acore_document path: $path" );
+
+    $self->prepare_acore();
+    my $doc = $self->acore->get_document({ path => $path });
+    return unless $doc;
+
+    my $res   = $self->response;
+    my $ctype = $doc->can('content_type')
+        ? $doc->content_type : "text/plain";
+    $res->headers->header(
+        "Content-Type"  => $ctype,
+        "Last-Modified" => HTTP::Date::time2str( $doc->updated_on->epoch ),
+    );
+    $res->body( $doc->as_string );
+    return 1;
+}
+
 sub serve_static_file {
-    my $self = shift;
-    my $file = shift;
+    my ( $self, $file ) = @_;
 
     $file = Path::Class::file($file) unless ref $file;
+
+    $self->log( debug => "serving static file. $file" );
 
     my $res = $self->res;
     if ( -f $file && -r _ ) {
