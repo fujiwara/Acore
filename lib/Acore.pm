@@ -4,7 +4,6 @@ use strict;
 use warnings;
 our $VERSION = '0.01';
 use base qw/ Class::Accessor::Fast /;
-use Acore::DateTime;
 use Acore::Storage;
 use Acore::User;
 use Acore::Document;
@@ -93,6 +92,7 @@ sub put_document {
     my $doc  = shift;
 
     if ( $doc->id ) {
+        require Acore::DateTime;
         $doc->updated_on( Acore::DateTime->now() );
         my $obj = $doc->to_object;
         $self->storage->document->put($obj);

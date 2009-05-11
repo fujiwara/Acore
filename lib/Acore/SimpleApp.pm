@@ -11,11 +11,10 @@ use HTTP::Date;
 use DBI;
 
 has context => ( is => "rw" );
+__PACKAGE__->meta->make_immutable;
+
 no Any::Moose;
-{
-    no strict "refs";
-    *c = \&context;
-}
+*c = \&context;
 
 sub handle_request {
     my $self = shift;
@@ -34,8 +33,9 @@ sub dispatch {
     my ( $self ) = @_;
     my $c = $self->context;
 
+    my $path = $ENV{PATH_INFO} || $self->context->req->path;
     my ($controller, @args)
-        = grep /./, split("/", $self->context->req->path);
+        = grep /./, split("/", $path);
     $controller ||= "index";
     $c->stash->{args} = \@args;
 
@@ -144,11 +144,8 @@ has acore => (
 
 __PACKAGE__->meta->make_immutable;
 no Any::Moose;
-{
-    no strict "refs";
-    *req = \&request;
-    *res = \&response;
-}
+*req = \&request;
+*res = \&response;
 
 sub path_to {
     my $self = shift;

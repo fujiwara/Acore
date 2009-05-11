@@ -3,7 +3,6 @@ package Acore::Document;
 use strict;
 use warnings;
 use base qw/ Class::Accessor::Fast /;
-use Acore::DateTime;
 use Clone qw/ clone /;
 use Scalar::Util qw/ blessed /;
 use Data::Structure::Util qw/ unbless /;
@@ -19,6 +18,8 @@ for my $name (qw/ created_on updated_on /) {
     no strict "refs";
     *{$name} = sub {
         use strict;
+        require Acore::DateTime;
+
         my $self = shift;
         if (@_) {
             my $value = shift;
@@ -38,6 +39,7 @@ sub to_object {
     my $self = shift;
     my $obj  = clone $self;
 
+    require Acore::DateTime;
     $obj->{created_on} = Acore::DateTime->format_datetime( $obj->created_on );
     $obj->{updated_on} = Acore::DateTime->format_datetime( $obj->updated_on );
     $obj->{_class}     = ref $self;
@@ -55,6 +57,7 @@ sub from_object {
 sub new {
     my $class = shift;
     my $self  = $class->SUPER::new(@_);
+    require Acore::DateTime;
     $self->{$_} ||= Acore::DateTime->now()
         for qw/ created_on updated_on /;
     $self;
