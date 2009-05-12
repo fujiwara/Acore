@@ -9,6 +9,7 @@ use MIME::Types;
 use HTTP::Date;
 use utf8;
 use Encode qw/ encode_utf8 decode_utf8 encode decode /;
+use UNIVERSAL::require;
 
 has stash => (
     is      => "rw",
@@ -47,6 +48,17 @@ sub log {
     warn "[$level] $msg\n";
 }
 
+sub setup {
+    my $class   = shift;
+    my @plugins = @_;
+
+    for my $plugin (@plugins) {
+        my $p_class = $plugin =~ /^\+/ ? $plugin : "Acore::WAF::Plugin::${plugin}";
+        warn "require plugin class: $p_class\n";
+        $p_class->use or die $!;
+    }
+}
+
 sub path_to {
     my $self = shift;
     my $obj = Path::Class::dir( $self->config->{root} || ".", @_ );
@@ -73,64 +85,26 @@ sub handle_request {
 sub dispatch {
     my ( $self ) = @_;
 
-    my $path = $ENV{PATH_INFO} || $self->req->path;
-    $path =~ s{^/}{}g;
-    my ($controller, @args) = split("/", $path);
-    $controller ||= "index";
-    $self->stash->{args} = \@args;
-
-    my $res = $self->response;
-    if ( my $sub = $self->can("dispatch_${controller}") ) {
-        return $sub->($self);
+    my $dispatcher = ref $self;
+    my $rule = $dispatcher->match( $self->req );
+    if ($rule) {
+        my $action = $rule->{action};
+        use Data::Dumper;
+        $self->log( debug => Dumper $rule );
+        my $controller = $rule->{controller};
+        $controller->$action( $self, $rule->{args} );
     }
     else {
-        $self->serve_acore_document("/$path")
-            or do {
-                $res->status(404);
-                $res->body("Not found.");
-            };
+        $self->res->body("Not found.");
+        $self->res->status(404);
     }
-}
-
-sub prepare_acore {
-    my $self = shift;
-
-    return if $self->acore;
-    require Acore;
-    require DBI;
-    my $dbh  = DBI->connect( @{ $self->config->{dsn} } )
-        or die "Can't connect DB: " . DBI->errstr;
-    $self->acore( Acore->new({ dbh => $dbh }) );
 }
 
 sub dispatch_static {
-    my $self = shift;
+    my (undef, $self, $args) = @_;
 
-    my $file = $self->path_to(
-        "static",
-        join("/", @{$self->stash->{args}} ),
-    );
+    my $file = $self->path_to("static", $args->{filename});
     $self->serve_static_file($file);
-}
-
-sub serve_acore_document {
-    my ( $self, $path ) = @_;
-
-    $self->log( debug => "serving acore_document path: $path" );
-
-    $self->prepare_acore();
-    my $doc = $self->acore->get_document({ path => $path });
-    return unless $doc;
-
-    my $res   = $self->response;
-    my $ctype = $doc->can('content_type')
-        ? $doc->content_type : "text/plain";
-    $res->headers->header(
-        "Content-Type"  => $ctype,
-        "Last-Modified" => HTTP::Date::time2str( $doc->updated_on->epoch ),
-    );
-    $res->body( $doc->as_string );
-    return 1;
 }
 
 sub serve_static_file {
@@ -162,6 +136,37 @@ sub serve_static_file {
         $res->status(404);
         $res->body("Not found.");
     }
+}
+
+sub prepare_acore {
+    my $self = shift;
+
+    return if $self->acore;
+    require Acore;
+    require DBI;
+    my $dbh  = DBI->connect( @{ $self->config->{dsn} } )
+        or die "Can't connect DB: " . DBI->errstr;
+    $self->acore( Acore->new({ dbh => $dbh }) );
+}
+
+sub serve_acore_document {
+    my ( $self, $path ) = @_;
+
+    $self->log( debug => "serving acore_document path: $path" );
+
+    $self->prepare_acore();
+    my $doc = $self->acore->get_document({ path => $path });
+    return unless $doc;
+
+    my $res   = $self->response;
+    my $ctype = $doc->can('content_type')
+        ? $doc->content_type : "text/plain";
+    $res->headers->header(
+        "Content-Type"  => $ctype,
+        "Last-Modified" => HTTP::Date::time2str( $doc->updated_on->epoch ),
+    );
+    $res->body( $doc->as_string );
+    return 1;
 }
 
 sub render {
