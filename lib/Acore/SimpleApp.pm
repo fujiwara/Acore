@@ -13,6 +13,8 @@ connect "adoc/:path",
     { controller => __PACKAGE__, action => "dispatch_acore" };
 connect "static/:filename",
     { controller => __PACKAGE__, action => "dispatch_static" };
+connect "favicon.ico",
+    { controller => __PACKAGE__, action => "dispatch_favicon" };
 
 __PACKAGE__->setup(qw/ Session /);
 
@@ -20,6 +22,10 @@ sub dispatch_index {
     my ($self, $c) = @_;
     $c->log( info => "dispatch index" );
     $c->prepare_acore();
+
+    my $count = $c->session->get('counter');
+    $c->session->set( counter => ++$count );
+
     $c->render("index.mt");
 }
 

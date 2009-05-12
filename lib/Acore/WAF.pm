@@ -98,6 +98,9 @@ sub dispatch {
         $self->res->body("Not found.");
         $self->res->status(404);
     }
+    $self->session->response_filter($self->response)
+        if $self->can('session');
+    $self;
 }
 
 sub dispatch_static {
@@ -179,6 +182,11 @@ sub render {
     );
     my $html = $mt->render_file( $tmpl, $self )->as_string;
     $self->res->body( encode_utf8($html) );
+}
+
+sub dispatch_favicon {
+    my ($self, $c) = @_;
+    $c->serve_static_file( $c->path_to("favicon.ico") );
 }
 
 1;
