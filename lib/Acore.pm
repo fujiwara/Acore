@@ -29,6 +29,12 @@ sub new {
     $self;
 }
 
+sub get_user {
+    my $self = shift;
+    my $args = shift;
+    return $self->storage->user->get( $args->{name} )
+}
+
 sub authenticate_user {
     my $self = shift;
     my $args = shift;

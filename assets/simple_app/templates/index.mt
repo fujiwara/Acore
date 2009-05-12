@@ -9,7 +9,9 @@
     <h1>SimpleApp Index</h1>
     <p>
       root : <?= $c->config->{root} ?><br/>
+      base : <?= $c->req->base ?><br/>
       uri : <?= $c->req->uri ?><br/>
+      uri_for('foo'): <?= $c->uri_for('foo') ?><br/>
       counter in session : <?= $c->session->{counter} ?><br/>
     </p>
   </body>

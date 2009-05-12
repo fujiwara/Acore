@@ -54,8 +54,9 @@ sub setup {
 
     for my $plugin (@plugins) {
         my $p_class = $plugin =~ /^\+/ ? $plugin : "Acore::WAF::Plugin::${plugin}";
-        warn "require plugin class: $p_class\n";
-        $p_class->use or die $!;
+        $class->log( info => "loading plugin: $p_class" );
+        $p_class->use or die "Can't load plugin: $!";
+        $p_class->setup if $p_class->can('setup');
     }
 }
 
@@ -71,6 +72,7 @@ sub handle_request {
     my ($config, $req) = @_;
     $self->request($req);
     $self->config($config);
+    $config->{include_path} ||= [];
     eval {
         $self->dispatch;
     };
@@ -85,14 +87,25 @@ sub handle_request {
 sub dispatch {
     my ( $self ) = @_;
 
-    my $dispatcher = ref $self;
+    my $dispatcher = (ref $self) . "::Dispatcher";
     my $rule = $dispatcher->match( $self->req );
     if ($rule) {
         my $action = $rule->{action};
         use Data::Dumper;
         $self->log( debug => Dumper $rule );
         my $controller = $rule->{controller};
-        $controller->$action( $self, $rule->{args} );
+
+        my $method = uc $self->req->method;
+        my $sub = $controller->can("${action}_${method}")
+               || $controller->can($action);
+
+        if ($sub) {
+            $sub->( $controller, $self, $rule->{args} );
+        }
+        else {
+            $self->res->body("Not found.");
+            $self->res->status(404);
+        }
     }
     else {
         $self->res->body("Not found.");
@@ -172,16 +185,35 @@ sub serve_acore_document {
     return 1;
 }
 
+sub redirect {
+    my ($self, $to) = @_;
+    $self->res->status(302);
+    $self->res->header( Location => $to );
+    $self->log( debug => "redirecting to $to" );
+}
+
+sub uri_for {
+    my $self = shift;
+    my $to   = shift;
+    my $uri  = URI->new($to);
+    $uri = $uri->abs( $self->req->uri );
+    return $uri;
+}
+
 sub render {
+    my ($self, $tmpl) = @_;
+    my $html = $self->render_part($tmpl);
+    $self->res->body( encode_utf8($html) );
+}
+
+sub render_part {
     my ($self, $tmpl) = @_;
 
     my $path = $self->path_to("templates");
     my $mt   = Text::MicroTemplate::File->new(
-        include_path => [ $path ],
-        use_cache    => 1,
+        include_path => [ $path, @{ $self->config->{include_path} } ],
     );
-    my $html = $mt->render_file( $tmpl, $self )->as_string;
-    $self->res->body( encode_utf8($html) );
+    return $mt->render_file( $tmpl, $self )->as_string;
 }
 
 sub dispatch_favicon {

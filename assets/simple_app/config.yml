@@ -13,3 +13,5 @@ session:
     class: Cookie
     args:
       name: simple_app_session_id
+include_path:
+  - assets/admin_console/templates

@@ -6,15 +6,21 @@ extends 'Acore::WAF';
 __PACKAGE__->meta->make_immutable;
 no Any::Moose;
 
-use HTTPx::Dispatcher;
-connect "",
-    { controller => __PACKAGE__, action => "dispatch_index" };
-connect "adoc/:path",
-    { controller => __PACKAGE__, action => "dispatch_acore" };
-connect "static/:filename",
-    { controller => __PACKAGE__, action => "dispatch_static" };
-connect "favicon.ico",
-    { controller => __PACKAGE__, action => "dispatch_favicon" };
+use Acore::WAF::Controller::AdminConsole;
+{
+    package Acore::SimpleApp::Dispatcher;
+    use HTTPx::Dispatcher;
+    connect "",
+        { controller => "Acore::SimpleApp", action => "dispatch_index" };
+    connect "adoc/:path",
+        { controller => "Acore::SimpleApp", action => "dispatch_acore" };
+    connect "static/:filename",
+        { controller => "Acore::SimpleApp", action => "dispatch_static" };
+    connect "favicon.ico",
+        { controller => "Acore::SimpleApp", action => "dispatch_favicon" };
+    connect "admin_console/:action",
+        { controller => "Acore::WAF::Controller::AdminConsole" };
+}
 
 __PACKAGE__->setup(qw/ Session /);
 
