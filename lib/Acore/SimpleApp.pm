@@ -14,7 +14,7 @@ connect "adoc/:path",
 connect "static/:filename",
     { controller => __PACKAGE__, action => "dispatch_static" };
 
-__PACKAGE__->setup(qw/ Sample /);
+__PACKAGE__->setup(qw/ Session /);
 
 sub dispatch_index {
     my ($self, $c) = @_;
