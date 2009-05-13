@@ -3,10 +3,18 @@ package Acore::WAF::Plugin::Sample;
 use strict;
 use warnings;
 require Exporter;
-our @EXPORT = qw/ simple_method /;
+our @EXPORT = qw/ sample_method /;
+
+sub setup {
+    my ($class, $controller) = @_;
+    $controller->add_trigger(
+        AFTER_DISPATCH => sub { },
+    );
+}
 
 sub sample_method {
-    my ($self, $c) = @_;
+    my $c = shift;
+    $c->res->body("sample plugin");
 }
 
 1;

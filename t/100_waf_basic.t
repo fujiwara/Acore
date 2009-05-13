@@ -239,3 +239,13 @@ html: &lt;html&gt;
 raw: <html>
 日本語は UTF-8 で書きます
 include file
+
+===
+--- uri
+http://localhost/act/sample_plugin
+--- response
+Content-Length: 13
+Content-Type: text/html
+Status: 200
+
+sample plugin

@@ -40,6 +40,11 @@ sub render {
     $c->render("test.mt");
 }
 
+sub sample_plugin {
+    my ($self, $c) = @_;
+    $c->sample_method;
+}
+
 package t::WAFTest::Controller::X;
 
 sub xyz {
