@@ -215,3 +215,13 @@ Content-Type: text/html
 Status: 200
 
 abc
+
+===
+--- uri
+http://localhost/act/forward_internal
+--- response
+Content-Length: 2
+Content-Type: text/html
+Status: 200
+
+ok
