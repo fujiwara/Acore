@@ -176,3 +176,13 @@ Location: http://localhost/redirect_to
 Content-Length: 0
 Content-Type: text/html
 Status: 302
+
+===
+--- uri
+http://localhost/act/error
+--- response
+Content-Length: 21
+Content-Type: text/html
+Status: 500
+
+Internal Server Error

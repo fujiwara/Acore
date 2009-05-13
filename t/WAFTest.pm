@@ -13,6 +13,8 @@ no Any::Moose;
     use HTTPx::Dispatcher;
     connect "",
         { controller => "t::WAFTest", action => "index"};
+    connect "favicon.ico",
+        { controller => "t::WAFTest", action => "dispatch_favicon"};
     connect "static/:filename",
         { controller => "t::WAFTest", action => "dispatch_static" };
     connect "act/:action",
@@ -34,6 +36,10 @@ sub ok {
 sub rd {
     my ($self, $c) = @_;
     $c->redirect( $c->uri_for('/redirect_to') );
+}
+
+sub error {
+    die;
 }
 
 
