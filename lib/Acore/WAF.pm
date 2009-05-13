@@ -62,7 +62,7 @@ sub setup {
     for my $plugin (@plugins) {
         my $p_class = $plugin =~ /^\+/ ? $plugin : "Acore::WAF::Plugin::${plugin}";
         $class->log( info => "loading plugin: $p_class" );
-        $p_class->use or die "Can't load plugin: $!";
+        $p_class->use or die "Can't load plugin: $@";
         $p_class->setup($class) if $p_class->can('setup');
     }
 }

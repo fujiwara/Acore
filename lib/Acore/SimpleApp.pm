@@ -1,5 +1,7 @@
 package Acore::SimpleApp;
 
+use strict;
+use warnings;
 use Any::Moose;
 extends 'Acore::WAF';
 
