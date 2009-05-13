@@ -186,3 +186,20 @@ Content-Type: text/html
 Status: 500
 
 Internal Server Error
+
+===
+--- preprocess
+{
+    my $fh = Path::Class::file("t/favicon.ico")->openw;
+    $fh->print("AAA");
+}
+(HTTP::Date::time2str(time));
+--- uri
+http://localhost/favicon.ico
+--- response
+Content-Length: 3
+Content-Type: image/vnd.microsoft.icon
+Last-Modified: %s
+Status: 200
+
+AAA

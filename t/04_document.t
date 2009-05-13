@@ -1,6 +1,6 @@
 # -*- mode:perl -*-
 use strict;
-use Test::More tests => 15;
+use Test::More tests => 16;
 use Data::Dumper;
 use Clone qw/ clone /;
 
@@ -19,6 +19,7 @@ BEGIN {
     isa_ok $d => "Acore::Document";
     isa_ok $d->created_on => $Acore::DateTime::DT_class;
     isa_ok $d->updated_on => $Acore::DateTime::DT_class;
+    ok $d->as_string;
 
     my $dt_c = clone($d->created_on);
     my $dt_u = clone($d->updated_on);

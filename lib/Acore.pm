@@ -32,17 +32,19 @@ sub new {
 sub get_user {
     my $self = shift;
     my $args = shift;
-    return $self->storage->user->get( $args->{name} )
+    my $user = $self->storage->user->get( $args->{name} )
+        or return;
+    $user = bless $user, $self->user_class;
+    $user->init;
+    $user;
 }
 
 sub authenticate_user {
     my $self = shift;
     my $args = shift;
 
-    my $user = $self->storage->user->get( $args->{name} )
+    my $user = $self->get_user($args)
         or return;
-    $user = bless $user, $self->user_class;
-    $user->init;
     return $user->authenticate($args);
 }
 

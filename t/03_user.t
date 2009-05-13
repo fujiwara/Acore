@@ -1,6 +1,6 @@
 # -*- mode:perl -*-
 use strict;
-use Test::More tests => 14;
+use Test::More tests => 17;
 use Test::Exception;
 use Data::Dumper;
 my $dbh = require t::connect_db;
@@ -23,12 +23,19 @@ BEGIN {
     ok $u->set_password("secret");
     ok $ac->save_user($u);
 
+    throws_ok { $ac->create_user({ name => "foo", xxx => "yyy" }) }
+        qr/already exists/i, "user is is already exists";
+
     ok !$ac->authenticate_user();
     ok !$ac->authenticate_user({ name => time });
 
     ok !$ac->authenticate_user({ name => "foo", password => "xxx" });
     my $u2;
     ok $u2 = $ac->authenticate_user({ name => "foo", password => "secret" });
+
+    my $u3 = $ac->get_user({ name => "foo" });
+    isa_ok $u3 => "Acore::User";
+    ok $u3->name => "foo";
 }
 
 $dbh->commit;
