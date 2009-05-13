@@ -134,13 +134,13 @@ sub dispatch {
             $sub->( $controller, $self, $rule->{args} );
         }
         else {
-            $self->log->error("action for dispatch (${controller}::${action}) is not found.");
+            $self->log->error("dispatch action (${controller}::${action}) is not found. for " . $self->req->uri );
             $self->res->body("Not found.");
             $self->res->status(404);
         }
     }
     else {
-        $self->log->error("dispatch rule is not found. " . $self->req->uri);
+        $self->log->error("dispatch rule is not found for " . $self->req->uri);
         $self->res->body("Not found.");
         $self->res->status(404);
     }

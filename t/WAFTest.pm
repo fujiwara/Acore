@@ -15,7 +15,7 @@ no Any::Moose;
         { controller => "t::WAFTest", action => "index"};
     connect "static/:filename",
         { controller => "t::WAFTest", action => "dispatch_static" };
-    connect ":action",
+    connect "act/:action",
         { controller => "t::WAFTest", };
 }
 
@@ -30,5 +30,11 @@ sub ok {
     my ($self, $c) = @_;
     $c->res->body("ok");
 }
+
+sub rd {
+    my ($self, $c) = @_;
+    $c->redirect( $c->uri_for('/redirect_to') );
+}
+
 
 1;
