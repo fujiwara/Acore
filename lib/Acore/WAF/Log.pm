@@ -39,19 +39,19 @@ for my $level ( keys %$Levels ) {
     my $level_num = $Levels->{$level};
     *{$level} = sub {
         my ($self, $msg) = @_;
-        return if $level_num > $Levels->{ $self->level };
+        return if $level_num > $Levels->{ $self->{level} };
 
         my (undef, $filename, $line) = caller;
         $self->{buffer} .= sprintf("[%s] ", scalar localtime)
-            if $self->timestamp;
+            if $self->{timestamp};
         $self->{buffer} .= "[$level] $msg at $filename line $line\n";
     };
 }
 
 sub flush {
     my $self = shift;
-    return if $self->{buffer} eq '';
-    warn $self->{buffer};
+    return unless $self->{buffer};
+    warn delete $self->{buffer};
 }
 
 1;

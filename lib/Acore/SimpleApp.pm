@@ -8,7 +8,6 @@ extends 'Acore::WAF';
 __PACKAGE__->meta->make_immutable;
 no Any::Moose;
 
-use Acore::WAF::Controller::AdminConsole;
 {
     package Acore::SimpleApp::Dispatcher;
     use HTTPx::Dispatcher;
@@ -22,9 +21,16 @@ use Acore::WAF::Controller::AdminConsole;
         { controller => "Acore::SimpleApp", action => "dispatch_favicon" };
     connect "admin_console/:action",
         { controller => "Acore::WAF::Controller::AdminConsole" };
+    connect ":action",
+        { controller => "Acore::SimpleApp", };
 }
 
 __PACKAGE__->setup(qw/ Session /);
+
+sub null {
+    my ($self, $c) = @_;
+    $c->res->body("ok");
+}
 
 sub dispatch_index {
     my ($self, $c) = @_;

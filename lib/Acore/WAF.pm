@@ -27,11 +27,13 @@ has request => (
     is  => "rw",
     isa => "HTTP::Engine::Request",
 );
+*req = \&request;
 
 has response => (
     is      => "rw",
     default => sub { HTTP::Engine::Response->new },
 );
+*res = \&response;
 
 has acore => (
     is  => "rw",
@@ -59,8 +61,6 @@ sub _build_log {
 
 __PACKAGE__->meta->make_immutable;
 no Any::Moose;
-*req = \&request;
-*res = \&response;
 
 my $Triggers = {};
 
@@ -116,8 +116,10 @@ sub dispatch {
     if ($rule) {
         my $action = $rule->{action};
         use Data::Dumper;
-        $self->log->debug( Dumper $rule );
+        local $Data::Dumper::Indent = 1;
+        $self->log->debug( "dispatch rule: " . Dumper $rule );
         my $controller = $rule->{controller};
+        $controller->require;
 
         my $method = uc $self->req->method;
         my $sub = $controller->can("${action}_${method}")
@@ -155,7 +157,7 @@ sub serve_static_file {
     my $res = $self->res;
     if ( -f $file && -r _ ) {
         my $mtime = $file->stat->mtime;
-        if (my $ims = $self->req->headers->header('If-Modified-Since')) {
+        if (my $ims = $self->req->header('If-Modified-Since')) {
             my $time = HTTP::Date::str2time($ims);
             if ( $mtime <= $time ) {
                 $res->status(304);
@@ -165,7 +167,7 @@ sub serve_static_file {
         $res->body( scalar $file->slurp );
 
         my $ext = ( $file =~ /\.(\w+)$/ ) ? lc($1) : "";
-        $res->headers->header(
+        $res->header(
             'Content-Type'  => MIME::Types->new->mimeTypeOf($ext) || "text/plain",
             'Last-Modified' => HTTP::Date::time2str($mtime)
         );
@@ -199,7 +201,7 @@ sub serve_acore_document {
     my $res   = $self->response;
     my $ctype = $doc->can('content_type')
         ? $doc->content_type : "text/plain";
-    $res->headers->header(
+    $res->header(
         "Content-Type"  => $ctype,
         "Last-Modified" => HTTP::Date::time2str( $doc->updated_on->epoch ),
     );
