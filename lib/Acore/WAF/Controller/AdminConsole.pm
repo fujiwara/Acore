@@ -21,7 +21,7 @@ sub _is_logged_in {
 
 sub login_form_GET {
     my ($self, $c) = @_;
-    $c->log( debug => "uri_for=". $c->uri_for("login_form") );
+    $c->log->debug( "uri_for=". $c->uri_for("login_form") );
     $c->render("admin_console/login_form.mt");
 }
 

@@ -10,6 +10,7 @@ use HTTP::Date;
 use utf8;
 use Encode qw/ encode_utf8 decode_utf8 encode decode /;
 use UNIVERSAL::require;
+use Acore::WAF::Log;
 
 has stash => (
     is      => "rw",
@@ -42,6 +43,20 @@ has triggers => (
     isa => "HashRef",
 );
 
+has log => (
+    is         => "rw",
+    isa        => "Acore::WAF::Log",
+    lazy_build => 1,
+);
+
+sub _build_log {
+    my $self = shift;
+    my $log  = Acore::WAF::Log->new;
+    $log->level( $self->config->{log}->{level} )
+        if defined $self->config->{log}->{level};
+    $log;
+}
+
 __PACKAGE__->meta->make_immutable;
 no Any::Moose;
 *req = \&request;
@@ -49,22 +64,18 @@ no Any::Moose;
 
 my $Triggers = {};
 
-sub log {
-    my $self = shift;
-    my ($level, $msg) = @_;
-    warn "[$level] $msg\n";
-}
-
 sub setup {
     my $class   = shift;
     my @plugins = @_;
 
+    my $log = Acore::WAF::Log->new;
     for my $plugin (@plugins) {
         my $p_class = $plugin =~ /^\+/ ? $plugin : "Acore::WAF::Plugin::${plugin}";
-        $class->log( info => "loading plugin: $p_class" );
+        $log->info("loading plugin: $p_class");
         $p_class->use or die "Can't load plugin: $@";
         $p_class->setup($class) if $p_class->can('setup');
     }
+    $log->flush;
 }
 
 sub path_to {
@@ -89,10 +100,11 @@ sub handle_request {
         $self->call_trigger('AFTER_DISPATCH');
     };
     if ($@) {
-        $self->log( error => $@ );
+        $self->log->error($@);
         $self->res->body("Internal Server Error");
         $self->res->status(500);
     }
+    $self->log->flush;
     return $self->response;
 }
 
@@ -104,7 +116,7 @@ sub dispatch {
     if ($rule) {
         my $action = $rule->{action};
         use Data::Dumper;
-        $self->log( debug => Dumper $rule );
+        $self->log->debug( Dumper $rule );
         my $controller = $rule->{controller};
 
         my $method = uc $self->req->method;
@@ -138,7 +150,7 @@ sub serve_static_file {
 
     $file = Path::Class::file($file) unless ref $file;
 
-    $self->log( debug => "serving static file. $file" );
+    $self->log->debug("serving static file. $file");
 
     my $res = $self->res;
     if ( -f $file && -r _ ) {
@@ -178,7 +190,7 @@ sub prepare_acore {
 sub serve_acore_document {
     my ( $self, $path ) = @_;
 
-    $self->log( debug => "serving acore_document path: $path" );
+    $self->log->debug("serving acore_document path: $path");
 
     $self->prepare_acore();
     my $doc = $self->acore->get_document({ path => $path });
@@ -199,7 +211,7 @@ sub redirect {
     my ($self, $to) = @_;
     $self->res->status(302);
     $self->res->header( Location => $to );
-    $self->log( debug => "redirecting to $to" );
+    $self->log->debug("redirecting to $to");
 }
 
 sub uri_for {

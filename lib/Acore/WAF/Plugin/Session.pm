@@ -32,7 +32,7 @@ sub session {
             state   => $state_class->new( %{ $config->{state}->{args} } ),
             request => $c->request,
         );
-        $c->log( debug => "session inited." );
+        $c->log->debug("session inited.");
     }
     return want('HASH') ? $c->{_session_obj}->as_hashref
                         : $c->{_session_obj};

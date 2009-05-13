@@ -28,7 +28,7 @@ __PACKAGE__->setup(qw/ Session /);
 
 sub dispatch_index {
     my ($self, $c) = @_;
-    $c->log( info => "dispatch index" );
+    $c->log->info("dispatch index");
     $c->prepare_acore();
 
     my $count = $c->session->get('counter');
