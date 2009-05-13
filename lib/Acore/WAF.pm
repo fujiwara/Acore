@@ -37,10 +37,17 @@ has acore => (
     isa => "Acore",
 );
 
+has triggers => (
+    is  => "rw",
+    isa => "HashRef",
+);
+
 __PACKAGE__->meta->make_immutable;
 no Any::Moose;
 *req = \&request;
 *res = \&response;
+
+my $Triggers = {};
 
 sub log {
     my $self = shift;
@@ -56,7 +63,7 @@ sub setup {
         my $p_class = $plugin =~ /^\+/ ? $plugin : "Acore::WAF::Plugin::${plugin}";
         $class->log( info => "loading plugin: $p_class" );
         $p_class->use or die "Can't load plugin: $!";
-        $p_class->setup if $p_class->can('setup');
+        $p_class->setup($class) if $p_class->can('setup');
     }
 }
 
@@ -70,11 +77,16 @@ sub path_to {
 sub handle_request {
     my $self = shift;
     my ($config, $req) = @_;
+
+    my $class = ref $self;
     $self->request($req);
     $self->config($config);
     $config->{include_path} ||= [];
+    $self->triggers( $Triggers->{$class} );
     eval {
+        $self->call_trigger('BEFORE_DISPATCH');
         $self->dispatch;
+        $self->call_trigger('AFTER_DISPATCH');
     };
     if ($@) {
         $self->log( error => $@ );
@@ -111,8 +123,6 @@ sub dispatch {
         $self->res->body("Not found.");
         $self->res->status(404);
     }
-    $self->session->response_filter($self->response)
-        if $self->can('session');
     $self;
 }
 
@@ -219,6 +229,25 @@ sub render_part {
 sub dispatch_favicon {
     my ($self, $c) = @_;
     $c->serve_static_file( $c->path_to("favicon.ico") );
+}
+
+sub add_trigger {
+    my $class    = shift;
+    my %triggers = @_;
+    $Triggers->{$class} ||= +{
+        BEFORE_DISPATCH => [],
+        AFTER_DISPATCH  => [],
+    };
+    push @{ $Triggers->{$class}->{$_} }, $triggers{$_}
+        for keys %triggers;
+}
+
+sub call_trigger {
+    my $self  = shift;
+    my $point = shift;
+    for my $sub (@{ $self->triggers->{$point} }) {
+        $sub->($self);
+    }
 }
 
 1;

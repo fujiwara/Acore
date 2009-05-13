@@ -6,6 +6,17 @@ use Want;
 require Exporter;
 our @EXPORT = qw/ session /;
 
+sub setup {
+    my ($class, $controller) = @_;
+    $controller->add_trigger(
+        AFTER_DISPATCH => sub {
+            my $c = shift;
+            $c->session->response_filter($c->response)
+                if $c->{_session_obj};
+        },
+    );
+}
+
 sub session {
     my $c = shift;
 
