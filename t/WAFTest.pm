@@ -1,0 +1,32 @@
+package t::WAFTest;
+
+use strict;
+use warnings;
+use Any::Moose;
+extends 'Acore::WAF';
+
+__PACKAGE__->meta->make_immutable;
+no Any::Moose;
+
+{
+    package t::WAFTest::Dispatcher;
+    use HTTPx::Dispatcher;
+    connect "",
+        { controller => "t::WAFTest", action => "index"};
+    connect ":action",
+        { controller => "t::WAFTest", };
+}
+
+__PACKAGE__->setup;
+
+sub index {
+    my ($self, $c) = @_;
+    $c->res->body("index");
+}
+
+sub ok {
+    my ($self, $c) = @_;
+    $c->res->body("ok");
+}
+
+1;

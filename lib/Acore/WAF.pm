@@ -68,6 +68,10 @@ sub setup {
     my $class   = shift;
     my @plugins = @_;
 
+    $Triggers->{$class} = +{
+        BEFORE_DISPATCH => [],
+        AFTER_DISPATCH  => [],
+    };
     my $log = Acore::WAF::Log->new;
     for my $plugin (@plugins) {
         my $p_class = $plugin =~ /^\+/ ? $plugin : "Acore::WAF::Plugin::${plugin}";
@@ -248,10 +252,6 @@ sub dispatch_favicon {
 sub add_trigger {
     my $class    = shift;
     my %triggers = @_;
-    $Triggers->{$class} ||= +{
-        BEFORE_DISPATCH => [],
-        AFTER_DISPATCH  => [],
-    };
     push @{ $Triggers->{$class}->{$_} }, $triggers{$_}
         for keys %triggers;
 }
