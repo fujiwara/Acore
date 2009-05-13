@@ -11,6 +11,7 @@ use utf8;
 use Encode qw/ encode_utf8 decode_utf8 encode decode /;
 use UNIVERSAL::require;
 use Acore::WAF::Log;
+use URI::Escape;
 
 has stash => (
     is      => "rw",
@@ -133,11 +134,13 @@ sub dispatch {
             $sub->( $controller, $self, $rule->{args} );
         }
         else {
+            $self->log->error("action for dispatch (${controller}::${action}) is not found.");
             $self->res->body("Not found.");
             $self->res->status(404);
         }
     }
     else {
+        $self->log->error("dispatch rule is not found. " . $self->req->uri);
         $self->res->body("Not found.");
         $self->res->status(404);
     }
@@ -159,7 +162,14 @@ sub serve_static_file {
     $self->log->debug("serving static file. $file");
 
     my $res = $self->res;
-    if ( -f $file && -r _ ) {
+    if ( -f $file ) {
+        unless ( -r _ ) {
+            $self->log->error("can't read file $file : $!");
+            $res->status(403);
+            $res->body("forbidden.");
+            return;
+        }
+
         my $mtime = $file->stat->mtime;
         if (my $ims = $self->req->header('If-Modified-Since')) {
             my $time = HTTP::Date::str2time($ims);
@@ -177,6 +187,7 @@ sub serve_static_file {
         );
     }
     else {
+        $self->log->error("$file is not exists. $!");
         $res->status(404);
         $res->body("Not found.");
     }
@@ -222,9 +233,17 @@ sub redirect {
 
 sub uri_for {
     my $self = shift;
-    my $to   = shift;
-    my $uri  = URI->new($to);
+    my $path = shift;
+
+    my @path = map { uri_escape_utf8($_) } grep {! ref $_ } @_;
+    $path .= join("/", @path);
+
+    my $uri = URI->new($path);
     $uri = $uri->abs( $self->req->uri );
+
+    $uri->query_form(%{ $_[-1] })
+        if ref $_[-1] eq 'HASH';
+
     return $uri;
 }
 
