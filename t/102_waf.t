@@ -1,0 +1,28 @@
+# -*- mode:perl -*-
+use strict;
+use Test::More tests => 5;
+use HTTP::Engine::Test::Request;
+
+BEGIN {
+    use_ok 'Acore::WAF';
+    use_ok 't::WAFTest';
+    use_ok 'HTTP::Engine';
+};
+
+my $app = t::WAFTest->new;
+my $req = HTTP::Engine::Test::Request->new(
+    uri    => 'http://example.com/?foo=bar&bar=baz',
+    method => "GET",
+);
+$app->request($req);
+$app->config({ include_path => [] });
+
+isa_ok $app => "Acore::WAF";
+can_ok $app, qw/ setup path_to handle_request dispatch dispatch_static
+                 serve_static_file prepare_acore serve_acore_document
+                 redirect uri_for render render_part dispatch_favicon
+                 add_trigger call_trigger
+                 stash config request response acore triggers log
+                 req res
+               /;
+

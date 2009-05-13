@@ -5,7 +5,7 @@ use Test::Base;
 use HTTP::Request;
 use Data::Dumper;
 
-plan tests => 1 * blocks;
+plan tests => (3 + 1 * blocks);
 
 filters {
     response => [qw/chop/],
@@ -20,10 +20,10 @@ run {
 
     my $req = HTTP::Request->new( GET => $block->uri );
     $req->protocol('HTTP/1.0');
-    eval $block->preprocess if $block->preprocess;
+    my @res_args = $block->preprocess ? eval $block->preprocess : ();
     die $@ if $@;
 
-    my $config = {};
+    my $config = { root => "t" };
     my $engine = HTTP::Engine->new(
         interface => {
             module => 'Test',
@@ -35,10 +35,14 @@ run {
     );
     my $response = $engine->run($req);
     my $data = $response->headers->as_string."\n".$response->content;
-    is $data, $block->response;
+    is $data, sprintf($block->response, @res_args);
+
+    eval $block->postprocess if $block->postprocess;
+    die $@ if $@;
 };
 
 __END__
+
 ===
 --- uri
 http://localhost/
@@ -59,6 +63,52 @@ Status: 200
 
 ok
 
+===
+--- uri
+http://localhost/static/not_found.txt
+--- response
+Content-Length: 10
+Content-Type: text/html
+Status: 404
+
+Not found.
+
+===
+--- preprocess
+{
+    my $fh = Path::Class::file("t/static/test.txt")->openw;
+    $fh->print("0123456789\nabcdefg");
+}
+(HTTP::Date::time2str(time));
+--- postprocess
+unlink("t/static/test.txt");
+--- uri
+http://localhost/static/test.txt
+--- response
+Content-Length: 18
+Content-Type: text/plain
+Last-Modified: %s
+Status: 200
+
+0123456789
+abcdefg
 
 
+===
+--- preprocess
+{
+    my $fh = Path::Class::file("t/static/hide.txt")->openw;
+    $fh->print("0123456789\nabcdefg");
+    chmod 0000, "t/static/hide.txt";
+}
+--- postprocess
+chmod 0600, "t/static/hide.txt";
+unlink("t/static/hide.txt");
+--- uri
+http://localhost/static/hide.txt
+--- response
+Content-Length: 10
+Content-Type: text/html
+Status: 403
 
+forbidden.

@@ -13,6 +13,8 @@ no Any::Moose;
     use HTTPx::Dispatcher;
     connect "",
         { controller => "t::WAFTest", action => "index"};
+    connect "static/:filename",
+        { controller => "t::WAFTest", action => "dispatch_static" };
     connect ":action",
         { controller => "t::WAFTest", };
 }
