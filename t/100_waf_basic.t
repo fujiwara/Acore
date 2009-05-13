@@ -194,6 +194,8 @@ Internal Server Error
     $fh->print("AAA");
 }
 (HTTP::Date::time2str(time));
+--- postprocess
+unlink "t/favicon.ico";
 --- uri
 http://localhost/favicon.ico
 --- response
@@ -203,3 +205,13 @@ Last-Modified: %s
 Status: 200
 
 AAA
+
+===
+--- uri
+http://localhost/act/forward
+--- response
+Content-Length: 3
+Content-Type: text/html
+Status: 200
+
+abc

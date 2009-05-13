@@ -283,4 +283,12 @@ sub call_trigger {
     }
 }
 
+sub forward {
+    my $self = shift;
+    my ($class, $action, @args) = @_;
+
+    $self->log->debug("forward to ${class}->${action}");
+    $class->$action( $self, @args );
+}
+
 1;

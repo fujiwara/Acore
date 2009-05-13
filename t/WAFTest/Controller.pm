@@ -22,6 +22,21 @@ sub error {
     die;
 }
 
+sub forward {
+    my ($self, $c) = @_;
+    $c->log->info("forward");
+    $c->forward("t::WAFTest::Controller::X", "xyz", qw/ a b c /);
+}
+
+package t::WAFTest::Controller::X;
+
+sub xyz {
+    my ($self, $c, @args) = @_;
+
+    $c->log->info("forwarded");
+    $c->res->body( join("", @args) );
+}
+
 1;
 
 
