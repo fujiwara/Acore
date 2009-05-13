@@ -225,3 +225,17 @@ Content-Type: text/html
 Status: 200
 
 ok
+
+===
+--- uri
+http://localhost/act/render
+--- response
+Content-Length: 113
+Content-Type: text/html
+Status: 200
+
+uri: http://localhost/act/render
+html: &lt;html&gt;
+raw: <html>
+日本語は UTF-8 で書きます
+include file

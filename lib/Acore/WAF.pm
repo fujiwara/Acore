@@ -52,6 +52,11 @@ has log => (
     lazy_build => 1,
 );
 
+has renderer => (
+    is         => "rw",
+    lazy_build => 1,
+);
+
 sub _build_log {
     my $self = shift;
     my $log  = Acore::WAF::Log->new;
@@ -59,6 +64,16 @@ sub _build_log {
         if defined $self->config->{log}->{level};
     $log;
 }
+
+sub _build_renderer {
+    my $self = shift;
+    my $path = $self->path_to("templates");
+    Text::MicroTemplate::File->new(
+        include_path => [ $path, @{ $self->config->{include_path} } ],
+        use_cache    => 1,
+    );
+}
+
 
 __PACKAGE__->meta->make_immutable;
 no Any::Moose;
@@ -255,12 +270,7 @@ sub render {
 
 sub render_part {
     my ($self, $tmpl) = @_;
-
-    my $path = $self->path_to("templates");
-    my $mt   = Text::MicroTemplate::File->new(
-        include_path => [ $path, @{ $self->config->{include_path} } ],
-    );
-    return $mt->render_file( $tmpl, $self )->as_string;
+    return $self->renderer->render_file( $tmpl, $self )->as_string;
 }
 
 sub dispatch_favicon {

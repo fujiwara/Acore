@@ -34,6 +34,12 @@ sub forward_internal {
     $c->forward($self, "ok");
 }
 
+sub render {
+    my ($self, $c) = @_;
+    $c->stash->{value} = "<html>";
+    $c->render("test.mt");
+}
+
 package t::WAFTest::Controller::X;
 
 sub xyz {
