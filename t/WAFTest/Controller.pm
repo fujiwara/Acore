@@ -45,6 +45,11 @@ sub sample_plugin {
     $c->sample_method;
 }
 
+sub adoc {
+    my ($self, $c, $args) = @_;
+    $c->serve_acore_document( "/" . $args->{path} );
+}
+
 package t::WAFTest::Controller::X;
 
 sub xyz {

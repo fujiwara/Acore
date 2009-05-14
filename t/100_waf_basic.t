@@ -4,8 +4,11 @@ use warnings;
 use Test::Base;
 use HTTP::Request;
 use Data::Dumper;
+use Acore::Document;
+use Acore;
+use DBI;
 
-plan tests => (3 + 1 * blocks);
+plan tests => ( 3 + 4 + 1 * blocks );
 
 filters {
     response => [qw/chop/],
@@ -15,6 +18,14 @@ use_ok("HTTP::Engine");
 use_ok("Acore::WAF");
 use_ok("t::WAFTest");
 
+my $config = {
+    root => "t",
+    dsn  => [
+        'dbi:SQLite:dbname=t/test.sqlite', '', '',
+        { RaiseError => 1, AutoCommit => 1 },
+    ],
+};
+
 run {
     my $block = shift;
 
@@ -23,7 +34,6 @@ run {
     my @res_args = $block->preprocess ? eval $block->preprocess : ();
     die $@ if $@;
 
-    my $config = { root => "t" };
     my $engine = HTTP::Engine->new(
         interface => {
             module => 'Test',
@@ -42,6 +52,32 @@ run {
     eval $block->postprocess if $block->postprocess;
     die $@ if $@;
 };
+
+sub create_adoc {
+    my $config = shift;
+
+    unlink "t/test.sqlite";
+    my $dbh = DBI->connect(@{ $config->{dsn} });
+    my $app = Acore->new({ dbh => $dbh, setup_db => 1, });
+    {
+        package Acore::Document::Test;
+        use Any::Moose;
+        extends 'Acore::Document';
+        override "as_string" => sub { shift->{body} };
+    }
+    my $doc = Acore::Document::Test->new({
+        path         => "/foo/bar",
+        content_type => "text/plain",
+        body         => "Acore::Document::Test body",
+    });
+    isa_ok $doc => "Acore::Document::Test";
+    isa_ok $doc => "Acore::Document";
+    is $doc->as_string => "Acore::Document::Test body";
+
+    $doc = $app->put_document($doc);
+    ok $doc;
+    $doc;
+}
 
 __END__
 
@@ -249,3 +285,29 @@ Content-Type: text/html
 Status: 200
 
 sample plugin
+
+===
+--- preprocess
+create_adoc($config);
+(HTTP::Date::time2str(time));
+--- uri
+http://localhost/adoc/foo/bar
+--- response
+Content-Length: 26
+Content-Type: text/plain
+Last-Modified: %s
+Status: 200
+
+Acore::Document::Test body
+
+===
+--- uri
+http://localhost/adoc/foo/baz
+--- response
+Content-Length: 10
+Content-Type: text/html
+Status: 404
+
+Not found.
+
+

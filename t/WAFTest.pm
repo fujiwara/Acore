@@ -20,7 +20,9 @@ __PACKAGE__->setup(qw/ Sample /);
     connect "static/:filename",
         { controller => "t::WAFTest", action => "dispatch_static" };
     connect "act/:action",
-        { controller => "t::WAFTest::Controller", };
+        { controller => "t::WAFTest::Controller" };
+    connect "adoc/:path",
+        { controller => "t::WAFTest::Controller", action => "adoc" };
 }
 
 1;

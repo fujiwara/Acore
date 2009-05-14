@@ -226,11 +226,15 @@ sub serve_acore_document {
 
     $self->prepare_acore();
     my $doc = $self->acore->get_document({ path => $path });
-    return unless $doc;
+    unless ($doc) {
+        $self->res->status(404);
+        $self->res->body("Not found.");
+        return;
+    }
 
     my $res   = $self->response;
-    my $ctype = $doc->can('content_type')
-        ? $doc->content_type : "text/plain";
+    my $ctype = $doc->can('content_type') ? $doc->content_type
+                                          : "text/plain";
     $res->header(
         "Content-Type"  => $ctype,
         "Last-Modified" => HTTP::Date::time2str( $doc->updated_on->epoch ),
