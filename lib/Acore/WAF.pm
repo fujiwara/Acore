@@ -131,10 +131,10 @@ sub _decode_request {
 
     for my $n ( keys %$ref ) {
         my $v = $ref->{$n};
-        $ref->{$n} =
-            ( ref $v eq "ARRAY" ) ? [ map { $enc->decode($_) } @$v ]
-          : ( !ref $v )           ? $enc->decode($v)
-          : $v;
+        $ref->{$n}
+            = ( ref $v eq "ARRAY" ) ? [ map { $enc->decode($_) } @$v ]
+            : ( !ref $v )           ? $enc->decode($v)
+            : $v;
     }
 }
 
@@ -200,7 +200,7 @@ sub dispatch {
             $sub->( $controller, $self, $rule->{args} );
         }
         else {
-            $self->log->error("dispatch action (${controller}::${action}) is not found. for " . $self->req->uri );
+            $self->log->error("dispatch action (${controller}::${action} or ${controller}::${action}_${method}) is not found. for " . $self->req->uri );
             $self->res->body("Not found.");
             $self->res->status(404);
         }

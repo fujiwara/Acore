@@ -54,7 +54,7 @@ sub adoc {
 sub say {
     my ($self, $c) = @_;
     $c->res->body(
-        $c->encode( "入力は" . $c->req->params->{'input'} . "です。\n" )
+        $c->encode("入力は" . $c->req->params->{'input'} . "です。\n")
     );
 }
 
@@ -62,6 +62,19 @@ sub say_mt {
     my ($self, $c) = @_;
     $c->render("say.mt");
 }
+
+sub say_multi {
+    my ($self, $c) = @_;
+    my @input = $c->req->param('input');
+    $c->res->body(
+        $c->encode("入力は" . join("", @input) . "です。\n")
+    );
+}
+
+sub rest_GET    { $_[1]->res->body("GET")    }
+sub rest_POST   { $_[1]->res->body("POST")   }
+sub rest_PUT    { $_[1]->res->body("PUT")    }
+sub rest_DELETE { $_[1]->res->body("DELETE") }
 
 
 package t::WAFTest::Controller::X;

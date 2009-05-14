@@ -13,6 +13,7 @@ plan tests => ( 3 + 4 + 1 * blocks );
 
 filters {
     response => [qw/chop convert_charset/],
+    method   => [qw/chop/],
 };
 
 use_ok("HTTP::Engine");
@@ -31,8 +32,14 @@ run {
     my $block  = shift;
     my $config = clone $base_config;
 
-    my $req = HTTP::Request->new( GET => $block->uri );
+    my $method = $block->method || "GET";
+    my $req = HTTP::Request->new( $method => $block->uri );
     $req->protocol('HTTP/1.0');
+    $req->header(
+        "Content-Length" => 0,
+        "Content-Type"   => "text/plain",
+    );
+
     my @res_args = $block->preprocess ? eval $block->preprocess : ();
     die $@ if $@;
 
@@ -49,7 +56,7 @@ run {
     my $data = $response->headers->as_string."\n".$response->content;
     $data =~ s/[\r\n]+\z//;
 
-    is $data, sprintf($block->response, @res_args);
+    is $data, sprintf($block->response, @res_args), $block->name;
 
     eval $block->postprocess if $block->postprocess;
     die $@ if $@;
@@ -82,16 +89,16 @@ sub create_adoc {
     });
     isa_ok $doc => "Acore::Document::Test";
     isa_ok $doc => "Acore::Document";
-    is $doc->as_string => "Acore::Document::Test body";
+    is $doc->as_string => "Acore::Document::Test body", "Acore::Document as_string";
 
     $doc = $app->put_document($doc);
-    ok $doc;
+    ok $doc, "Acore->put_document";
     $doc;
 }
 
 __END__
 
-===
+=== /
 --- uri
 http://localhost/
 --- response
@@ -101,7 +108,7 @@ Status: 200
 
 index
 
-===
+=== ok
 --- uri
 http://localhost/act/ok
 --- response
@@ -111,7 +118,7 @@ Status: 200
 
 ok
 
-===
+=== not found
 --- uri
 http://localhost/act/ng
 --- response
@@ -121,7 +128,7 @@ Status: 404
 
 Not found.
 
-===
+=== not found
 --- uri
 http://localhost/ng
 --- response
@@ -131,7 +138,7 @@ Status: 404
 
 Not found.
 
-===
+=== static not found
 --- uri
 http://localhost/static/not_found.txt
 --- response
@@ -141,7 +148,7 @@ Status: 404
 
 Not found.
 
-===
+=== static ok
 --- preprocess
 {
     my $fh = Path::Class::file("t/static/test.txt")->openw;
@@ -161,7 +168,7 @@ Status: 200
 0123456789
 abcdefg
 
-===
+=== static forbidden
 --- preprocess
 {
     my $fh = Path::Class::file("t/static/hide.txt")->openw;
@@ -180,7 +187,7 @@ Status: 403
 
 forbidden.
 
-===
+=== static not modified
 --- preprocess
 $req->header("If-Modified-Since" => HTTP::Date::time2str(time));
 {
@@ -195,7 +202,7 @@ http://localhost/static/test2.txt
 Content-Type: text/html; charset=utf-8
 Status: 304
 
-===
+=== static no extention
 --- preprocess
 {
     my $fh = Path::Class::file("t/static/noext")->openw;
@@ -214,7 +221,7 @@ Status: 200
 
 0123456789
 
-===
+=== redirect
 --- uri
 http://localhost/act/rd
 --- response
@@ -223,7 +230,7 @@ Content-Length: 0
 Content-Type: text/html; charset=utf-8
 Status: 302
 
-===
+=== server error
 --- uri
 http://localhost/act/error
 --- response
@@ -233,7 +240,7 @@ Status: 500
 
 Internal Server Error
 
-===
+=== favicon
 --- preprocess
 {
     my $fh = Path::Class::file("t/favicon.ico")->openw;
@@ -252,7 +259,7 @@ Status: 200
 
 AAA
 
-===
+=== forward
 --- uri
 http://localhost/act/forward
 --- response
@@ -262,7 +269,7 @@ Status: 200
 
 abc
 
-===
+=== forward internal
 --- uri
 http://localhost/act/forward_internal
 --- response
@@ -272,7 +279,7 @@ Status: 200
 
 ok
 
-===
+=== render
 --- uri
 http://localhost/act/render
 --- response
@@ -286,7 +293,7 @@ raw: <html>
 日本語は UTF-8 で書きます
 include file
 
-===
+=== plugin
 --- uri
 http://localhost/act/sample_plugin
 --- response
@@ -296,7 +303,7 @@ Status: 200
 
 sample plugin
 
-===
+=== acore document
 --- preprocess
 create_adoc($config);
 (HTTP::Date::time2str(time));
@@ -310,7 +317,7 @@ Status: 200
 
 Acore::Document::Test body
 
-===
+=== acore document not found
 --- uri
 http://localhost/adoc/foo/baz
 --- response
@@ -320,7 +327,7 @@ Status: 404
 
 Not found.
 
-===
+=== decode input
 --- uri
 http://localhost/act/say?input=%E3%81%82%E3%81%84%E3%81%86
 --- response
@@ -330,7 +337,7 @@ Status: 200
 
 入力はあいうです。
 
-===
+=== decode input & render
 --- uri
 http://localhost/act/say_mt?input=%E3%81%82%E3%81%84%E3%81%86
 --- response
@@ -340,7 +347,7 @@ Status: 200
 
 入力はあいうです。
 
-===
+=== cp932
 --- preprocess
 $config->{encoding} = "cp932";
 $config->{charset}  = "Shift_JIS";
@@ -353,7 +360,7 @@ Status: 200
 
 入力はあいうです。
 
-===
+=== cp932 & render
 --- preprocess
 $config->{encoding} = "cp932";
 $config->{charset}  = "Shift_JIS";
@@ -365,3 +372,59 @@ Content-Type: text/html; charset=Shift_JIS
 Status: 200
 
 入力はあいうです。
+
+=== input multi param
+--- uri
+http://localhost/act/say_multi?input=%E3%81%82&input=%E3%81%84&input=%E3%81%86
+--- response
+Content-Length: 28
+Content-Type: text/html; charset=utf-8
+Status: 200
+
+入力はあいうです。
+
+=== rest GET
+--- uri
+http://localhost/act/rest
+--- response
+Content-Length: 3
+Content-Type: text/html; charset=utf-8
+Status: 200
+
+GET
+
+=== rest POST
+--- method
+POST
+--- uri
+http://localhost/act/rest
+--- response
+Content-Length: 4
+Content-Type: text/html; charset=utf-8
+Status: 200
+
+POST
+
+=== rest PUT
+--- method
+PUT
+--- uri
+http://localhost/act/rest
+--- response
+Content-Length: 3
+Content-Type: text/html; charset=utf-8
+Status: 200
+
+PUT
+
+=== rest DELETE
+--- method
+DELETE
+--- uri
+http://localhost/act/rest
+--- response
+Content-Length: 6
+Content-Type: text/html; charset=utf-8
+Status: 200
+
+DELETE
