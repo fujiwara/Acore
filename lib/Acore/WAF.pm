@@ -495,9 +495,9 @@ Request handler for HTTP::Engine.
     },
  )->run();
 
-=item path_to(@path)
+=item path_to
 
-Returns Path::Class object under $config->{root}.
+Returns Path::Class object in $config->{root}.
 
  $config->{root} = "/your_app/root";
  $file = $c->path_to("static", "foo.jpg"); # /your_app/root/static/foo.jpg
@@ -546,6 +546,7 @@ To set other include path,
  $config->{include_path} = [ "/path/1", "path/2" ];
 
 # template file
+
  ? $c = $_[0]
  <title><?= $c->stash->{title} ?></title>
  uri: <?= $c->req->uri ?>
@@ -557,6 +558,7 @@ Render template, but not set response body.
  $mail = $c->render_part("mail_template.mt");
 
 Like TT's [% INCLUDE %]
+
  ?=r $_[0]->render_part("file");
 
 =item serve_static_file
@@ -567,7 +569,7 @@ Serve static file in $config->{root} dir.
 
 =item forward
 
-Forward other controller's action.
+Forward to other controller's action.
 
  $c->forward("YourApp::Controller::Foo", "action", @args);
 
@@ -619,8 +621,6 @@ Finalize method.
      { controller => "YourApp", action => "dispatch_static" };
  connect "favicon.ico",
      { controller => "YourApp", action => "dispatch_favicon" };
- connect "document/:path",
-     { controller => "YourApp", action => "dispatch_acore_document" };
 
 =over 4
 
@@ -631,10 +631,6 @@ Serve static file in {root}/static dir.
 =item dispatch_favicon
 
 Serve {root}/favicon.ico .
-
-=item dispatch_acore
-
-Server Acore::Document.
 
 =back
 
