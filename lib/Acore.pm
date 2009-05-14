@@ -168,9 +168,57 @@ Constractor.
 
  $acore = Acore->new({ dbh => $dbh, setup_db => 1 });
 
-dbh: DBI データベースハンドル
+dbh: DBI database handle.
 
-setup_db: 真を指定すると DB のテーブルを作成します
+setup_db: Flag of create tables.
+
+=item get_user
+
+Get Acore::User from storage.
+
+ $user = $acore->get_user({ name => "username" });
+
+=item save_user
+
+Store Acore::User to storage.
+
+ $acore->save_user($user);
+
+=item create_user
+
+Create Acore::User.
+
+ $user = $acore->create_user({ name => "foo" });
+ $user->set_password('secret');
+ $acore->save_user($user);
+
+=item authenticate_user
+
+Authenticate user. Returns Acore::User.
+
+ $user = $acore->authenticate_user({
+     name     => "foo",
+     password => "secret",
+ });
+
+=item get_document
+
+Get Acore::Document from storage.
+
+ $doc = $acore->get_document({ id => $id });
+ $doc = $acore->get_document({ path => $path });
+
+=item store_document
+
+Store Acore::Document to storage.
+
+ $doc = $acore->store_document($doc);
+
+=item search_document
+
+Search Acore::Documents from storage, path first match.
+
+ @doc = $acore->search_document({ path => "/foo/bar" });
 
 =back
 
