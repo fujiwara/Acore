@@ -7,18 +7,19 @@ use Data::Dumper;
 use Acore::Document;
 use Acore;
 use DBI;
+use Clone qw/ clone /;
 
 plan tests => ( 3 + 4 + 1 * blocks );
 
 filters {
-    response => [qw/chop/],
+    response => [qw/chop convert_charset/],
 };
 
 use_ok("HTTP::Engine");
 use_ok("Acore::WAF");
 use_ok("t::WAFTest");
 
-my $config = {
+my $base_config = {
     root => "t",
     dsn  => [
         'dbi:SQLite:dbname=t/test.sqlite', '', '',
@@ -27,7 +28,8 @@ my $config = {
 };
 
 run {
-    my $block = shift;
+    my $block  = shift;
+    my $config = clone $base_config;
 
     my $req = HTTP::Request->new( GET => $block->uri );
     $req->protocol('HTTP/1.0');
@@ -52,6 +54,14 @@ run {
     eval $block->postprocess if $block->postprocess;
     die $@ if $@;
 };
+
+sub convert_charset {
+    my $str = shift;
+    if ( $str =~ /Shift_JIS/i ) {
+        Encode::from_to($str, 'utf-8', 'cp932');
+    }
+    $str;
+}
 
 sub create_adoc {
     my $config = shift;
@@ -326,6 +336,32 @@ http://localhost/act/say_mt?input=%E3%81%82%E3%81%84%E3%81%86
 --- response
 Content-Length: 28
 Content-Type: text/html; charset=utf-8
+Status: 200
+
+入力はあいうです。
+
+===
+--- preprocess
+$config->{encoding} = "cp932";
+$config->{charset}  = "Shift_JIS";
+--- uri
+http://localhost/act/say?input=%82%A0%82%A2%82%A4
+--- response
+Content-Length: 19
+Content-Type: text/html; charset=Shift_JIS
+Status: 200
+
+入力はあいうです。
+
+===
+--- preprocess
+$config->{encoding} = "cp932";
+$config->{charset}  = "Shift_JIS";
+--- uri
+http://localhost/act/say_mt?input=%82%A0%82%A2%82%A4
+--- response
+Content-Length: 19
+Content-Type: text/html; charset=Shift_JIS
 Status: 200
 
 入力はあいうです。

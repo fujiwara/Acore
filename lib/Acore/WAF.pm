@@ -91,7 +91,7 @@ sub _build_renderer {
 sub _build_encoder {
     my $self = shift;
     Encode::find_encoding( $self->encoding )
-            or die "Can't found encoding " . $self->encoding;
+        or die "Can't found encoding " . $self->encoding;
 }
 
 __PACKAGE__->meta->make_immutable;
@@ -143,14 +143,13 @@ sub handle_request {
     my ($config, $req) = @_;
     my $class = ref $self;
 
-    $self->request($req);
-    $self->_decode_request;
-
     $self->config($config);
     $config->{include_path} ||= [];
-
     $self->encoding( $config->{encoding} )
         if $config->{encoding};
+
+    $self->request($req);
+    $self->_decode_request;
 
     $self->triggers( $Triggers->{$class} );
 
