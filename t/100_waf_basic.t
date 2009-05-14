@@ -429,6 +429,27 @@ Status: 200
 
 DELETE
 
+
+=== form validator plugin ok
+--- uri
+http://localhost/act/name_is_not_null?name=foo
+--- response
+Content-Length: 2
+Content-Type: text/html; charset=utf-8
+Status: 200
+
+ok
+
+=== form validator plugin ok
+--- uri
+http://localhost/act/name_is_not_null?name=
+--- response
+Content-Length: 2
+Content-Type: text/html; charset=utf-8
+Status: 200
+
+ng
+
 === ovreride finalize
 --- preprocess
 {

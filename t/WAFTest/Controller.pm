@@ -76,6 +76,14 @@ sub rest_POST   { $_[1]->res->body("POST")   }
 sub rest_PUT    { $_[1]->res->body("PUT")    }
 sub rest_DELETE { $_[1]->res->body("DELETE") }
 
+sub name_is_not_null {
+    my ($self, $c) = @_;
+
+    my $res = $c->form->check(
+        name => [qw/ NOT_NULL /],
+    );
+    $c->res->body( $res->has_error ? "ng" : "ok" );
+}
 
 package t::WAFTest::Controller::X;
 
