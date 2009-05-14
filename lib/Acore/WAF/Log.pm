@@ -60,7 +60,7 @@ __END__
 
 =head1 NAME
 
-Acore::WAF::Log - log
+Acore::WAF::Log - log module
 
 =head1 SYNOPSIS
 
@@ -70,6 +70,51 @@ Acore::WAF::Log - log
   $log->error('Error message.'); # send message to STDERR
 
 =head1 DESCRIPTION
+
+=head1 LOG LEVELS
+
+Default level is "info".
+
+=over 4
+
+=item emerge
+
+=item alert
+
+=item critical
+
+=item error
+
+=item warning
+
+=item notice
+
+=item info
+
+=item debug
+
+=back
+
+=head1 METHODS
+
+=over 4
+
+=item level
+
+Get or set log level.
+
+ $log->level;
+ $log->level('debug');
+
+=item timestamp
+
+Flag to add timestamp in log message.
+
+=item flush
+
+Flush buffer to STDERR.
+
+=back
 
 =head1 AUTHOR
 

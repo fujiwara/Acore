@@ -12,8 +12,8 @@ use Clone qw/ clone /;
 plan tests => ( 3 + 4 + 1 * blocks );
 
 filters {
-    response => [qw/chop convert_charset/],
-    method   => [qw/chop/],
+    response => [qw/chomp convert_charset/],
+    method   => [qw/chomp/],
 };
 
 use_ok("HTTP::Engine");
@@ -428,3 +428,26 @@ Content-Type: text/html; charset=utf-8
 Status: 200
 
 DELETE
+
+=== ovreride finalize
+--- preprocess
+{
+    package t::WAFTest;
+    use Any::Moose;
+    override "finalize" => sub {
+        super();
+        my $c = shift;
+        $c->res->header("X-Override-Finalize" => "ok");
+    };
+}
+--- uri
+http://localhost/
+--- response
+--- response
+Content-Length: 5
+Content-Type: text/html; charset=utf-8
+Status: 200
+X-Override-Finalize: ok
+
+index
+

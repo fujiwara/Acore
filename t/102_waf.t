@@ -18,11 +18,11 @@ $app->request($req);
 $app->config({ include_path => [] });
 
 isa_ok $app => "Acore::WAF";
-can_ok $app, qw/ setup path_to handle_request dispatch dispatch_static
+can_ok $app, qw/ setup path_to handle_request _dispatch dispatch_static
                  serve_static_file prepare_acore serve_acore_document
                  redirect uri_for render render_part dispatch_favicon
-                 add_trigger call_trigger
-                 stash config request response acore triggers log
+                 add_trigger _call_trigger
+                 stash config request response acore _triggers log
                  req res
                /;
 

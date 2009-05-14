@@ -41,7 +41,7 @@ has acore => (
     isa => "Acore",
 );
 
-has triggers => (
+has _triggers => (
     is  => "rw",
     isa => "HashRef",
 );
@@ -151,12 +151,12 @@ sub handle_request {
     $self->request($req);
     $self->_decode_request;
 
-    $self->triggers( $Triggers->{$class} );
+    $self->_triggers( $Triggers->{$class} );
 
     eval {
-        $self->call_trigger('BEFORE_DISPATCH');
-        $self->dispatch;
-        $self->call_trigger('AFTER_DISPATCH');
+        $self->_call_trigger('BEFORE_DISPATCH');
+        $self->_dispatch;
+        $self->_call_trigger('AFTER_DISPATCH');
     };
     if ($@) {
         $self->log->error($@);
@@ -179,7 +179,7 @@ sub finalize {
     1;
 }
 
-sub dispatch {
+sub _dispatch {
     my ( $self ) = @_;
 
     my $dispatcher = (ref $self) . "::Dispatcher";
@@ -341,10 +341,10 @@ sub add_trigger {
         for keys %triggers;
 }
 
-sub call_trigger {
+sub _call_trigger {
     my $self  = shift;
     my $point = shift;
-    for my $sub (@{ $self->triggers->{$point} }) {
+    for my $sub (@{ $self->_triggers->{$point} }) {
         $sub->($self);
     }
 }
@@ -358,3 +358,296 @@ sub forward {
 }
 
 1;
+
+__END__
+
+=head1 NAME
+
+Acore::WAF - AnyCMS web application framework
+
+=head1 SYNOPSIS
+
+ package YourApp;
+ use Any::Moose;
+ extends 'Acore::WAF';
+ __PACKAGE__->setup(@plugins);
+
+ package YourApp::Dispatcher;
+ use HTTPx::Dispatcher;
+ connect "",
+     { controller => "YourApp::Controller", action => "dispatch_index" };
+ connect "static/:filename",
+     { controller => "YourApp", action => "dispatch_static" };
+ connect "favicon.ico",
+     { controller => "YourApp", action => "dispatch_favicon" };
+ connect ":action",
+     { controller => "YourApp::Controller" };
+
+ package YourApp::Controller;
+ use utf8;
+ sub dispatch_index {
+     my ($self, $c) = @_;
+     $c->render("index.mt");
+ }
+ sub foo {
+     my ($self, $c) = @_;
+     $c->request->param('foo');
+     $c->response->body( $c->encode($utf8_flagged_str) );
+ }
+
+ #!/usr/bin/perl
+ use HTTP::Engine;
+ use YourApp;
+ my $engine = HTTP::Engine->new(
+    interface => {
+        module => 'ServerSimple',
+        args   => {
+            host => "0.0.0.0",
+            port => 3000,
+        },
+        request_handler => sub {
+            YourApp->new->handle_request($config, @_);
+        },
+    },
+ );
+ $engine->run;
+
+=head1 DESCRIPTION
+
+Acore::WAF is HTTP::Engine based web application framework, with Acore.
+
+=head1 ATTRIBUTES
+
+=over 4
+
+=item stash
+
+ $c->stash->{key} = $value;
+
+=item config
+
+Config hashref.
+
+=item request
+
+HTTP::Engine::Request object.
+
+ $c->request->params->{foo}
+ $c->req->params->{foo};
+
+=item response
+
+HTTP::Engine::Response object.
+
+ $c->response->body("body");
+ $c->res->body("body");
+
+=item acore
+
+Acore object.
+
+ $config = {
+     dsn => ['dbi:SQLite:dbname=foo', '', '',
+             { AutoCommit => 1, RaiseError => 1 }
+     ],
+ };
+
+ $c->prepare_acore
+ $doc = $c->acore->get_document({ path => "/" });
+
+=item log
+
+Acore::WAF::Log object.
+
+ $c->log->info("info message");
+
+=item encoding
+
+External encoding name. default: "utf-8".
+
+=back
+
+=head1 METHODS
+
+=over 4
+
+=item new
+
+Constractor.
+
+=item setup
+
+Class method. Setup plugins.
+
+ # load Acore::WAF::Plugin::Session
+ YourApp->setup(qw/ Session /);
+
+=item handle_request
+
+Request handler for HTTP::Engine.
+
+ HTTP::Engine->new(
+    interface => {
+        module => 'CGI',
+        request_handler => sub {
+            YourApp->new()->handle_request($config, @_);
+        },
+    },
+ )->run();
+
+=item path_to(@path)
+
+Returns Path::Class object under $config->{root}.
+
+ $config->{root} = "/your_app/root";
+ $file = $c->path_to("static", "foo.jpg"); # /your_app/root/static/foo.jpg
+ $dir  = $c->path_to("static");
+ $dir->file("foo.jpg");
+
+=item prepare_acore
+
+Prepare Acore object. $config->{dsn} is required.
+
+See also acore attribute.
+
+=item serve_acore_document
+
+Serve Acore::Document object.
+
+ $c->serve_acore_document("/path/to/object");
+
+Content-Type is Acore::Document->content_type.
+
+Response body is Acore::Document->as_string.
+
+=item uri_for
+
+ $c->uri_for("/path/to", @args?, {params}?);
+
+Like Catalyst->uri_for.
+
+=item redirect
+
+Redirect to URL.
+
+ $c->redirect( $c->uri_for('/path/to') );
+
+=item render
+
+Render template, and set response body.
+
+Template engine is Text::MicroTemplate.
+
+ $c->render("index.mt");
+
+Include path is $config->{root}->{templates} by default.
+
+To set other include path,
+ $config->{include_path} = [ "/path/1", "path/2" ];
+
+# template file
+ ? $c = $_[0]
+ <title><?= $c->stash->{title} ?></title>
+ uri: <?= $c->req->uri ?>
+
+=item render_part
+
+Render template, but not set response body.
+
+ $mail = $c->render_part("mail_template.mt");
+
+Like TT's [% INCLUDE %]
+ ?=r $_[0]->render_part("file");
+
+=item serve_static_file
+
+Serve static file in $config->{root} dir.
+
+ $c->serve_static_file("static/foo.jpg");
+
+=item forward
+
+Forward other controller's action.
+
+ $c->forward("YourApp::Controller::Foo", "action", @args);
+
+ package YourApp::Controller::Foo;
+ sub action {
+     my ($self, $c, @args) = @_;
+     $c->forward($self, "other");
+ }
+ sub other {
+     my ($self, $c) = @_;
+ }
+
+=item add_trigger
+
+Class method. Set trigger in YourApp class.
+
+Available trigger points are "BEFORE_DISPATCH" and "AFTER_DISPATCH".
+
+ package Acore::WAF::Plugin::Foo;
+ sub setup {
+     my ($class, $app) = @_;
+     $app->add_trigger(
+         BEFORE_DISPATCH => sub {
+             my $c = shift;
+             # ...
+         },
+     );
+ }
+
+=item finalize
+
+Finalize method.
+
+ package YourApp;
+ use Any::Moose;
+ extends 'Acore::WAF';
+ override "finalize" => sub {
+     super()
+     # your finalize code
+ };
+
+=back
+
+=head1 INSTALLED ACTIONS
+
+ package YourApp::Dispatcher;
+ use HTTPx::Dispatcher;
+ connect "static/:filename",
+     { controller => "YourApp", action => "dispatch_static" };
+ connect "favicon.ico",
+     { controller => "YourApp", action => "dispatch_favicon" };
+ connect "document/:path",
+     { controller => "YourApp", action => "dispatch_acore_document" };
+
+=over 4
+
+=item dispatch_static
+
+Serve static file in {root}/static dir.
+
+=item dispatch_favicon
+
+Serve {root}/favicon.ico .
+
+=item dispatch_acore
+
+Server Acore::Document.
+
+=back
+
+
+=head1 AUTHOR
+
+FUJIWARA E<lt>fujiwara@topicmaker.comE<gt>
+
+=head1 SEE ALSO
+
+=head1 LICENSE
+
+This library is free software; you can redistribute it and/or modify
+it under the same terms as Perl itself.
+
+=cut
