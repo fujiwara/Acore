@@ -158,21 +158,9 @@ Acore - AnyCMS core
 
 Acore is AnyCMS core module.
 
-=head1 ATTRIBUTES
+=head1 METHODS
 
 =over 4
-
-=item address
-
-Returns the IP address of the client.
-
-=item cookies
-
-Returns a reference to a hash containing the cookies
-
-=item method
-
-=head1 METHODS
 
 =item new
 
@@ -183,6 +171,8 @@ Constractor.
 dbh: DBI データベースハンドル
 
 setup_db: 真を指定すると DB のテーブルを作成します
+
+=back
 
 =head1 AUTHOR
 
