@@ -2,6 +2,7 @@ package t::WAFTest::Controller;
 
 use strict;
 use warnings;
+use utf8;
 
 sub index {
     my ($self, $c) = @_;
@@ -49,6 +50,19 @@ sub adoc {
     my ($self, $c, $args) = @_;
     $c->serve_acore_document( "/" . $args->{path} );
 }
+
+sub say {
+    my ($self, $c) = @_;
+    $c->res->body(
+        $c->encode( "入力は" . $c->req->params->{'input'} . "です。\n" )
+    );
+}
+
+sub say_mt {
+    my ($self, $c) = @_;
+    $c->render("say.mt");
+}
+
 
 package t::WAFTest::Controller::X;
 

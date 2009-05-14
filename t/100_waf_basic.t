@@ -86,7 +86,7 @@ __END__
 http://localhost/
 --- response
 Content-Length: 5
-Content-Type: text/html
+Content-Type: text/html; charset=utf-8
 Status: 200
 
 index
@@ -96,7 +96,7 @@ index
 http://localhost/act/ok
 --- response
 Content-Length: 2
-Content-Type: text/html
+Content-Type: text/html; charset=utf-8
 Status: 200
 
 ok
@@ -106,7 +106,7 @@ ok
 http://localhost/act/ng
 --- response
 Content-Length: 10
-Content-Type: text/html
+Content-Type: text/html; charset=utf-8
 Status: 404
 
 Not found.
@@ -116,7 +116,7 @@ Not found.
 http://localhost/ng
 --- response
 Content-Length: 10
-Content-Type: text/html
+Content-Type: text/html; charset=utf-8
 Status: 404
 
 Not found.
@@ -126,7 +126,7 @@ Not found.
 http://localhost/static/not_found.txt
 --- response
 Content-Length: 10
-Content-Type: text/html
+Content-Type: text/html; charset=utf-8
 Status: 404
 
 Not found.
@@ -144,7 +144,7 @@ unlink("t/static/test.txt");
 http://localhost/static/test.txt
 --- response
 Content-Length: 18
-Content-Type: text/plain
+Content-Type: text/plain; charset=utf-8
 Last-Modified: %s
 Status: 200
 
@@ -165,7 +165,7 @@ unlink("t/static/hide.txt");
 http://localhost/static/hide.txt
 --- response
 Content-Length: 10
-Content-Type: text/html
+Content-Type: text/html; charset=utf-8
 Status: 403
 
 forbidden.
@@ -182,7 +182,7 @@ unlink("t/static/test2.txt");
 --- uri
 http://localhost/static/test2.txt
 --- response
-Content-Type: text/html
+Content-Type: text/html; charset=utf-8
 Status: 304
 
 ===
@@ -198,7 +198,7 @@ unlink("t/static/noext");
 http://localhost/static/noext
 --- response
 Content-Length: 10
-Content-Type: text/plain
+Content-Type: text/plain; charset=utf-8
 Last-Modified: %s
 Status: 200
 
@@ -210,7 +210,7 @@ http://localhost/act/rd
 --- response
 Location: http://localhost/redirect_to
 Content-Length: 0
-Content-Type: text/html
+Content-Type: text/html; charset=utf-8
 Status: 302
 
 ===
@@ -218,7 +218,7 @@ Status: 302
 http://localhost/act/error
 --- response
 Content-Length: 21
-Content-Type: text/html
+Content-Type: text/html; charset=utf-8
 Status: 500
 
 Internal Server Error
@@ -247,7 +247,7 @@ AAA
 http://localhost/act/forward
 --- response
 Content-Length: 3
-Content-Type: text/html
+Content-Type: text/html; charset=utf-8
 Status: 200
 
 abc
@@ -257,7 +257,7 @@ abc
 http://localhost/act/forward_internal
 --- response
 Content-Length: 2
-Content-Type: text/html
+Content-Type: text/html; charset=utf-8
 Status: 200
 
 ok
@@ -267,7 +267,7 @@ ok
 http://localhost/act/render
 --- response
 Content-Length: 113
-Content-Type: text/html
+Content-Type: text/html; charset=utf-8
 Status: 200
 
 uri: http://localhost/act/render
@@ -281,7 +281,7 @@ include file
 http://localhost/act/sample_plugin
 --- response
 Content-Length: 13
-Content-Type: text/html
+Content-Type: text/html; charset=utf-8
 Status: 200
 
 sample plugin
@@ -294,7 +294,7 @@ create_adoc($config);
 http://localhost/adoc/foo/bar
 --- response
 Content-Length: 26
-Content-Type: text/plain
+Content-Type: text/plain; charset=utf-8
 Last-Modified: %s
 Status: 200
 
@@ -305,9 +305,27 @@ Acore::Document::Test body
 http://localhost/adoc/foo/baz
 --- response
 Content-Length: 10
-Content-Type: text/html
+Content-Type: text/html; charset=utf-8
 Status: 404
 
 Not found.
 
+===
+--- uri
+http://localhost/act/say?input=%E3%81%82%E3%81%84%E3%81%86
+--- response
+Content-Length: 28
+Content-Type: text/html; charset=utf-8
+Status: 200
 
+入力はあいうです。
+
+===
+--- uri
+http://localhost/act/say_mt?input=%E3%81%82%E3%81%84%E3%81%86
+--- response
+Content-Length: 28
+Content-Type: text/html; charset=utf-8
+Status: 200
+
+入力はあいうです。

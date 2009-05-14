@@ -8,7 +8,7 @@ use Path::Class ();
 use MIME::Types;
 use HTTP::Date;
 use utf8;
-use Encode qw/ encode_utf8 decode_utf8 encode decode /;
+use Encode qw/ encode_utf8 decode_utf8 /;
 use UNIVERSAL::require;
 use Acore::WAF::Log;
 use URI::Escape;
@@ -57,6 +57,20 @@ has renderer => (
     lazy_build => 1,
 );
 
+has encoding => (
+    is      => "rw",
+    default => "utf-8",
+);
+
+has encoder => (
+    is         => "rw",
+    lazy_build => 1,
+    handles    => {
+        "encode" => "encode",
+        "decode" => "decode",
+    },
+);
+
 sub _build_log {
     my $self = shift;
     my $log  = Acore::WAF::Log->new;
@@ -74,6 +88,11 @@ sub _build_renderer {
     );
 }
 
+sub _build_encoder {
+    my $self = shift;
+    Encode::find_encoding( $self->encoding )
+            or die "Can't found encoding " . $self->encoding;
+}
 
 __PACKAGE__->meta->make_immutable;
 no Any::Moose;
@@ -105,15 +124,36 @@ sub path_to {
     return Path::Class::file( $obj->stringify );
 }
 
+sub _decode_request {
+    my $self = shift;
+    my $ref  = $self->request->params;
+    my $enc  = $self->encoder;
+
+    for my $n ( keys %$ref ) {
+        my $v = $ref->{$n};
+        $ref->{$n} =
+            ( ref $v eq "ARRAY" ) ? [ map { $enc->decode($_) } @$v ]
+          : ( !ref $v )           ? $enc->decode($v)
+          : $v;
+    }
+}
+
 sub handle_request {
     my $self = shift;
     my ($config, $req) = @_;
-
     my $class = ref $self;
+
     $self->request($req);
+    $self->_decode_request;
+
     $self->config($config);
     $config->{include_path} ||= [];
+
+    $self->encoding( $config->{encoding} )
+        if $config->{encoding};
+
     $self->triggers( $Triggers->{$class} );
+
     eval {
         $self->call_trigger('BEFORE_DISPATCH');
         $self->dispatch;
@@ -124,8 +164,20 @@ sub handle_request {
         $self->res->body("Internal Server Error");
         $self->res->status(500);
     }
+    $self->finalize();
     $self->log->flush;
     return $self->response;
+}
+
+sub finalize {
+    my $self = shift;
+
+    my $c_type = $self->res->content_type || "text/html";
+    if ( $c_type =~ m{^text/} && $c_type !~ m{; *charset=}i ) {
+        $c_type .= "; charset=" . ($self->config->{charset} || $self->encoding)
+    }
+    $self->res->content_type($c_type);
+    1;
 }
 
 sub dispatch {
@@ -269,7 +321,8 @@ sub uri_for {
 sub render {
     my ($self, $tmpl) = @_;
     my $html = $self->render_part($tmpl);
-    $self->res->body( encode_utf8($html) );
+    my $res  = $self->res;
+    $res->body( $self->encoder->encode($html) );
 }
 
 sub render_part {

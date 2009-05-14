@@ -10,6 +10,7 @@ use Acore::Document;
 use Carp;
 use Data::Structure::Util qw/ unbless /;
 use Clone qw/ clone /;
+use utf8;
 
 __PACKAGE__->mk_accessors(qw/ storage user_class /);
 
@@ -135,15 +136,53 @@ __END__
 
 =head1 NAME
 
-Acore -
+Acore - AnyCMS core
 
 =head1 SYNOPSIS
 
   use Acore;
+  $dbh = DBI->connect($dsn, ... );
+  $acore = Acore->new({ dbh => $dbh });
+
+  $user = $acore->create_user({ name => "foo" });
+  $user = $acore->get_user({ name => "foo" });
+  $user = $acore->authenticate_user({ name => "foo", password => "secret" });
+
+  $doc = $acore->put_document(
+      Acore::Document::Foo->new()
+  );
+  $doc = $acore->get_document({ id => $id });
+  @doc = $acore->search_documents({ path => "/path/to" });
 
 =head1 DESCRIPTION
 
-Acore is
+Acore is AnyCMS core module.
+
+=head1 ATTRIBUTES
+
+=over 4
+
+=item address
+
+Returns the IP address of the client.
+
+=item cookies
+
+Returns a reference to a hash containing the cookies
+
+=item method
+
+=head1 METHODS
+
+=item new
+
+Constractor.
+
+ $acore = Acore->new({ dbh => $dbh, setup_db => 1 });
+
+dbh: DBI データベースハンドル
+
+setup_db: 真を指定すると DB のテーブルを作成します
 
 =head1 AUTHOR
 
