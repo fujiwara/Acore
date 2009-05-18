@@ -19,3 +19,41 @@ sub form {
 }
 
 1;
+__END__
+
+=head1 NAME
+
+Acore::WAF::Plugin::FormValidator - AnyCMS formvalidator plugin
+
+=head1 SYNOPSIS
+
+ YourApp->setup(qw/ FormValidator /);
+
+ package YourApp::Controller;
+ sub foo {
+     my ($self, $c) = @_;
+     $c->form->check(
+         id => [qw/ NOT_NULL INT /],
+     );
+     if ($c->form->has_errror) {
+     }
+ }
+
+=head1 DESCRIPTION
+
+Acore form validator plugin by FormValidator::Lite
+
+=head1 AUTHOR
+
+FUJIWARA E<lt>fujiwara@topicmaker.comE<gt>
+
+=head1 SEE ALSO
+
+FormValidator::Lite
+
+=head1 LICENSE
+
+This library is free software; you can redistribute it and/or modify
+it under the same terms as Perl itself.
+
+=cut

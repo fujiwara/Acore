@@ -38,5 +38,53 @@ sub session {
                         : $c->{_session_obj};
 }
 
-
 1;
+__END__
+
+=head1 NAME
+
+Acore::WAF::Plugin::Session - AnyCMS session plugin
+
+=head1 SYNOPSIS
+
+ YourApp->setup(qw/ Session /);
+ $config->{session} = {
+     store => {
+         class => "DBM",
+         args  => { file => "t/sessoin.dbm", },
+     },
+     state => {
+         class => "Cookie",
+         args  => {
+             name => "yourapp_session_id",
+             path => "/foo/bar",
+         },
+     },
+ };
+
+ package YourApp::Controller;
+ sub foo {
+     my ($self, $c) = @_;
+     $c->session->set(foo => "bar");
+     $c->session->get("foo");
+     $c->session->expire();
+ }
+
+=head1 DESCRIPTION
+
+Acore session plugin by HTTP::Session
+
+=head1 AUTHOR
+
+FUJIWARA E<lt>fujiwara@topicmaker.comE<gt>
+
+=head1 SEE ALSO
+
+HTTP::Session
+
+=head1 LICENSE
+
+This library is free software; you can redistribute it and/or modify
+it under the same terms as Perl itself.
+
+=cut
