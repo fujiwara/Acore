@@ -1,0 +1,5 @@
+uri: [% c.req.uri | html %]
+html: [% value | html %]
+raw: [% value %]
+日本語は UTF-8 で書きます
+[% INCLUDE "include.tt" %]
