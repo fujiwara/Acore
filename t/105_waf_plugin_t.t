@@ -19,9 +19,7 @@ use_ok("t::WAFTestTT");
 
 my $base_config = {
     root => "t",
-    tt => {
-        INCLUDE_PATH => "t/templates",
-    },
+    tt   => {},
 };
 
 run {

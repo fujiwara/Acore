@@ -11,7 +11,9 @@ no warnings 'redefine';
 
 sub _build_renderer {
     my $c = shift;
-    $c->config->{tt}->{ENCODING} ||= 'utf-8';
+    my $config = $c->config->{tt};
+    $config->{ENCODING}     ||= 'utf-8';
+    $config->{INCLUDE_PATH} ||= $c->path_to('templates')->stringify;
     Template->new($c->config->{tt});
 }
 
@@ -33,3 +35,45 @@ sub render_part {
 }
 
 1;
+__END__
+
+=head1 NAME
+
+Acore::WAF::Plugin::TT - AnyCMS Template-Toolkit plugin
+
+=head1 SYNOPSIS
+
+ YourApp->setup(qw/ TT /);
+ $config->{tt} = {
+     # TT config options
+ };
+
+ package YourApp::Controller;
+ sub foo {
+     my ($self, $c) = @_;
+     $c->render('foo.tt');
+ }
+
+=head1 DESCRIPTION
+
+Acore template plugin using Template-Toolkit.
+
+Default TT options are
+
+  INCLUDE_PATH => "root/templates",
+  ENCODING     => "utf-8",
+
+=head1 AUTHOR
+
+FUJIWARA E<lt>fujiwara@topicmaker.comE<gt>
+
+=head1 SEE ALSO
+
+Template-Toolkit
+
+=head1 LICENSE
+
+This library is free software; you can redistribute it and/or modify
+it under the same terms as Perl itself.
+
+=cut
