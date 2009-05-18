@@ -2,18 +2,12 @@ package Acore::CLI::SetupDB;
 
 use strict;
 use warnings;
-use Getopt::Long;
 use DBI;
 use Acore::Storage;
 
 sub run {
-    my ( $dsn, $user, $password, $usage );
-    my $result = GetOptions(
-        "dsn=s"      => \$dsn,
-        "username=s" => \$user,
-        "password=s" => \$password,
-        "help"       => \$usage,
-    );
+    my $class = shift;
+    my ( $dsn, $user, $password, $usage ) = @_;
     if ($usage || !$dsn) {
         usage();
         exit;
