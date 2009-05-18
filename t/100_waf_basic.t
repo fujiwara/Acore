@@ -190,6 +190,7 @@ Not found.
 === static ok
 --- preprocess
 {
+    mkdir "t/static";
     my $fh = Path::Class::file("t/static/test.txt")->openw;
     $fh->print("0123456789\nabcdefg");
 }

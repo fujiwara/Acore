@@ -14,6 +14,7 @@ BEGIN {
     my $ac = Acore->new({ dbh => $dbh, setup_db => 1, });
     isa_ok $ac => "Acore";
 
+    mkdir "t/tmp";
     my $file = Acore::Document::File->new({
         path         => "/foo/bar/baz",
         file_path    => "t/tmp/$$.txt",
