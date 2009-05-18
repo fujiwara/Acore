@@ -28,7 +28,6 @@ sub login_form_GET {
 sub login_form_POST {
     my ($self, $c) = @_;
 
-    $c->prepare_acore;
     my $user = $c->acore->authenticate_user({
         name     => $c->req->param('name'),
         password => $c->req->param('password'),

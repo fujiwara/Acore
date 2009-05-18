@@ -20,12 +20,24 @@ use_ok("HTTP::Engine");
 use_ok("Acore::WAF");
 use_ok("t::WAFTest");
 
+our $SessionId;
+
 my $base_config = {
     root => "t",
     dsn  => [
         'dbi:SQLite:dbname=t/test.sqlite', '', '',
         { RaiseError => 1, AutoCommit => 1 },
     ],
+    session => {
+        store => {
+            class => "DBM",
+            args  => { file => "t/sessoin.dbm", },
+        },
+        state => {
+            class => "Cookie",
+            args  => {},
+        },
+    },
 };
 
 run {
@@ -39,6 +51,9 @@ run {
         "Content-Length" => 0,
         "Content-Type"   => "text/plain",
     );
+    $req->header(
+        "Cookie" => "http_session_sid=$SessionId"
+    ) if $SessionId;
 
     my @res_args = $block->preprocess ? eval $block->preprocess : ();
     die $@ if $@;
@@ -55,6 +70,7 @@ run {
     my $response = $engine->run($req);
     my $data = $response->headers->as_string."\n".$response->content;
     $data =~ s/[\r\n]+\z//;
+    $data = handle_session($data);
 
     is $data, sprintf($block->response, @res_args), $block->name;
 
@@ -67,6 +83,15 @@ sub convert_charset {
     if ( $str =~ /Shift_JIS/i ) {
         Encode::from_to($str, 'utf-8', 'cp932');
     }
+    $str;
+}
+
+sub handle_session {
+    my $str = shift;
+    $str =~ s{Set-Cookie: http_session_sid=(.+?);}
+             {Set-Cookie: http_session_sid=SESSIONID;};
+    $SessionId = $1;
+warn "SessionId=$SessionId" if $1;
     $str;
 }
 
@@ -94,6 +119,20 @@ sub create_adoc {
     $doc = $app->put_document($doc);
     ok $doc, "Acore->put_document";
     $doc;
+}
+
+sub create_user {
+    my $config = shift;
+
+    unlink "t/test.sqlite";
+    my $dbh = DBI->connect(@{ $config->{dsn} });
+    my $app = Acore->new({ dbh => $dbh, setup_db => 1, });
+    my $user = $app->create_user({
+        name => "root",
+    });
+    $user->set_password('toor');
+    $app->save_user($user);
+    $user;
 }
 
 __END__
@@ -458,6 +497,62 @@ Content-Type: text/html; charset=utf-8
 Status: 200
 
 ng
+
+=== login_ok
+--- preprocess
+create_user($config);
+--- uri
+http://localhost/act/login?name=root&password=toor
+--- response
+Content-Length: 8
+Content-Type: text/html; charset=utf-8
+Set-Cookie: http_session_sid=SESSIONID; path=/
+Status: 200
+
+login_ok
+
+=== logged_in
+--- uri
+http://localhost/act/logged_in
+--- response
+Content-Length: 9
+Content-Type: text/html; charset=utf-8
+Set-Cookie: http_session_sid=SESSIONID; path=/
+Status: 200
+
+logged_in
+
+=== logout
+--- uri
+http://localhost/act/logout
+--- response
+Content-Length: 9
+Content-Type: text/html; charset=utf-8
+Status: 200
+
+logout_ok
+
+=== logged_in
+--- uri
+http://localhost/act/logged_in
+--- response
+Content-Length: 13
+Content-Type: text/html; charset=utf-8
+Set-Cookie: http_session_sid=SESSIONID; path=/
+Status: 200
+
+not_logged_in
+
+=== login_ng
+--- uri
+http://localhost/act/login?name=root&password=xxxx
+--- response
+Content-Length: 8
+Content-Type: text/html; charset=utf-8
+Set-Cookie: http_session_sid=SESSIONID; path=/
+Status: 200
+
+login_ng
 
 === ovreride finalize
 --- preprocess

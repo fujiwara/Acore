@@ -90,6 +90,29 @@ sub name_is_not_null {
     $c->res->body( $res->has_error ? "ng" : "ok" );
 }
 
+sub login {
+    my ($self, $c) = @_;
+    my $p = $c->req->params;
+    if ( $c->login( $p->{name}, $p->{password} ) ) {
+        $c->res->body("login_ok");
+    }
+    else {
+        $c->res->body("login_ng");
+    }
+}
+
+sub logged_in {
+    my ($self, $c) = @_;
+
+    $c->res->body( $c->user ? "logged_in" : "not_logged_in" );
+}
+
+sub logout {
+    my ($self, $c) = @_;
+    $c->logout;
+    $c->res->body( "logout_ok" );
+}
+
 package t::WAFTest::Controller::X;
 
 sub xyz {

@@ -37,8 +37,9 @@ has response => (
 *res = \&response;
 
 has acore => (
-    is  => "rw",
-    isa => "Acore",
+    is         => "rw",
+    isa        => "Acore",
+    lazy_build => 1,
 );
 
 has _triggers => (
@@ -71,6 +72,11 @@ has encoder => (
     },
 );
 
+has user => (
+    is         => "rw",
+    lazy_build => 1,
+);
+
 sub _build_log {
     my $self = shift;
     my $log  = Acore::WAF::Log->new;
@@ -92,6 +98,21 @@ sub _build_encoder {
     my $self = shift;
     Encode::find_encoding( $self->encoding )
         or die "Can't found encoding " . $self->encoding;
+}
+
+sub _build_acore {
+    my $self = shift;
+
+    require Acore;
+    require DBI;
+    my $dbh  = DBI->connect( @{ $self->config->{dsn} } )
+        or die "Can't connect DB: " . DBI->errstr;
+    Acore->new({ dbh => $dbh });
+}
+
+sub _build_user {
+    my $self = shift;
+    $self->session->get('user');
 }
 
 __PACKAGE__->meta->make_immutable;
@@ -259,23 +280,12 @@ sub serve_static_file {
     }
 }
 
-sub prepare_acore {
-    my $self = shift;
-
-    return if $self->acore;
-    require Acore;
-    require DBI;
-    my $dbh  = DBI->connect( @{ $self->config->{dsn} } )
-        or die "Can't connect DB: " . DBI->errstr;
-    $self->acore( Acore->new({ dbh => $dbh }) );
-}
 
 sub serve_acore_document {
     my ( $self, $path ) = @_;
 
     $self->log->debug("serving acore_document path: $path");
 
-    $self->prepare_acore();
     my $doc = $self->acore->get_document({ path => $path });
     unless ($doc) {
         $self->res->status(404);
@@ -356,6 +366,26 @@ sub forward {
     $self->log->debug("forward to ${class}->${action}");
     $class->$action( $self, @args );
 }
+
+sub login {
+    my $self = shift;
+    my ( $name, $password ) = @_;
+
+    my $user = $self->acore->authenticate_user({
+        name     => $name,
+        password => $password,
+    });
+    $self->log->info( "login: name=$name " . ($user ? "succeeded" : "failed") );
+    $self->session->set( user => $user );
+    $self->user($user);
+}
+
+sub logout {
+    my $self = shift;
+    $self->user(undef);
+    $self->session->expire();
+}
+
 
 1;
 
@@ -452,7 +482,6 @@ Acore object.
      ],
  };
 
- $c->prepare_acore
  $doc = $c->acore->get_document({ path => "/" });
 
 =item log
@@ -503,12 +532,6 @@ Returns Path::Class object in $config->{root}.
  $file = $c->path_to("static", "foo.jpg"); # /your_app/root/static/foo.jpg
  $dir  = $c->path_to("static");
  $dir->file("foo.jpg");
-
-=item prepare_acore
-
-Prepare Acore object. $config->{dsn} is required.
-
-See also acore attribute.
 
 =item serve_acore_document
 
@@ -610,6 +633,21 @@ Finalize method.
      super()
      # your finalize code
  };
+
+=item login
+
+Login user using Acore::User->authenticate_user();
+
+Plugin::Session required.
+
+ if ( $c->login("username", "password") ) {
+     # login succeeded
+     $c->user;  # isa Acore::User
+ }
+
+=item logout
+
+Log out user from session.
 
 =back
 
