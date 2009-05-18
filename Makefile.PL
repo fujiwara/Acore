@@ -10,6 +10,7 @@ author_tests 'xt';
 build_requires 'Test::More';
 use_test_base;
 auto_include;
-WriteAll;
 install_script 'acore_setupdb.pl';
 install_script 'acore_setupwaf.pl';
+
+WriteAll;
