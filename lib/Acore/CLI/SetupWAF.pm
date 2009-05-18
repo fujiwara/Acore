@@ -8,6 +8,7 @@ use Text::MicroTemplate qw/:all/;
 use utf8;
 use Encode qw/ encode_utf8 /;
 use MIME::Base64;
+use Path::Class qw/ file dir /;
 
 our $AppName;
 sub run {
@@ -37,17 +38,18 @@ sub run {
                       templates_hello_world_mt
                       favicon_ico /)
     {
-        my ($filename, $tmpl, $raw) = __PACKAGE__->$file();
-        open my $fh, ">", $filename,
+        my ($filename, $tmpl, $raw, $permission) = __PACKAGE__->$file();
+        my $fh = file($filename)->openw
             or die "Can't create file $filename: $!";
         if ($raw) {
-            print $fh $tmpl;
+            $fh->print($tmpl);
         }
         else {
-            print $fh encode_utf8( render_mt($tmpl)->as_string );
+            $fh->print( encode_utf8( render_mt($tmpl)->as_string ) );
         }
-        close $fh;
+        $fh->close;
         print "create $name/$filename\n";
+        chmod $permission, $filename if $permission;
     }
     my $dsn = sprintf "dbi:SQLite:dbname=db/%s.acore.sqlite", lc $AppName;
     Acore::CLI::SetupDB->run($dsn, "", "", "");
@@ -99,7 +101,7 @@ my $engine = HTTP::Engine->new(
 );
 $engine->run;
     _END_OF_FILE_
-    );
+    , undef, oct(755));
 }
 
 sub lib_app_controller_pm {
