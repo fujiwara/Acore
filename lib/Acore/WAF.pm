@@ -295,10 +295,11 @@ sub serve_acore_document {
 }
 
 sub redirect {
-    my ($self, $to) = @_;
-    $self->res->status(302);
+    my ($self, $to, $status) = @_;
+    $self->res->status( $status || 302 );
     $self->res->header( Location => $to );
     $self->log->debug("redirecting to $to");
+    $to;
 }
 
 sub uri_for {
@@ -320,8 +321,7 @@ sub uri_for {
 sub render {
     my ($self, $tmpl) = @_;
     my $html = $self->render_part($tmpl);
-    my $res  = $self->res;
-    $res->body( $self->encoder->encode($html) );
+    $self->res->body( $self->encoder->encode($html) );
 }
 
 sub render_part {

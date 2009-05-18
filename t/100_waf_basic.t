@@ -230,6 +230,15 @@ Content-Length: 0
 Content-Type: text/html; charset=utf-8
 Status: 302
 
+=== redirect 301
+--- uri
+http://localhost/act/rd301
+--- response
+Location: http://localhost/redirect_to
+Content-Length: 0
+Content-Type: text/html; charset=utf-8
+Status: 301
+
 === server error
 --- uri
 http://localhost/act/error

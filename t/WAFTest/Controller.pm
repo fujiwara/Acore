@@ -19,6 +19,11 @@ sub rd {
     $c->redirect( $c->uri_for('/redirect_to') );
 }
 
+sub rd301 {
+    my ($self, $c) = @_;
+    $c->redirect( $c->uri_for('/redirect_to'), 301 );
+}
+
 sub error {
     die;
 }
