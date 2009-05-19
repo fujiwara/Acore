@@ -12,6 +12,8 @@ use Encode qw/ encode_utf8 decode_utf8 /;
 use UNIVERSAL::require;
 use Acore::WAF::Log;
 use URI::Escape;
+use CGI::ExceptionManager;
+use CGI::ExceptionManager::StackTrace;
 
 has stash => (
     is      => "rw",
@@ -20,7 +22,7 @@ has stash => (
 );
 
 has config  => (
-    is => "rw",
+    is  => "rw",
     isa => "HashRef",
 );
 
@@ -75,6 +77,10 @@ has encoder => (
 has user => (
     is         => "rw",
     lazy_build => 1,
+);
+
+has debug => (
+    is => "rw",
 );
 
 sub _build_log {
@@ -174,22 +180,46 @@ sub handle_request {
 
     $self->request($req);
     $self->_decode_request;
-
     $self->_triggers( $Triggers->{$class} );
+    $self->debug( $ENV{DEBUG} || $config->{debug} || 0 );
 
-    eval {
-        $self->_call_trigger('BEFORE_DISPATCH');
-        $self->_dispatch;
-        $self->_call_trigger('AFTER_DISPATCH');
+    no warnings "redefine";
+    local *CGI::ExceptionManager::StackTrace::output = sub {
+        $self->output_stack_trace(@_);
     };
-    if ($@) {
-        $self->log->error($@);
-        $self->res->body("Internal Server Error");
-        $self->res->status(500);
-    }
-    $self->finalize();
+
+    CGI::ExceptionManager->run(
+        callback => sub {
+            $self->_call_trigger('BEFORE_DISPATCH');
+            $self->_dispatch;
+            $self->_call_trigger('AFTER_DISPATCH');
+            $self->finalize();
+            return $self->response;
+        },
+        powered_by => __PACKAGE__,
+    );
     $self->log->flush;
     return $self->response;
+}
+
+sub output_stack_trace {
+    my $self = shift;
+    my ($error, %args) = @_;
+
+    $self->log->error( $error->{message} );
+    my $res = $self->res;
+    $res->status(500);
+    $res->headers->content_type('text/html; charset=utf-8');
+
+    if ( $self->debug ) {
+        my $body = $error->as_html(%args);
+        utf8::encode($body);
+        $res->body($body);
+    }
+    else {
+        $res->body("Internal Server Error");
+    }
+    $res;
 }
 
 sub finalize {

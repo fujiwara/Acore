@@ -172,6 +172,7 @@ name: <?=r app_name() ?>
 root: .
 log:
   level: debug
+debug: on
 dsn:
   - dbi:SQLite:dbname=db/<?=r lc app_name() ?>.acore.sqlite
   -
