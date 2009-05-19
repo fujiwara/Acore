@@ -364,6 +364,7 @@ sub uri_for {
 
     my @path = map { uri_escape_utf8($_) } grep {! ref $_ } @_;
     $path .= join("/", @path);
+    $path =~ s{^/}{};
 
     my $uri = URI->new($path);
     $uri = $uri->abs( $self->req->base );

@@ -112,17 +112,17 @@ use strict;
 use warnings;
 use FindBin;
 use lib "$FindBin::Bin/../lib";
-use HTTP::Engine;
+use HTTP::Engine::MinimalCGI;
+use Acore::WAF::MinimalCGI;
 use <?=r app_name() ?>;
 use YAML ();
 use utf8;
-
 my $config = YAML::LoadFile("../config/<?=r app_name() ?>.yaml");
 die "Can't load config." unless $config;
 
 HTTP::Engine->new(
     interface => {
-        module => 'CGI',
+        module => 'MinimalCGI',
         request_handler => sub {
             my $app = <?=r app_name() ?>->new;
             $app->handle_request($config, @_);
