@@ -14,6 +14,7 @@ use Acore::WAF::Log;
 use URI::Escape;
 use CGI::ExceptionManager;
 use CGI::ExceptionManager::StackTrace;
+use Clone qw/ clone /;
 
 our $VERSION = 0.1;
 
@@ -240,7 +241,16 @@ sub _dispatch {
     my ( $self ) = @_;
 
     my $dispatcher = (ref $self) . "::Dispatcher";
-    my $rule = $dispatcher->match( $self->req );
+
+    my $rule = $dispatcher->match(
+        $ENV{GATEWAY_INTERFACE} =~ /^CGI/
+            ? do {
+                my $r = clone $self->req;
+                $r->path($ENV{PATH_INFO});
+                $r
+            }
+            : $self->req
+        );
     if ($rule) {
         my $action = $rule->{action};
         use Data::Dumper;
