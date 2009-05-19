@@ -33,7 +33,8 @@ sub run {
             or die "Can't create dir $name/$dir: $!";
         print "mkdir $name/$dir\n";
     }
-    for my $file (qw/ script_server_pl lib_app_pm config_yaml
+    for my $file (qw/ script_server_pl script_index_cgi
+                      lib_app_pm config_yaml
                       lib_app_controller_pm favicon_ico 
                       anycms_logo
                     /)
@@ -104,12 +105,41 @@ $engine->run;
     , undef, oct(755));
 }
 
+sub script_index_cgi {
+    return ("script/index.cgi" => <<'    _END_OF_FILE_'
+#!/usr/bin/perl
+use strict;
+use warnings;
+use FindBin;
+use lib "$FindBin::Bin/../lib";
+use HTTP::Engine;
+use <?=r app_name() ?>;
+use YAML ();
+use utf8;
+
+my $config = YAML::LoadFile("../config/<?=r app_name() ?>.yaml");
+die "Can't load config." unless $config;
+
+HTTP::Engine->new(
+    interface => {
+        module => 'CGI',
+        request_handler => sub {
+            my $app = <?=r app_name() ?>->new;
+            $app->handle_request($config, @_);
+        },
+    },
+)->run;
+    _END_OF_FILE_
+    , undef, oct(755));
+}
+
 sub lib_app_controller_pm {
     return ("lib/${AppName}/Controller/Root.pm" => <<'    _END_OF_FILE_'
 package <?=r app_name() ?>::Controller::Root;
 
 use strict;
 use warnings;
+use utf8;
 
 sub hello_world {
     my ($self, $c) = @_;

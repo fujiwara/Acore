@@ -24,8 +24,9 @@ has stash => (
 );
 
 has config  => (
-    is  => "rw",
-    isa => "HashRef",
+    is      => "rw",
+    isa     => "HashRef",
+    default => sub { +{} },
 );
 
 has request => (
@@ -438,7 +439,7 @@ sub welcome_message {
   <head>
   <meta http-equiv="Content-Language" content="ja" />
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-  <title>$name on Acore::WAF <?= $Acore::WAF::VERSION ?></title>
+  <title><?= $c->config->{name} ?> on Acore::WAF <?= $Acore::WAF::VERSION ?></title>
   <style type="text/css">
     body {
       color: #000;
