@@ -3,20 +3,21 @@ name 'Acore';
 all_from 'lib/Acore.pm';
 
 build_requires 'Module::Install' => 0.77;
-requires 'HTTP::Engine';
-requires 'HTTPx::Dispatcher';
 requires 'Any::Moose';
+requires 'CGI::ExceptionManager' => 0.05;
 requires 'Class::Accessor::Fast';
+requires 'Clone';
+requires 'Crypt::SaltedHash';
+requires 'DBI';
 requires 'DBIx::CouchLike' => 0.03;
 requires 'FormValidator::Lite';
-requires 'HTTP::Date';
 requires 'Getopt::Long';
+requires 'HTTP::Date';
+requires 'HTTP::Engine';
+requires 'HTTP::Session';
+requires 'HTTPx::Dispatcher';
 requires 'MIME::Base64';
 requires 'Path::Class';
-requires 'Crypt::SaltedHash';
-requires 'CGI::ExceptionManager' => 0.05;
-requires 'DBI';
-requires 'Clone';
 test_requires 'DBD::SQLite';
 
 tests 't/*.t';
