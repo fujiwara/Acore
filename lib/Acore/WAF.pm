@@ -161,15 +161,13 @@ sub path_to {
 
 sub _decode_request {
     my $self = shift;
-    my $ref  = $self->request->params;
+    my $req  = $self->request;
     my $enc  = $self->encoder;
 
-    for my $n ( keys %$ref ) {
-        my $v = $ref->{$n};
-        $ref->{$n}
-            = ( ref $v eq "ARRAY" ) ? [ map { $enc->decode($_) } @$v ]
-            : ( !ref $v )           ? $enc->decode($v)
-            : $v;
+    for my $n ( $req->param ) {
+        $req->param(
+            $n => map { $enc->decode($_) } $req->param($n)
+        );
     }
 }
 
@@ -368,7 +366,7 @@ sub uri_for {
     $path .= join("/", @path);
 
     my $uri = URI->new($path);
-    $uri = $uri->abs( $self->req->uri );
+    $uri = $uri->abs( $self->req->base );
 
     $uri->query_form(%{ $_[-1] })
         if ref $_[-1] eq 'HASH';

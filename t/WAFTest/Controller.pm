@@ -59,7 +59,7 @@ sub adoc {
 sub say {
     my ($self, $c) = @_;
     $c->res->body(
-        $c->encode("入力は" . $c->req->params->{'input'} . "です。\n")
+        $c->encode("入力は" . $c->req->param('input') . "です。\n")
     );
 }
 
@@ -92,8 +92,7 @@ sub name_is_not_null {
 
 sub login {
     my ($self, $c) = @_;
-    my $p = $c->req->params;
-    if ( $c->login( $p->{name}, $p->{password} ) ) {
+    if ( $c->login( $c->req->param('name'), $c->req->param("password") ) ) {
         $c->res->body("login_ok");
     }
     else {

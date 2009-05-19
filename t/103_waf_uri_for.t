@@ -35,30 +35,6 @@ __END__
 
 ===
 --- code
-$app->uri_for('')
---- uri
-http://example.com/aaa/bbb?foo=bar&bar=baz
-
-===
---- code
-$app->uri_for('foo')
---- uri
-http://example.com/aaa/foo
-
-===
---- code
-$app->uri_for('../foo')
---- uri
-http://example.com/foo
-
-===
---- code
-$app->uri_for('../foo/bar')
---- uri
-http://example.com/foo/bar
-
-===
---- code
 $app->uri_for('/foo/bar')
 --- uri
 http://example.com/foo/bar
