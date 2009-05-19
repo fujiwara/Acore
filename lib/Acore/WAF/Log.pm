@@ -31,6 +31,11 @@ has timestamp => (
     default => 1,
 );
 
+has caller => (
+    is      => "rw",
+    default => 0,
+);
+
 __PACKAGE__->meta->make_immutable;
 no Any::Moose;
 
@@ -41,10 +46,16 @@ for my $level ( keys %$Levels ) {
         my ($self, $msg) = @_;
         return if $level_num > $Levels->{ $self->{level} };
 
-        my (undef, $filename, $line) = caller;
         $self->{buffer} .= sprintf("[%s] ", scalar localtime)
             if $self->{timestamp};
-        $self->{buffer} .= "[$level] $msg at $filename line $line\n";
+
+        if ($self->{caller}) {
+            my (undef, $filename, $line) = caller;
+            $self->{buffer} .= "[$level] $msg at $filename line $line\n";
+        }
+        else {
+            $self->{buffer} .= "[$level] $msg \n";
+        }
     };
 }
 
@@ -109,6 +120,14 @@ Get or set log level.
 =item timestamp
 
 Flag to add timestamp in log message.
+
+Default: 1
+
+=item caller
+
+Flag to add caller info(file, line) in log message.
+
+Default: 0
 
 =item flush
 

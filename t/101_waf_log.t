@@ -1,6 +1,6 @@
 # -*- mode:perl -*-
 use strict;
-use Test::More tests => 22;
+use Test::More tests => 24;
 
 BEGIN {
     use_ok 'Acore::WAF::Log';
@@ -20,6 +20,7 @@ BEGIN {
     ok $log->can('notice');
     ok $log->can('info');
     ok $log->can('debug');
+    ok $log->can('caller');
 
     $log->level('error');
     is $log->level => "error";
@@ -32,4 +33,10 @@ BEGIN {
     }
 
     ok $log->flush;
+
+    $log->caller(1);
+    $log->error("error message"); my ($file, $line) = (__FILE__, __LINE__);
+
+    like $log->buffer => qr{\Q at $file line $line\E};
 }
+
