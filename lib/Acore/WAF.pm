@@ -15,6 +15,7 @@ use URI::Escape;
 use CGI::ExceptionManager;
 use CGI::ExceptionManager::StackTrace;
 use Clone qw/ clone /;
+use Data::Dumper;
 
 our $VERSION = 0.1;
 
@@ -243,7 +244,7 @@ sub _dispatch {
     my $dispatcher = (ref $self) . "::Dispatcher";
 
     my $rule = $dispatcher->match(
-        $ENV{GATEWAY_INTERFACE} =~ /^CGI/
+        ($ENV{GATEWAY_INTERFACE} and $ENV{GATEWAY_INTERFACE} =~ /^CGI/)
             ? do {
                 my $r = clone $self->req;
                 $r->path($ENV{PATH_INFO});
@@ -253,9 +254,10 @@ sub _dispatch {
         );
     if ($rule) {
         my $action = $rule->{action};
-        use Data::Dumper;
         local $Data::Dumper::Indent = 1;
-        $self->log->debug( "dispatch rule: " . Dumper $rule );
+        $self->log->debug(
+            "dispatch:\n" . Data::Dumper->Dump([$rule], ["rule"])
+        );
         my $controller = $rule->{controller};
         $controller->require;
 
