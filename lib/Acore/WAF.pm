@@ -15,6 +15,8 @@ use URI::Escape;
 use CGI::ExceptionManager;
 use CGI::ExceptionManager::StackTrace;
 
+our $VERSION = 0.1;
+
 has stash => (
     is      => "rw",
     isa     => "HashRef",
@@ -419,6 +421,130 @@ sub logout {
     $self->session->expire();
 }
 
+sub welcome_message {
+    my $c    = shift;
+    my $name = $c->config->{name};
+    my $base = $c->req->base;
+
+    use English;
+    require Module::CoreList;
+
+    $c->response->content_type('text/html; charset=utf-8');
+    my $body = Text::MicroTemplate::render_mt(<<'EOF'
+? my $c = $_[0]
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="ja" lang="ja">
+  <head>
+  <meta http-equiv="Content-Language" content="ja" />
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>$name on Acore::WAF <?= $Acore::WAF::VERSION ?></title>
+  <style type="text/css">
+    body {
+      color: #000;
+      background-color: #eee;
+    }
+    div#content {
+      width: 640px;
+      margin-left: auto;
+      margin-right: auto;
+      margin-top: 10px;
+      margin-bottom: 10px;
+      text-align: left;
+      background-color: #ccc;
+      border: 1px solid #aaa;
+    }
+    p, h1, h2 {
+      margin-left: 20px;
+      margin-right: 20px;
+      font-family: verdana, tahoma, sans-serif;
+    }
+    a {
+      font-family: verdana, tahoma, sans-serif;
+    }
+    :link, :visited {
+      text-decoration: none;
+      color: #b00;
+      border-bottom: 1px dotted #bbb;
+    }
+    :link:hover, :visited:hover {
+      color: #555;
+    }
+    div#topbar {
+      margin: 0px;
+    }
+    pre {
+      margin: 10px;
+      padding: 8px;
+    }
+    div#answers {
+      padding: 8px;
+      margin: 10px;
+      background-color: #fff;
+      border: 1px solid #aaa;
+    }
+    h1 {
+      font-size: 0.9em;
+      font-weight: normal;
+      text-align: center;
+    }
+    p {
+      font-size: 0.9em;
+    }
+    p img {
+      float: right;
+      margin-left: 10px;
+    }
+    span#appname {
+      font-weight: bold;
+      font-size: 1.6em;
+    }
+    </style>
+  </head>
+  <body>
+    <div id="content">
+      <div id="topbar">
+        <h1><span id="appname"><?= $c->config->{name} ?></span> on Acore::WAF <?= $Acore::WAF::VERSION ?></h1>
+      </div>
+      <div id="answers">
+        <p><img src="<?= $c->req->base ?>static/anycms-logo.png" alt="" width="200" height="67" />
+          Welcome to the  world of Acore::WAF.
+        </p>
+        <h2>Information</h2>
+        <table>
+          <tr><th>OS</th><td><?= $OSNAME ?></td></tr>
+          <tr><th>Perl version</th><td><?= $] ?></td></tr>
+          <tr><th>Perlのパス</th><td><?= $EXECUTABLE_NAME ?></td></tr>
+          <tr><th>モジュールパス</th><td>
+? for my $inc (@INC) {
+              <?= $inc ?><br/>
+? }
+          </td></tr>
+          <tr><th>プロセスID</th><td><?= $$ ?></td></tr>
+        </table>
+
+        <h2>環境変数</h2>
+        <table>
+? for my $key (sort keys %ENV) {
+          <tr><th><?= $key ?></th><td><?= $ENV{$key} ?></td>
+? }
+        </table>
+
+        <h2>Perl標準添付モジュール(perl <?= $] ?>)</h2>
+        <table>
+? my $modules = $Module::CoreList::version{$]};
+? for my $key (sort keys %$modules) {
+        <tr><th><?= $key ?></th><td><?= $modules->{$key} || '' ?></td>
+? }
+        </table>
+      </div>
+    </div>
+  </body>
+</html>
+EOF
+    , $c )->as_string;
+    $c->response->body($body);
+}
 
 1;
 
