@@ -256,8 +256,8 @@ sub _dispatch {
         my $action = $rule->{action};
         local $Data::Dumper::Indent = 1;
         $self->log->debug(
-            "dispatch:\n" . Data::Dumper->Dump([$rule], ["rule"])
-        );
+            "dispatch rule: " . Data::Dumper->Dump([$rule], ["rule"])
+        ) if $self->debug;
         my $controller = $rule->{controller};
         $controller->require;
 
