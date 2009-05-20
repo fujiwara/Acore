@@ -26,13 +26,13 @@ our $SessionId;
 my $base_config = {
     root => "t",
     dsn  => [
-        'dbi:SQLite:dbname=t/test.sqlite', '', '',
+        'dbi:SQLite:dbname=t/tmp/test.sqlite', '', '',
         { RaiseError => 1, AutoCommit => 1 },
     ],
     session => {
         store => {
             class => "DBM",
-            args  => { file => "t/sessoin.dbm", },
+            args  => { file => "t/tmp/session.dbm", },
         },
         state => {
             class => "Cookie",
@@ -98,7 +98,7 @@ sub handle_session {
 sub create_adoc {
     my $config = shift;
 
-    unlink "t/test.sqlite";
+    unlink "t/tmp/test.sqlite";
     my $dbh = DBI->connect(@{ $config->{dsn} });
     my $app = Acore->new({ dbh => $dbh, setup_db => 1, });
     {
@@ -124,7 +124,7 @@ sub create_adoc {
 sub create_user {
     my $config = shift;
 
-    unlink "t/test.sqlite";
+    unlink "t/tmp/test.sqlite";
     my $dbh = DBI->connect(@{ $config->{dsn} });
     my $app = Acore->new({ dbh => $dbh, setup_db => 1, });
     my $user = $app->create_user({
