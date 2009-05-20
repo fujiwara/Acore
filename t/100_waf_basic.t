@@ -572,6 +572,17 @@ Status: 200
 
 login_ng
 
+=== private
+--- uri
+http://localhost/act/_private
+--- response
+Content-Length: 9
+Content-Type: text/html; charset=utf-8
+Status: 404
+
+Not Found
+
+
 === ovreride finalize
 --- preprocess
 {

@@ -86,6 +86,11 @@ sub minimal_cgi {
     $c->res->body( $c->encode($body) );
 }
 
+sub _private {
+    my ($self, $c) = @_;
+    $c->res->body('private action');
+}
+
 
 sub rest_GET    { $_[1]->res->body("GET")    }
 sub rest_POST   { $_[1]->res->body("POST")   }
