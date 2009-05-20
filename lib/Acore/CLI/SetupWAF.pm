@@ -78,15 +78,13 @@ use lib "$FindBin::Bin/../lib";
 use HTTP::Engine;
 use <?=r app_name() ?>;
 use Getopt::Std;
-use YAML ();
+use Acore::WAF::ConfigLoader;
 
 my $opts = {};
 getopts("p:c:", $opts);
 $opts->{c} ||= "config/<?=r app_name() ?>.yaml";
 
-my $config = $opts->{c} ? YAML::LoadFile($opts->{c}) : {};
-die "Can't load config." unless $config;
-
+my $config = Acore::WAF::ConfigLoader->new->load($opts->{c});
 my $engine = HTTP::Engine->new(
     interface => {
         module => 'ServerSimple',
@@ -114,11 +112,13 @@ use FindBin;
 use lib "$FindBin::Bin/../lib";
 use HTTP::Engine::MinimalCGI;
 use Acore::WAF::MinimalCGI;
+use Acore::WAF::ConfigLoader;
 use <?=r app_name() ?>;
-use YAML ();
 use utf8;
-my $config = YAML::LoadFile("../config/<?=r app_name() ?>.yaml");
-die "Can't load config." unless $config;
+
+my $loader = Acore::WAF::ConfigLoader->new({ cache_dir => "../db" });
+my $config = $loader->load("../config/<?=r app_name() ?>.yaml");
+$config->{root} = ".." if $config->{root} eq '.';
 
 HTTP::Engine->new(
     interface => {

@@ -142,7 +142,7 @@ sub setup {
     my $log = Acore::WAF::Log->new;
     for my $plugin (@plugins) {
         my $p_class = $plugin =~ /^\+/ ? $plugin : "Acore::WAF::Plugin::${plugin}";
-        $log->info("loading plugin: $p_class");
+        $log->debug("loading plugin: $p_class");
         {
             no warnings 'redefine';
             $p_class->use or die "Can't load plugin: $@";

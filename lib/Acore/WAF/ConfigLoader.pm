@@ -42,8 +42,8 @@ sub load {
                 carp("Can't open config cache file $pl_file to write: $!");
                 return $config;
             };
-        $fh->print("use strict;\nuse warnings;\nmy ");
-        $fh->print(Data::Dumper->Dump([$config], ["config"]));
+        local $Data::Dumper::Indent = 1;
+        $fh->print("my ", Data::Dumper->Dump([$config], ["config"]));
         $fh->close;
         $self->from("file. cache created");
     }
