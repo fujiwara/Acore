@@ -23,6 +23,6 @@ can_ok $app, qw/ setup path_to handle_request _dispatch dispatch_static
                  redirect uri_for render render_part dispatch_favicon
                  add_trigger _call_trigger
                  stash config request response acore _triggers log
-                 req res
+                 req res error detach welcome_message
                /;
 

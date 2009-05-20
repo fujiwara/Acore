@@ -119,6 +119,13 @@ sub detach {
     $c->res->body("after detach"); # not reached
 }
 
+sub welcome {
+    my ($self, $c) = @_;
+    my $body = $c->welcome_message;
+    utf8::encode($body);
+    $c->res->body($body);
+}
+
 package t::WAFTest::Controller::X;
 
 sub xyz {

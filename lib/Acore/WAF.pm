@@ -8,7 +8,7 @@ use Path::Class ();
 use MIME::Types;
 use HTTP::Date;
 use utf8;
-use Encode qw/ encode_utf8 decode_utf8 /;
+use Encode ();
 use UNIVERSAL::require;
 use Acore::WAF::Log;
 use URI::Escape;
