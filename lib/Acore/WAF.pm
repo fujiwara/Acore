@@ -5,12 +5,12 @@ use warnings;
 use Any::Moose;
 use Text::MicroTemplate::File ();
 use Path::Class ();
-use MIME::Types;
 use HTTP::Date;
 use utf8;
 use Encode ();
 use UNIVERSAL::require;
 use Acore::WAF::Log;
+use Acore::MIME::Types;
 use URI::Escape;
 use CGI::ExceptionManager;
 use CGI::ExceptionManager::StackTrace;
@@ -330,7 +330,7 @@ sub serve_static_file {
 
         my $ext = ( $file =~ /\.(\w+)$/ ) ? lc($1) : "";
         $res->header(
-            'Content-Type'  => MIME::Types->new->mimeTypeOf($ext) || "text/plain",
+            'Content-Type'  => Acore::MIME::Types->mimeTypeOf($ext) || "text/plain",
             'Last-Modified' => HTTP::Date::time2str($mtime)
         );
     }
