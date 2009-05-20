@@ -29,8 +29,10 @@ lib/Acore/SimpleApp/Controller.pm
 lib/Acore/Storage.pm
 lib/Acore/User.pm
 lib/Acore/WAF.pm
+lib/Acore/WAF/ConfigLoader.pm
 lib/Acore/WAF/Controller/AdminConsole.pm
 lib/Acore/WAF/Log.pm
+lib/Acore/WAF/MinimalCGI.pm
 lib/Acore/WAF/Plugin/FormValidator.pm
 lib/Acore/WAF/Plugin/Sample.pm
 lib/Acore/WAF/Plugin/Session.pm
@@ -57,6 +59,8 @@ t/102_waf.t
 t/103_waf_uri_for.t
 t/104_waf_plugin.t
 t/105_waf_plugin_t.t
+t/106_minimal_cgi.t
+t/107_waf_config_loader.t
 t/WAFTest.pm
 t/WAFTest/Controller.pm
 t/WAFTestTT.pm
