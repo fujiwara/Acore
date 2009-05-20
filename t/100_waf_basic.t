@@ -356,8 +356,8 @@ sample plugin
 
 === acore document
 --- preprocess
-create_adoc($config);
-(HTTP::Date::time2str(time));
+my $doc = create_adoc($config);
+(HTTP::Date::time2str($doc->updated_on->epoch));
 --- uri
 http://localhost/adoc/foo/bar
 --- response
