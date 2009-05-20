@@ -24,8 +24,10 @@ sub load {
     my $dir = $self->cache_dir;
     if ($dir) {
         my $pl_file = dir($dir)->file( $yaml_file->basename . ".pl" );
-        if (-e $pl_file && $pl_file->stat->mtime >= $yaml_file->stat->mtime) {
-            $config = eval { require $pl_file };
+        if (   $pl_file->stat
+            && $pl_file->stat->mtime >= $yaml_file->stat->mtime
+        ) {
+            $config = eval { require "$pl_file" }; ## no critic
             if ($@) {
                 carp("Can't load config cache file $pl_file : $@");
             }
