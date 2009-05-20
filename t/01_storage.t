@@ -8,7 +8,7 @@ BEGIN {
 };
 
 {
-    my $db  = "t/test.sqlite";
+    my $db  = "t/tmp/test.sqlite";
     my $dbh = DBI->connect("dbi:SQLite:dbname=$db");
     my $s = Acore::Storage->new({ dbh => $dbh });
     isa_ok $s => "Acore::Storage";

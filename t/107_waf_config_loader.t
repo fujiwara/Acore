@@ -46,3 +46,5 @@ YAML::DumpFile(
     is $loader->from => "file. no cache";
 }
 
+unlink "t/tmp/test_config.yaml";
+

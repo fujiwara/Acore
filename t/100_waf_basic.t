@@ -135,6 +135,11 @@ sub create_user {
     $user;
 }
 
+unlink $_ for qw( t/tmp/test.sqlite
+                  t/tmp/session.dbm.dir
+                  t/tmp/test_config.yaml
+                  t/tmp/session.dbm.pag );
+
 __END__
 
 === /
