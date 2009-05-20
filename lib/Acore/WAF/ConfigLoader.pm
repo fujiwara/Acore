@@ -5,7 +5,7 @@ use warnings;
 use Any::Moose;
 use Carp;
 use Path::Class qw/ file dir /;
-use Data::Dumper;
+use Storable;
 
 has cache_dir => (
     is => "rw",
@@ -23,11 +23,11 @@ sub load {
     my $config;
     my $dir = $self->cache_dir;
     if ($dir) {
-        my $pl_file = dir($dir)->file( $yaml_file->basename . ".pl" );
+        my $pl_file = dir($dir)->file( $yaml_file->basename . ".cache" );
         if (   $pl_file->stat
             && $pl_file->stat->mtime >= $yaml_file->stat->mtime
         ) {
-            $config = eval { require "$pl_file" }; ## no critic
+            $config = eval { Storable::retrieve("$pl_file"); };
             if ($@ || ref $config ne "HASH") {
                 carp("Can't load config cache file $pl_file : $@");
             }
@@ -39,15 +39,14 @@ sub load {
         require YAML;
         $config = YAML::LoadFile($yaml_file);
 
-        my $fh = eval { $pl_file->openw };
-        if ($@ || !$fh) {
+        eval {
+            Storable::nstore($config, "$pl_file");
+        };
+        if ($@) {
             carp("Can't open config cache file $pl_file to write: $!");
             $self->from("file. no cache");
             return $config;
         }
-        local $Data::Dumper::Indent = 1;
-        $fh->print("my ", Data::Dumper->Dump([$config], ["config"]));
-        $fh->close;
         $self->from("file. cache created");
     }
     else {
@@ -84,7 +83,7 @@ YAML file loader with cache.
 
 =item cache_dir
 
-Directory for store cache .pl file. (default: no cache)
+Directory for store cache file. (default: no cache)
 
 =item from
 
@@ -104,7 +103,7 @@ Loading status.
 
 Load yaml file.
 
-if $loader->cache_dir exists, create cache .pl file.
+if $loader->cache_dir exists, create cache file.
 
 =back
 

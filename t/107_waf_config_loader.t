@@ -29,19 +29,19 @@ YAML::DumpFile(
     $loader->cache_dir("t/tmp");
     my $config = $loader->load($yaml);
     is_deeply( $config => { name => "TestApp" } );
-    ok -e "t/tmp/test_config.yaml.pl";
+    ok -e "t/tmp/test_config.yaml.cache";
     is $loader->from => "file. cache created";
 
     $config = $loader->load($yaml);
     is_deeply( $config => { name => "TestApp" } );
     is $loader->from => "cache.";
 
-    unlink "t/tmp/test_config.yaml.pl";
+    unlink "t/tmp/test_config.yaml.cache";
     $config = $loader->load($yaml);
     is_deeply( $config => { name => "TestApp" } );
     is $loader->from => "file. cache created";
 
-    unlink "t/tmp/test_config.yaml.pl";
+    unlink "t/tmp/test_config.yaml.cache";
     $loader->cache_dir(undef);
     $config = $loader->load($yaml);
     is_deeply( $config => { name => "TestApp" } );
@@ -53,13 +53,13 @@ YAML::DumpFile(
     $loader->cache_dir("t/tmp");
     my $config = $loader->load($yaml);
     is_deeply( $config => { name => "TestApp" } );
-    ok -e "t/tmp/test_config.yaml.pl";
+    ok -e "t/tmp/test_config.yaml.cache";
     is $loader->from => "file. cache created";
 
     # break cache
     {
-        my $fh = file("t/tmp/test_config.yaml.pl")->open(">>");
-        $fh->print("}");
+        my $fh = file("t/tmp/test_config.yaml.cache")->open(">");
+        $fh->print("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx");
     }
     $config = $loader->load($yaml);
     is_deeply( $config => { name => "TestApp" } );
