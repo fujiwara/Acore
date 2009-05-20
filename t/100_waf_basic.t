@@ -8,6 +8,7 @@ use Acore::Document;
 use Acore;
 use DBI;
 use Clone qw/ clone /;
+use Path::Class qw/ file dir /;
 
 plan tests => ( 3 + 4 + 1 * blocks );
 
@@ -91,7 +92,6 @@ sub handle_session {
     $str =~ s{Set-Cookie: http_session_sid=(.+?);}
              {Set-Cookie: http_session_sid=SESSIONID;};
     $SessionId = $1;
-warn "SessionId=$SessionId" if $1;
     $str;
 }
 
@@ -191,10 +191,10 @@ Not found.
 --- preprocess
 {
     mkdir "t/static";
-    my $fh = Path::Class::file("t/static/test.txt")->openw;
+    my $fh = file("t/static/test.txt")->openw;
     $fh->print("0123456789\nabcdefg");
 }
-(HTTP::Date::time2str(time));
+(HTTP::Date::time2str(file("t/static/test.txt")->stat->mtime));
 --- postprocess
 unlink("t/static/test.txt");
 --- uri
@@ -211,7 +211,7 @@ abcdefg
 === static forbidden
 --- preprocess
 {
-    my $fh = Path::Class::file("t/static/hide.txt")->openw;
+    my $fh = file("t/static/hide.txt")->openw;
     $fh->print("0123456789\nabcdefg");
     chmod 0000, "t/static/hide.txt";
 }
@@ -229,10 +229,12 @@ forbidden.
 
 === static not modified
 --- preprocess
-$req->header("If-Modified-Since" => HTTP::Date::time2str(time));
 {
-    my $fh = Path::Class::file("t/static/test2.txt")->openw;
+    my $fh = file("t/static/test2.txt")->openw;
     $fh->print("0123456789\nabcdefg");
+    $req->header("If-Modified-Since"
+        => HTTP::Date::time2str(file("t/static/test2.txt")->stat->mtime)
+    );
 }
 --- postprocess
 unlink("t/static/test2.txt");
@@ -245,10 +247,10 @@ Status: 304
 === static no extention
 --- preprocess
 {
-    my $fh = Path::Class::file("t/static/noext")->openw;
+    my $fh = file("t/static/noext")->openw;
     $fh->print("0123456789");
 }
-(HTTP::Date::time2str(time));
+(HTTP::Date::time2str( file("t/static/noext")->stat->mtime ));
 --- postprocess
 unlink("t/static/noext");
 --- uri
@@ -292,10 +294,10 @@ Internal Server Error
 === favicon
 --- preprocess
 {
-    my $fh = Path::Class::file("t/favicon.ico")->openw;
+    my $fh = file("t/favicon.ico")->openw;
     $fh->print("AAA");
 }
-(HTTP::Date::time2str(time));
+(HTTP::Date::time2str(file("t/favicon.ico")->stat->mtime));
 --- postprocess
 unlink "t/favicon.ico";
 --- uri
