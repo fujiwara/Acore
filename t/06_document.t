@@ -1,18 +1,21 @@
 # -*- mode:perl -*-
 use strict;
-use Test::More tests => 19;
+use Test::More tests => 36;
 use Test::Exception;
 use Data::Dumper;
-my $dbh = require t::connect_db;
+use t::Cache;
 
 BEGIN {
     use_ok 'Acore';
     use_ok 'Acore::Document';
 };
 
+for my $cache ( undef, t::Cache->new({}) )
 {
-    my $ac = Acore->new({ dbh => $dbh, setup_db => 1, });
+    my $dbh = do "t/connect_db.pm";
+    my $ac  = Acore->new({ dbh => $dbh, setup_db => 1, });
     isa_ok $ac => "Acore";
+    $ac->cache($cache);
 
     ok $ac->can('get_document'), "can get_document";
     ok $ac->can('put_document'), "can put_document";
@@ -49,6 +52,7 @@ BEGIN {
     sleep 1;
     my $updated_doc = $ac->put_document($docs[0]);
     ok $updated_doc->updated_on > $updated_on, "update timestamp";
+
+    $dbh->commit;
 }
 
-$dbh->commit;

@@ -12,7 +12,7 @@ use Data::Structure::Util qw/ unbless /;
 use Clone qw/ clone /;
 use utf8;
 
-__PACKAGE__->mk_accessors(qw/ storage user_class /);
+__PACKAGE__->mk_accessors(qw/ storage user_class cache /);
 
 sub new {
     my $class = shift;
@@ -33,8 +33,18 @@ sub new {
 sub get_user {
     my $self = shift;
     my $args = shift;
-    my $user = $self->storage->user->get( $args->{name} )
-        or return;
+
+    my $user;
+    $user = $self->cache->get( "Acore::User/name=". $args->{name} )
+        if defined $args->{name} && $self->cache;
+    unless ($user) {
+        $user = $self->storage->user->get( $args->{name} );
+        $self->cache->set("Acore::User/name=". $args->{name} => $user)
+            if $self->cache && $user;
+    }
+
+    $user or return;
+
     $user = bless $user, $self->user_class;
     $user->init;
     $user;
@@ -52,7 +62,11 @@ sub authenticate_user {
 sub save_user {
     my $self = shift;
     my $user = shift;
-    $self->storage->user->put( unbless $user );
+    my $unbless_user = unbless $user;
+    $self->storage->user->put( $unbless_user );
+    $self->cache->set( "Acore::User/name=" . $user->{name} => $unbless_user )
+        if $self->cache;
+    $user;
 }
 
 sub create_user {
@@ -79,22 +93,34 @@ sub get_document {
 
     my $doc;
     if ( defined $args->{id} ) {
-        $doc = $self->storage->document->get($args->{id});
+        $doc = $self->cache->get("Acore::Document/id=" . $args->{id})
+            if $self->cache;
+        unless ($doc) {
+            $doc = $self->storage->document->get($args->{id});
+            $self->cache->set("Acore::Document/id=" . $args->{id} => $doc)
+                if $self->cache && $doc;
+        }
     }
     elsif ( defined $args->{path} ) {
-        my $view = $self->storage->document->view(
-            "path/all", {
-                key          => $args->{path},
-                include_docs => 1,
-            }
-        )->next;
-        return unless $view;
-        $doc = $view->{document};
+        $doc = $self->cache->get("Acore::Document/path=" . $args->{path})
+            if $self->cache;
+        unless ($doc) {
+            my $view = $self->storage->document->view(
+                "path/all", {
+                    key          => $args->{path},
+                    include_docs => 1,
+                }
+            )->next;
+            return unless $view;
+            $doc = $view->{document};
+            $self->cache->set("Acore::Document/path=" . $args->{path} => $doc)
+                if $self->cache && $doc;
+        }
     }
     return unless $doc;
 
     return Acore::Document->from_object($doc);
-}
+    }
 
 sub put_document {
     my $self = shift;
@@ -105,11 +131,15 @@ sub put_document {
         $doc->updated_on( Acore::DateTime->now() );
         my $obj = $doc->to_object;
         $self->storage->document->put($obj);
+        if ($self->cache) {
+            $self->cache->set("Acore::Document/id=". $doc->id, $obj);
+            $self->cache->remove("Acore::Document/path=". $doc->path);
+        }
         return $doc;
     }
     else {
         my $obj = $doc->to_object;
-        my $id = $self->storage->document->post($obj);
+        my $id  = $self->storage->document->post($obj);
         return $self->get_document({ id => $id });
     }
 }
@@ -219,6 +249,12 @@ Store Acore::Document to storage.
 Search Acore::Documents from storage, path first match.
 
  @doc = $acore->search_documents({ path => "/foo/bar" });
+
+=item cache
+
+Cache object which has Cache::Cache like interfaces.
+
+ $acore->cache( Cache::Memcached->new({ ... } ) ); # enable cache
 
 =back
 

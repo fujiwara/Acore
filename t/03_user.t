@@ -1,16 +1,20 @@
 # -*- mode:perl -*-
 use strict;
-use Test::More tests => 17;
+use Test::More tests => 43;
 use Test::Exception;
 use Data::Dumper;
-my $dbh = require t::connect_db;
+use t::Cache;
 
 BEGIN {
     use_ok 'Acore';
 };
 
+for my $cache ( undef, t::Cache->new({}) )
 {
+    my $dbh = do "t/connect_db.pm";
     my $ac = Acore->new({ dbh => $dbh, setup_db => 1, });
+    $ac->cache($cache);
+
     isa_ok $ac => "Acore";
     isa_ok $ac->storage => "Acore::Storage";
     ok $ac->can('create_user'), "can create_user";
@@ -35,7 +39,17 @@ BEGIN {
 
     my $u3 = $ac->get_user({ name => "foo" });
     isa_ok $u3 => "Acore::User";
-    ok $u3->name => "foo";
+    is $u3->name  => "foo";
+    is $u3->{xxx} => "yyy";
+
+    $u3->{xxx} = "zzz";
+    ok $ac->save_user($u3);
+
+    my $u4 = $ac->get_user({ name => "foo" });
+    isa_ok $u4 => "Acore::User";
+    is $u4->name  => "foo";
+    is $u4->{xxx} => "zzz";
+
+    $dbh->commit;
 }
 
-$dbh->commit;
