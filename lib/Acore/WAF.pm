@@ -519,7 +519,7 @@ sub welcome_message {
         <h1><span id="appname"><?= $c->config->{name} ?></span> on Acore::WAF <?= $Acore::WAF::VERSION ?></h1>
       </div>
       <div id="answers">
-        <p><img src="<?= $c->req->base ?>static/anycms-logo.png" alt="" width="200" height="67" />
+        <p><img src="<?= $c->uri_for('/static/anycms-logo.png') ?>" alt="AnyCMS" width="200" height="67" />
           Welcome to the  world of Acore::WAF.
         </p>
         <h2>Information</h2>
