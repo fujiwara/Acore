@@ -208,17 +208,17 @@ Get Acore::Document from storage.
  $doc = $acore->get_document({ id => $id });
  $doc = $acore->get_document({ path => $path });
 
-=item store_document
+=item put_document
 
 Store Acore::Document to storage.
 
- $doc = $acore->store_document($doc);
+ $doc = $acore->put_document($doc);
 
-=item search_document
+=item search_documents
 
 Search Acore::Documents from storage, path first match.
 
- @doc = $acore->search_document({ path => "/foo/bar" });
+ @doc = $acore->search_documents({ path => "/foo/bar" });
 
 =back
 

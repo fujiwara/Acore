@@ -63,6 +63,21 @@ Default TT options are
   INCLUDE_PATH => "root/templates",
   ENCODING     => "utf-8",
 
+
+=head1 EXPORT METHODS
+
+=over 4
+
+=item render
+
+Override default $c->render.
+
+=item render_part
+
+Override default $c->render_part.
+
+=back
+
 =head1 AUTHOR
 
 FUJIWARA E<lt>fujiwara@topicmaker.comE<gt>

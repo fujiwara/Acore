@@ -76,6 +76,17 @@ sub say_multi {
     );
 }
 
+sub minimal_cgi {
+    my ($self, $c) = @_;
+    my @input = $c->req->param('input');
+
+    my $body = "入力は" . join("", @input) . "です。\n";
+    $body   .= "base=" . $c->req->base . "\n";
+    $body   .= "path=" . $c->req->path . "\n";
+    $c->res->body( $c->encode($body) );
+}
+
+
 sub rest_GET    { $_[1]->res->body("GET")    }
 sub rest_POST   { $_[1]->res->body("POST")   }
 sub rest_PUT    { $_[1]->res->body("PUT")    }

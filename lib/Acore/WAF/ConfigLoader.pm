@@ -28,7 +28,7 @@ sub load {
             && $pl_file->stat->mtime >= $yaml_file->stat->mtime
         ) {
             $config = eval { require "$pl_file" }; ## no critic
-            if ($@) {
+            if ($@ || ref $config ne "HASH") {
                 carp("Can't load config cache file $pl_file : $@");
             }
             else {
@@ -37,13 +37,14 @@ sub load {
             }
         }
         require YAML;
-        $config = YAML::LoadFile($yaml_file)
-            or croak("Can't load file: $yaml_file $!");
-        my $fh = $pl_file->openw
-            or do {
-                carp("Can't open config cache file $pl_file to write: $!");
-                return $config;
-            };
+        $config = YAML::LoadFile($yaml_file);
+
+        my $fh = eval { $pl_file->openw };
+        if ($@ || !$fh) {
+            carp("Can't open config cache file $pl_file to write: $!");
+            $self->from("file. no cache");
+            return $config;
+        }
         local $Data::Dumper::Indent = 1;
         $fh->print("my ", Data::Dumper->Dump([$config], ["config"]));
         $fh->close;
@@ -51,8 +52,7 @@ sub load {
     }
     else {
         require YAML;
-        $config = YAML::LoadFile($yaml_file)
-            or croak("Can't load file: $yaml_file $!");
+        $config = YAML::LoadFile($yaml_file);
         $self->from("file. no cache");
     }
     return $config;
@@ -63,3 +63,62 @@ no Any::Moose;
 
 1;
 __END__
+
+=head1 NAME
+
+Acore::WAF::ConfigLoader - AnyCMS config file loader
+
+=head1 SYNOPSIS
+
+ $loader = Acore::WAF::ConfigLoader->new;
+ $loader->cache_dir("/path/to/cach");
+ $config = $loader->load("config.yaml");
+
+=head1 DESCRIPTION
+
+YAML file loader with cache.
+
+=head1 ATTRIBUTES
+
+=over 4
+
+=item cache_dir
+
+Directory for store cache .pl file. (default: no cache)
+
+=item from
+
+Loading status.
+
+ "file. cache created"
+ "file. no cache"
+ "cache."
+
+=back
+
+=head1 METHODS
+
+=over 4
+
+=item load
+
+Load yaml file.
+
+if $loader->cache_dir exists, create cache .pl file.
+
+=back
+
+=head1 AUTHOR
+
+FUJIWARA E<lt>fujiwara@topicmaker.comE<gt>
+
+=head1 SEE ALSO
+
+YAML
+
+=head1 LICENSE
+
+This library is free software; you can redistribute it and/or modify
+it under the same terms as Perl itself.
+
+=cut

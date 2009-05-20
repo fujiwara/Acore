@@ -74,6 +74,16 @@ Acore::WAF::Plugin::Session - AnyCMS session plugin
 
 Acore session plugin by HTTP::Session
 
+=head1 EXPORT METHODS
+
+=over 4
+
+=item session
+
+An instance of HTTP::Session.
+
+=back
+
 =head1 AUTHOR
 
 FUJIWARA E<lt>fujiwara@topicmaker.comE<gt>

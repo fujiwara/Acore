@@ -1,6 +1,6 @@
 # -*- mode:perl -*-
 use strict;
-use Test::More tests => 7;
+use Test::More tests => 9;
 use HTTP::Request;
 
 BEGIN {
@@ -12,7 +12,7 @@ BEGIN {
     $ENV{REQUEST_METHOD}    = "GET";
     $ENV{SCRIPT_NAME}       = "/index.cgi";
     $ENV{QUERY_STRING}      = "input=%E3%81%82&input=%E3%81%84&input=%E3%81%86";
-    $ENV{PATH_INFO}         = "/act/say_multi";
+    $ENV{PATH_INFO}         = "/act/minimal_cgi";
     $ENV{HTTP_HOST}         = "localhost";
 };
 
@@ -46,5 +46,7 @@ BEGIN {
     like $data => qr{Status: 200};
     like $data => qr{Content-Type: text/html; charset=utf-8};
     like $data => qr{入力はあいうです。};
+    like $data => qr{base=http://localhost/index\.cgi/};
+    like $data => qr{path=/act/minimal_cgi};
 }
 

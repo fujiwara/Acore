@@ -188,7 +188,7 @@ sub handle_request {
 
     no warnings "redefine";
     local *CGI::ExceptionManager::StackTrace::output = sub {
-        $self->output_stack_trace(@_);
+        $self->_output_stack_trace(@_);
     };
 
     CGI::ExceptionManager->run(
@@ -205,7 +205,7 @@ sub handle_request {
     return $self->response;
 }
 
-sub output_stack_trace {
+sub _output_stack_trace {
     my $self = shift;
     my ($error, %args) = @_;
 
@@ -835,6 +835,10 @@ Send error to client and detach().
      $c->error( $status_code => $message_for_log );
      # not reached here
  }
+
+=item welcome_message
+
+Returns welcome message HTML.
 
 =item login
 

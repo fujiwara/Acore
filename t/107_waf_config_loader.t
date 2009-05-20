@@ -1,8 +1,10 @@
 # -*- mode:perl -*-
 use strict;
 use warnings;
-use Test::More tests => 14;
+use Test::More tests => 21;
 use YAML;
+use Test::Exception;
+use Path::Class qw/ file /;
 
 use_ok('Acore::WAF::ConfigLoader');
 
@@ -45,6 +47,32 @@ YAML::DumpFile(
     is_deeply( $config => { name => "TestApp" } );
     is $loader->from => "file. no cache";
 }
+
+
+{
+    $loader->cache_dir("t/tmp");
+    my $config = $loader->load($yaml);
+    is_deeply( $config => { name => "TestApp" } );
+    ok -e "t/tmp/test_config.yaml.pl";
+    is $loader->from => "file. cache created";
+
+    # break cache
+    {
+        my $fh = file("t/tmp/test_config.yaml.pl")->open(">>");
+        $fh->print("}");
+    }
+    $config = $loader->load($yaml);
+    is_deeply( $config => { name => "TestApp" } );
+    is $loader->from => "file. cache created";
+}
+
+{
+    $loader->cache_dir("t/notfound");
+    my $config = $loader->load($yaml);
+    is_deeply( $config => { name => "TestApp" } );
+    is $loader->from => "file. no cache";
+}
+
 
 unlink "t/tmp/test_config.yaml";
 
