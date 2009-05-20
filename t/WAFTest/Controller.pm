@@ -91,6 +91,16 @@ sub _private {
     $c->res->body('private action');
 }
 
+sub cache_set {
+    my ($self, $c) = @_;
+    $c->cache->set( key => $c->encode( $c->req->param('value') ) );
+    $c->res->body( $c->cache->get('key') );
+}
+
+sub cache_get {
+    my ($self, $c) = @_;
+    $c->res->body( $c->cache->get('key') );
+}
 
 sub rest_GET    { $_[1]->res->body("GET")    }
 sub rest_POST   { $_[1]->res->body("POST")   }
