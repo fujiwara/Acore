@@ -112,6 +112,13 @@ sub logout {
     $c->res->body( "logout_ok" );
 }
 
+sub detach {
+    my ($self, $c) = @_;
+    $c->res->body("before detach");
+    $c->detach();
+    $c->res->body("after detach"); # not reached
+}
+
 package t::WAFTest::Controller::X;
 
 sub xyz {

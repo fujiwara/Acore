@@ -196,11 +196,11 @@ sub handle_request {
             $self->_call_trigger('BEFORE_DISPATCH');
             $self->_dispatch;
             $self->_call_trigger('AFTER_DISPATCH');
-            $self->finalize();
             return $self->response;
         },
         powered_by => __PACKAGE__,
     );
+    $self->finalize();
     $self->log->flush;
     return $self->response;
 }
@@ -252,6 +252,9 @@ sub _dispatch {
         );
     if ($rule) {
         my $action = $rule->{action};
+        $self->error( 404 => "dispatch action $action is private." )
+            if $action =~ /^_/;
+
         local $Data::Dumper::Indent = 1;
         $self->log->debug(
             "dispatch rule: " . Data::Dumper->Dump([$rule], ["rule"])
@@ -267,17 +270,32 @@ sub _dispatch {
             $sub->( $controller, $self, $rule->{args} );
         }
         else {
-            $self->log->error("dispatch action (${controller}::${action} or ${controller}::${action}_${method}) is not found. for " . $self->req->uri );
-            $self->res->body("Not found.");
-            $self->res->status(404);
+            $self->error(
+                404 => "dispatch action (${controller}::${action} or ${controller}::${action}_${method}) is not found. for " . $self->req->uri
+            );
         }
     }
     else {
-        $self->log->error("dispatch rule is not found for " . $self->req->uri);
-        $self->res->body("Not found.");
-        $self->res->status(404);
+        $self->error(
+            404 => "dispatch rule is not found for " . $self->req->uri
+        );
     }
     $self;
+}
+
+sub error {
+    my ($self, $status, $message) = @_;
+    my (undef, $file, $line) = caller;
+    $self->log->error($message . " at $file line $line");
+    require HTTP::Status;
+    $status ||= 500;
+    $self->res->body( HTTP::Status::status_message($status) );
+    $self->res->status($status);
+    detach();
+}
+
+sub detach {
+    CGI::ExceptionManager::detach()
 }
 
 sub dispatch_static {
@@ -297,10 +315,7 @@ sub serve_static_file {
     my $res = $self->res;
     if ( -f $file ) {
         unless ( -r _ ) {
-            $self->log->error("can't read file $file : $!");
-            $res->status(403);
-            $res->body("forbidden.");
-            return;
+            $self->error( 403 => "can't read file $file : $!" );
         }
 
         my $mtime = $file->stat->mtime;
@@ -320,9 +335,7 @@ sub serve_static_file {
         );
     }
     else {
-        $self->log->error("$file is not exists. $!");
-        $res->status(404);
-        $res->body("Not found.");
+        $self->error( 404 => "$file is not exists. $!");
     }
 }
 
@@ -334,9 +347,7 @@ sub serve_acore_document {
 
     my $doc = $self->acore->get_document({ path => $path });
     unless ($doc) {
-        $self->res->status(404);
-        $self->res->body("Not found.");
-        return;
+        $self->error( 404 => "Not found acore document path: $path" );
     }
 
     my $res   = $self->response;
@@ -804,6 +815,26 @@ Finalize method.
      super()
      # your finalize code
  };
+
+=item detach
+
+Detach from action.
+
+ sub action_foo {
+     my ($self, $c) = @_;
+     $c->detach;
+     # not reached here
+ }
+
+=item error
+
+Send error to client and detach().
+
+ sub action_foo {
+     my ($self, $c) = @_;
+     $c->error( $status_code => $message_for_log );
+     # not reached here
+ }
 
 =item login
 

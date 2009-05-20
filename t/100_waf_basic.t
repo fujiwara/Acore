@@ -166,31 +166,31 @@ ok
 --- uri
 http://localhost/act/ng
 --- response
-Content-Length: 10
+Content-Length: 9
 Content-Type: text/html; charset=utf-8
 Status: 404
 
-Not found.
+Not Found
 
 === not found
 --- uri
 http://localhost/ng
 --- response
-Content-Length: 10
+Content-Length: 9
 Content-Type: text/html; charset=utf-8
 Status: 404
 
-Not found.
+Not Found
 
 === static not found
 --- uri
 http://localhost/static/not_found.txt
 --- response
-Content-Length: 10
+Content-Length: 9
 Content-Type: text/html; charset=utf-8
 Status: 404
 
-Not found.
+Not Found
 
 === static ok
 --- preprocess
@@ -226,11 +226,11 @@ unlink("t/static/hide.txt");
 --- uri
 http://localhost/static/hide.txt
 --- response
-Content-Length: 10
+Content-Length: 9
 Content-Type: text/html; charset=utf-8
 Status: 403
 
-forbidden.
+Forbidden
 
 === static not modified
 --- preprocess
@@ -295,6 +295,16 @@ Content-Type: text/html; charset=utf-8
 Status: 500
 
 Internal Server Error
+
+=== detach
+--- uri
+http://localhost/act/detach
+--- response
+Content-Length: 13
+Content-Type: text/html; charset=utf-8
+Status: 200
+
+before detach
 
 === favicon
 --- preprocess
@@ -377,11 +387,11 @@ Acore::Document::Test body
 --- uri
 http://localhost/adoc/foo/baz
 --- response
-Content-Length: 10
+Content-Length: 9
 Content-Type: text/html; charset=utf-8
 Status: 404
 
-Not found.
+Not Found
 
 === decode input
 --- uri
