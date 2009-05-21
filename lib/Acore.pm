@@ -120,7 +120,7 @@ sub get_document {
     return unless $doc;
 
     return Acore::Document->from_object($doc);
-    }
+}
 
 sub put_document {
     my $self = shift;
@@ -149,15 +149,16 @@ sub search_documents {
     my $args = shift;
 
     return unless defined $args->{path};
+
+    $args->{key_like}     = delete($args->{path}) . "%";
+    $args->{include_docs} = 1;
+
     my $itr = $self->storage->document->view(
-        "path/all" => {
-            key_like     => $args->{path} . "%",
-            limit        => $args->{limit},
-            offfset      => $args->{offset},
-            include_docs => 1,
-        });
-    my @docs = map { Acore::Document->from_object( $_->{document} ) }
-        $itr->all;
+        "path/all" => $args
+    );
+    my @docs = $itr
+        ? map { Acore::Document->from_object( $_->{document} ) } $itr->all
+        : ();
     return wantarray ? @docs : \@docs;
 }
 
