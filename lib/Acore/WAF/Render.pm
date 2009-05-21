@@ -24,6 +24,12 @@ sub replace($$$) {  ## no critic
     $src;
 }
 
+sub html_line_break($) { ## no critic
+    local $_ = $_[0];
+    s{\r*\n}{<br/>}g;
+    $_;
+}
+
 1;
 __END__
 

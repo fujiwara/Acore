@@ -15,41 +15,47 @@ use_ok("Acore::WAF::Render");
         my @x = split / +/, $_[0];
         Acore::WAF::Render::replace(@x);
     }
+    *html_line_break = *Acore::WAF::Render::html_line_break;
 }
 
 run_is input => 'expected';
 
-
-
 __END__
 
-===
+=== html
 --- input chomp html
 <a href="javascript:foo('a&b')"></a>
 --- expected chomp
 &lt;a href=&quot;javascript:foo(&#39;a&amp;b&#39;)&quot;&gt;&lt;/a&gt;
 
-===
+=== uri
 --- input chomp uri
 a=b&c=d
 --- expected chomp
 a%3Db%26c%3Dd
 
-===
+=== uri utf8
 --- input chomp uri
 あいう
 --- expected chomp
 %E3%81%82%E3%81%84%E3%81%86
 
-===
+=== replace
 --- input chomp replace
 foobar   foo   bar
 --- expected chomp
 barbar
 
-===
+=== replace utf8
 --- input chomp replace
 あいうえお   [あい]  *
 --- expected chomp
 **うえお
 
+=== html_line_break
+--- input chomp html_line_break
+A
+B
+C
+--- expected chomp
+A<br/>B<br/>C
