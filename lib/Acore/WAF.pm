@@ -10,6 +10,7 @@ use utf8;
 use Encode ();
 use UNIVERSAL::require;
 use Acore::WAF::Log;
+use Acore::WAF::Render;
 use Acore::MIME::Types;
 use URI::Escape;
 use CGI::ExceptionManager;
@@ -99,6 +100,8 @@ sub _build_log {
 sub _build_renderer {
     my $self = shift;
     my $path = $self->path_to("templates");
+
+    package Acore::WAF::Render;
     Text::MicroTemplate::File->new(
         include_path => [ $path, @{ $self->config->{include_path} } ],
         use_cache    => 1,

@@ -73,7 +73,9 @@ run {
     $data =~ s/[\r\n]+\z//;
     $data = handle_session($data);
 
-    is $data, sprintf($block->response, @res_args), $block->name;
+    is $data => $block->raw ? $block->response
+                            : sprintf($block->response, @res_args),
+       $block->name;
 
     eval $block->postprocess if $block->postprocess;
     die $@ if $@;
@@ -581,6 +583,31 @@ Content-Type: text/html; charset=utf-8
 Status: 404
 
 Not Found
+
+=== package
+--- uri
+http://localhost/act/render_package
+--- response
+Content-Length: 18
+Content-Type: text/html; charset=utf-8
+Status: 200
+
+Acore::WAF::Render
+
+=== render filter
+--- uri
+http://localhost/act/render_filter
+--- response
+Content-Length: 64
+Content-Type: text/html; charset=utf-8
+Status: 200
+
+&lt;s&gt;
+%E3%81%82%E3%81%84%E3%81%86
+Aいう
+%26lt%3Bs%26gt%3B
+--- raw
+1
 
 === ovreride finalize
 --- preprocess

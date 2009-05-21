@@ -152,6 +152,17 @@ sub welcome {
     $c->res->body($body);
 }
 
+sub render_package {
+    my ($self, $c) = @_;
+    $c->render("render_package.mt");
+}
+
+sub render_filter {
+    my ($self, $c) = @_;
+    $c->render("render_filter.mt");
+}
+
+
 package t::WAFTest::Controller::X;
 
 sub xyz {
