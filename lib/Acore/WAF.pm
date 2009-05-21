@@ -399,7 +399,7 @@ sub render_part {
 
 sub dispatch_favicon {
     my ($self, $c) = @_;
-    $c->serve_static_file( $c->path_to("favicon.ico") );
+    $c->serve_static_file( $c->path_to("static/favicon.ico") );
 }
 
 sub add_trigger {

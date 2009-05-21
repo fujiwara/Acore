@@ -26,17 +26,18 @@ sub run {
     mkdir $name or die "Can't create dir $name: $!";
     chdir $name;
 
-    for my $dir (qw/ static templates db script lib config /,
+    for my $dir (qw/ static templates db script lib config t xt /,
                  "lib/$name", "lib/$name/Controller"
     ) {
         mkdir $dir
             or die "Can't create dir $name/$dir: $!";
         print "mkdir $name/$dir\n";
     }
-    for my $file (qw/ script_server_pl script_index_cgi
+    for my $file (qw/ script_server_pl script_index_cgi makefile_pl
                       lib_app_pm config_yaml
-                      lib_app_controller_pm favicon_ico 
+                      lib_app_controller_pm favicon_ico
                       anycms_logo
+                      t_00_compile_t
                     /)
     {
         my ($filename, $tmpl, $raw, $permission) = __PACKAGE__->$file();
@@ -54,6 +55,8 @@ sub run {
     }
     my $dsn = sprintf "dbi:SQLite:dbname=db/%s.acore.sqlite", lc $AppName;
     Acore::CLI::SetupDB->run($dsn, "", "", "");
+    chdir "..";
+    1;
 }
 
 sub app_name { $AppName }
@@ -212,12 +215,40 @@ session:
 
 sub favicon_ico {
     no utf8;
-    return ("favicon.ico", decode_base64(<<'    _END_OF_FILE_'
+    return ("static/favicon.ico", decode_base64(<<'    _END_OF_FILE_'
 iVBORw0KGgoAAAANSUhEUgAAABAAAAAQBAMAAADt3eJSAAAAElBMVEX/////////////C17hAGcA
 AACr6v1WAAAAQUlEQVQImWMwhgIGY2NDQUFhCEPYUBiXCIwB1wVluEABguGk4uSi5OKkwqDiogIC
 LlCGEkREyUUFokZFBagGpgsArcIY91nxh2cAAAAASUVORK5CYII=
     _END_OF_FILE_
     ), "raw");
+}
+
+sub makefile_pl {
+    return ("Makefile.PL", <<'    _END_OF_FILE_'
+use inc::Module::Install;
+name '<?=r app_name() ?>';
+build_requires 'Module::Install' => 0.77;
+build_requires 'Test::More';
+test_requires 'DBD::SQLite';
+tests 't/*.t';
+author_tests 'xt';
+use_test_base;
+auto_include;
+WriteAll;
+    _END_OF_FILE_
+    );
+}
+
+sub t_00_compile_t {
+    return ("t/00_compile.t", <<'    _END_OF_FILE_'
+use strict;
+use Test::More tests => 1;
+
+BEGIN {
+    use_ok '<?= app_name() ?>';
+}
+    _END_OF_FILE_
+    );
 }
 
 sub anycms_logo {

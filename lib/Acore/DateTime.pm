@@ -5,6 +5,15 @@ use warnings;
 use UNIVERSAL::require;
 our $DT_class = "DateTimeX::Lite";
 $DT_class->require;
+my %Tz;
+
+sub time_zone {
+    my ($class, $name) = shift;
+    return $Tz{$name} if defined $Tz{$name};
+
+    my $tz_class = "${DT_class}::TimeZone";
+    $Tz{$name} = $tz_class->new($name);
+}
 
 sub now {
     $DT_class->now();

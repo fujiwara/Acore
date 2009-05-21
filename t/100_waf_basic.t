@@ -309,12 +309,12 @@ before detach
 === favicon
 --- preprocess
 {
-    my $fh = file("t/favicon.ico")->openw;
+    my $fh = file("t/static/favicon.ico")->openw;
     $fh->print("AAA");
 }
-(HTTP::Date::time2str(file("t/favicon.ico")->stat->mtime));
+(HTTP::Date::time2str(file("t/static/favicon.ico")->stat->mtime));
 --- postprocess
-unlink "t/favicon.ico";
+unlink "t/static/favicon.ico";
 --- uri
 http://localhost/favicon.ico
 --- response
