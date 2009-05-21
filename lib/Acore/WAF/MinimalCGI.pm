@@ -19,6 +19,8 @@ use URI;
         );
         $self->{base};
     }
+    no warnings 'redefine';
+    sub method { $ENV{REQUEST_METHOD} || 'GET' }
 }
 
 1;
