@@ -30,7 +30,7 @@ sub render_part {
         $tmpl,
         { c => $c, %{ $c->stash } },
         \$output,
-    );
+    ) or die $c->renderer->error();
     $output;
 }
 

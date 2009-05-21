@@ -14,4 +14,9 @@ sub render {
     $c->render("test.tt");
 }
 
+sub render_broken_tt {
+    my ($self, $c) = @_;
+    $c->render("broken.tt");
+}
+
 1;
