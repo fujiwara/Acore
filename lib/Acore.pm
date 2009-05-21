@@ -128,7 +128,7 @@ sub put_document {
 
     if ( $doc->id ) {
         require Acore::DateTime;
-        $doc->updated_on( Acore::DateTime->now() );
+        $doc->updated_on( Acore::DateTime->now( time_zone => "local" ) );
         my $obj = $doc->to_object;
         $self->storage->document->put($obj);
         if ($self->cache) {

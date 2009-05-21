@@ -60,7 +60,7 @@ sub new {
     my $class = shift;
     my $self  = $class->SUPER::new(@_);
     require Acore::DateTime;
-    $self->{$_} ||= Acore::DateTime->now()
+    $self->{$_} ||= Acore::DateTime->now( time_zone => "local" )
         for qw/ created_on updated_on /;
     $self;
 }
