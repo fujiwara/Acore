@@ -263,7 +263,8 @@ sub _dispatch {
             "dispatch rule: " . Data::Dumper->Dump([$rule], ["rule"])
         ) if $self->debug;
         my $controller = $rule->{controller};
-        $controller->require;
+        $controller->require
+            or die "Can't require $controller: $@\n";
 
         my $method = uc $self->req->method;
         my $sub = $controller->can("${action}_${method}")
