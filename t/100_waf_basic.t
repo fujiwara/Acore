@@ -598,7 +598,7 @@ Acore::WAF::Render
 --- uri
 http://localhost/act/render_filter
 --- response
-Content-Length: 64
+Content-Length: 88
 Content-Type: text/html; charset=utf-8
 Status: 200
 
@@ -606,6 +606,7 @@ Status: 200
 %E3%81%82%E3%81%84%E3%81%86
 Aいう
 %26lt%3Bs%26gt%3B
+&lt;s&gt;<br/>&lt;s&gt;
 --- raw
 1
 

@@ -1,4 +1,5 @@
-<?=r html q{<s>} ?>
-<?=r uri "あいう" ?>
-<?=r replace("あいう", qr{あ}, "A") ?>
-<?=r uri html q{<s>} ?>
+<?=r "<s>" | html ?>
+<?=r "あいう" | uri ?>
+<?=r "あいう" | replace("あ", "A") ?>
+<?=r "<s>" | html | uri ?>
+<?=r "<s>\n<s>" | html | html_line_break ?>

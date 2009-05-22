@@ -9,13 +9,19 @@ use_ok("Acore::WAF::Render");
 
 {
     no warnings;
-    *html    = *Acore::WAF::Render::html;
-    *uri     = *Acore::WAF::Render::uri;
-    sub replace {
-        my @x = split / +/, $_[0];
-        Acore::WAF::Render::replace(@x);
+    sub html {
+        $_[0] | Acore::WAF::Render::html()
     }
-    *html_line_break = *Acore::WAF::Render::html_line_break;
+    sub uri  {
+        $_[0] | Acore::WAF::Render::uri()
+    }
+    sub html_line_break {
+        $_[0] | Acore::WAF::Render::html_line_break()
+    }
+    sub replace {
+        my ($val, $reg, $rep) = split / +/, $_[0];
+        $val | Acore::WAF::Render::replace($reg, $rep);
+    }
 }
 
 run_is input => 'expected';
