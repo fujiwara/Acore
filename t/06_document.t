@@ -1,6 +1,6 @@
 # -*- mode:perl -*-
 use strict;
-use Test::More tests => 36;
+use Test::More tests => 40;
 use Test::Exception;
 use Data::Dumper;
 use t::Cache;
@@ -52,6 +52,10 @@ for my $cache ( undef, t::Cache->new({}) )
     sleep 1;
     my $updated_doc = $ac->put_document($docs[0]);
     ok $updated_doc->updated_on > $updated_on, "update timestamp";
+
+    my $id = $ac->new_document_id;
+    ok $id;
+    ok $id != $ac->new_document_id, "different id";
 
     $dbh->commit;
 }

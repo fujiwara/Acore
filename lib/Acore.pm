@@ -88,6 +88,11 @@ sub create_user {
     return $user;
 }
 
+sub new_document_id {
+    my $self = shift;
+    $self->storage->document->id_generator->get_id;
+}
+
 sub get_document {
     my ($self, $args) = @_;
 
@@ -231,6 +236,10 @@ Authenticate user. Returns Acore::User.
      name     => "foo",
      password => "secret",
  });
+
+=item new_document_id
+
+Generate new document id.
 
 =item get_document
 
