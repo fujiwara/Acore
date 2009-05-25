@@ -23,13 +23,13 @@ sub load {
     my $config;
     my $dir = $self->cache_dir;
     if ($dir) {
-        my $pl_file = dir($dir)->file( $yaml_file->basename . ".cache" );
-        if (   $pl_file->stat
-            && $pl_file->stat->mtime >= $yaml_file->stat->mtime
+        my $cache_file = dir($dir)->file( $yaml_file->basename . ".cache" );
+        if (   $cache_file->stat
+            && $cache_file->stat->mtime >= $yaml_file->stat->mtime
         ) {
-            $config = eval { Storable::retrieve("$pl_file"); };
+            $config = eval { Storable::retrieve("$cache_file"); };
             if ($@ || ref $config ne "HASH") {
-                carp("Can't load config cache file $pl_file : $@");
+                carp("Can't load config cache file $cache_file : $@");
             }
             else {
                 $self->from("cache.");
@@ -40,10 +40,10 @@ sub load {
         $config = YAML::LoadFile($yaml_file);
 
         eval {
-            Storable::nstore($config, "$pl_file");
+            Storable::nstore($config, "$cache_file");
         };
         if ($@) {
-            carp("Can't open config cache file $pl_file to write: $!");
+            carp("Can't open config cache file $cache_file to write: $!");
             $self->from("file. no cache");
             return $config;
         }
