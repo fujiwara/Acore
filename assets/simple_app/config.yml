@@ -1,3 +1,4 @@
+name: SimpleApp
 log:
   level: debug
 root: assets/simple_app

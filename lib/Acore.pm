@@ -30,6 +30,19 @@ sub new {
     $self;
 }
 
+sub all_users {
+    my $self = shift;
+    my $args = shift;
+    my @user = map {
+        my $user = $_->{value};
+        $user->{id} ||= $_->{id};
+        bless $user, $self->user_class;
+        $user->init;
+        $user;
+    } $self->storage->user->all;
+    @user;
+}
+
 sub get_user {
     my $self = shift;
     my $args = shift;
@@ -91,6 +104,19 @@ sub create_user {
 sub new_document_id {
     my $self = shift;
     $self->storage->document->id_generator->get_id;
+}
+
+sub all_documents {
+    my $self = shift;
+    my $args = shift;
+    use Data::Dumper;
+    my @docs
+        = map  {
+            $_->{value}->{_id} ||= $_->{id};
+            Acore::Document->from_object( $_->{value} ) }
+          grep { $_->{id} !~ qr{^_design/} }
+          $self->storage->document->all($args);
+    @docs;
 }
 
 sub get_document {

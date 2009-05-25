@@ -40,6 +40,14 @@ sub html_line_break() { ## no critic
     };
 }
 
+sub list_join {
+    my ($sep) = shift;
+    joint {
+        my @list = ref $_[0] eq 'ARRAY' ? @{$_[0]} : @_;
+        join($sep, @list);
+    };
+}
+
 1;
 __END__
 
