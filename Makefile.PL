@@ -18,6 +18,7 @@ requires 'HTTP::Session';
 requires 'HTTPx::Dispatcher';
 requires 'MIME::Base64';
 requires 'Path::Class';
+requires 'Sub::Pipe';
 test_requires 'DBD::SQLite';
 
 tests 't/*.t';
