@@ -162,6 +162,12 @@ sub render_filter {
     $c->render("render_filter.mt");
 }
 
+sub form {
+    my ($self, $c) = @_;
+    $c->render('form.mt');
+    $c->fillform();
+}
+
 
 package t::WAFTest::Controller::X;
 

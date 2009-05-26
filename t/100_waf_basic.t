@@ -610,6 +610,24 @@ Aいう
 --- raw
 1
 
+=== fill in form
+--- uri
+http://localhost/act/form?foo=FOO&bar=%E3%81%82%E3%81%84%E3%81%86
+--- response
+Content-Length: 295
+Content-Type: text/html; charset=utf-8
+Status: 200
+
+<form>
+<input value="FOO" name="foo" type="text" />
+<input value="あいう" name="bar" type="text" />
+<select name="bar">
+<option value="あああ">あああ</option>
+<option value="あいう" selected="selected">あいう</option>
+<option value="いいい">いいい</option>
+</select>
+</form>
+
 === ovreride finalize
 --- preprocess
 {
