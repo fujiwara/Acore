@@ -1,6 +1,6 @@
 # -*- mode:perl -*-
 use strict;
-use Test::More tests => 42;
+use Test::More tests => 46;
 use Test::Exception;
 use Data::Dumper;
 use t::Cache;
@@ -61,6 +61,22 @@ for my $cache ( undef, t::Cache->new({}) )
     is_deeply \@doc => [
         $ac->get_document({ id => $doc->id }),
         $ac->get_document({ id => $doc4->id }),
+    ];
+
+    my @doc = $ac->get_documents_by_id( $doc->id );
+    is_deeply \@doc => [
+        $ac->get_document({ id => $doc->id }),
+    ];
+
+    my $doc5 = $ac->put_document( Acore::Document->new({
+        path => "/foo/baz",
+        body => "This is a document baz.",
+    }) );
+
+    my @doc = $ac->get_documents_by_id( $doc->id, $doc5->id );
+    is_deeply \@doc => [
+        $ac->get_document({ id => $doc->id }),
+        $ac->get_document({ id => $doc5->id }),
     ];
 
     $dbh->commit;

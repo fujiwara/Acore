@@ -113,11 +113,45 @@ sub all_documents {
     $args->{exclude_designs} = 1;
     my @docs
         = map  {
-            $_->{value}->{_id} ||= $_->{id};
-            Acore::Document->from_object( $_->{value} ) }
+              $_->{value}->{_id} ||= $_->{id};
+              $self->cache->set("Acore::Document/id=" . $_->{id} => $_->{value})
+                  if $self->cache && $_;
+
+              Acore::Document->from_object( $_->{value} )
+          }
           $self->storage->document->all($args);
-    @docs;
+    return wantarray ? @docs : \@docs;
 }
+
+sub get_documents_by_id {
+    my ($self, @id) = @_;
+
+    my (%cached, %no_cached, @docs);
+
+    my $cache = $self->cache;
+    if ($cache) {
+        for my $id (@id) {
+            my $doc = $cache->get("Acore::Document/id=$id");
+            if ($doc) {
+                $cached{$id} = Acore::Document->from_object($doc);
+            }
+            else {
+                $no_cached{$id} = 1;
+            }
+        }
+        if (keys %no_cached == 0) { # 全部 cache から見つかった
+            @docs = sort { $a->id cmp $b->id } values %cached;
+            return wantarray ? @docs : \@docs;
+        }
+        @id   = keys %no_cached;
+        @docs = values %cached;
+    }
+
+    push @docs, $self->all_documents({ id_in => \@id });
+    @docs = sort { $a->id cmp $b->id } @docs;
+    return wantarray ? @docs : \@docs;
+}
+
 
 sub get_document {
     my ($self, $args) = @_;

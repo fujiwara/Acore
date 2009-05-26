@@ -10,6 +10,7 @@ sub is_logged_in {
     my ($self, $c) = @_;
 
     if ( $c->user && $c->user->has_role($PermitRole) ) {
+        $c->log->debug("user logged in.");
         if ( $c->req->method eq "POST"
                  && $c->req->param('sid') ne $c->session->session_id )
         {
@@ -17,6 +18,8 @@ sub is_logged_in {
         }
         return 1;
     }
+    $c->log->debug( $c->user );
+
     $c->redirect( $c->uri_for('/admin_console/login_form') );
     $c->detach();
 }
