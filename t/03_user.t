@@ -1,6 +1,6 @@
 # -*- mode:perl -*-
 use strict;
-use Test::More tests => 43;
+use Test::More tests => 51;
 use Test::Exception;
 use Data::Dumper;
 use t::Cache;
@@ -49,6 +49,13 @@ for my $cache ( undef, t::Cache->new({}) )
     isa_ok $u4 => "Acore::User";
     is $u4->name  => "foo";
     is $u4->{xxx} => "zzz";
+
+    my $u5 = $ac->create_user({ name => "bar", xxx => "www" });
+    my @u = $ac->all_users;
+    is $u[0]->name  => "bar";
+    is $u[0]->{xxx} => "www";
+    is $u[1]->name  => "foo";
+    is $u[1]->{xxx} => "zzz";
 
     $dbh->commit;
 }

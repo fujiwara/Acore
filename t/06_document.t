@@ -1,6 +1,6 @@
 # -*- mode:perl -*-
 use strict;
-use Test::More tests => 40;
+use Test::More tests => 42;
 use Test::Exception;
 use Data::Dumper;
 use t::Cache;
@@ -56,6 +56,12 @@ for my $cache ( undef, t::Cache->new({}) )
     my $id = $ac->new_document_id;
     ok $id;
     ok $id != $ac->new_document_id, "different id";
+
+    my @doc = $ac->all_documents;
+    is_deeply \@doc => [
+        $ac->get_document({ id => $doc->id }),
+        $ac->get_document({ id => $doc4->id }),
+    ];
 
     $dbh->commit;
 }

@@ -109,12 +109,12 @@ sub new_document_id {
 sub all_documents {
     my $self = shift;
     my $args = shift;
-    use Data::Dumper;
+
+    $args->{exclude_designs} = 1;
     my @docs
         = map  {
             $_->{value}->{_id} ||= $_->{id};
             Acore::Document->from_object( $_->{value} ) }
-          grep { $_->{id} !~ qr{^_design/} }
           $self->storage->document->all($args);
     @docs;
 }
