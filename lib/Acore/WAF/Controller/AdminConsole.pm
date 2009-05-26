@@ -6,6 +6,21 @@ use Data::Dumper;
 
 my $PermitRole = "AdminConsoleLogin";
 
+sub is_logged_in {
+    my ($self, $c) = @_;
+
+    if ( $c->user && $c->user->has_role($PermitRole) ) {
+        if ( $c->req->method eq "POST"
+                 && $c->req->param('sid') ne $c->session->session_id )
+        {
+            $c->error( 500 => 'CSRF detacted.' );
+        }
+        return 1;
+    }
+    $c->redirect( $c->uri_for('/admin_console/login_form') );
+    $c->detach();
+}
+
 sub index {
     my ($self, $c) = @_;
     my @all_users = $c->acore->all_users;
@@ -52,12 +67,9 @@ sub logout {
 
 sub menu_GET {
     my ($self, $c) = @_;
-    if ($c->user) {
-        $c->render("admin_console/menu.mt");
-    }
-    else {
-        $c->redirect( $c->uri_for('/admin_console/login_form') );
-    }
+
+    $c->forward( $self => "is_logged_in" );
+    $c->render("admin_console/menu.mt");
 }
 
 sub setup_at_first_GET {
@@ -97,6 +109,8 @@ sub setup_at_first_POST {
 sub user_list {
     my ($self, $c) = @_;
 
+    $c->forward( $self => "is_logged_in" );
+
     $c->stash->{all_users} = [ $c->acore->all_users ];
     $c->render('admin_console/user_list.mt');
 }
@@ -104,8 +118,11 @@ sub user_list {
 sub document_list {
     my ($self, $c) = @_;
 
+    $c->forward( $self => "is_logged_in" );
+
     my $limit  = 20;
-    my $offset = ( int( $c->req->param('page') || 1 ) - 1 ) * $limit;
+    my $page   = int( $c->req->param('page') || 1 );
+    my $offset = ( $page - 1 ) * $limit;
 
     $c->stash->{all_documents} = [
         $c->acore->all_documents({
@@ -113,8 +130,61 @@ sub document_list {
             limit  => $limit,
         }),
     ];
+    $c->stash->{offset} = $offset;
+    $c->stash->{limit}  = $limit;
+    $c->stash->{page}   = $page;
     $c->render('admin_console/document_list.mt');
 }
+
+sub document_form_GET {
+    my ($self, $c) = @_;
+
+    $c->forward( $self => "is_logged_in" );
+
+    $c->stash->{document}
+        = $c->acore->get_document({ id => $c->req->param('id') });
+
+    $c->render('admin_console/document_form.mt');
+}
+
+sub document_form_POST {
+    my ($self, $c) = @_;
+
+    $c->forward( $self => "is_logged_in" );
+
+    my $doc = $c->acore->get_document({ id => $c->req->param('id') });
+    $c->error( 404 => "document not found." )
+        unless $doc;
+
+    $c->form->check(
+        id         => [qw/ NOT_NULL ASCII /],
+        path       => [qw/ NOT_NULL ASCII /],
+    );
+
+    my $json = JSON->new;
+    my $obj  = eval { $json->decode( $c->req->param('content') ) };
+    if ($@ || !$obj) {
+        $c->form->set_error( content => "INVALID_JSON" );
+    }
+
+    if ( $c->form->has_error ) {
+        $c->render('admin_console/document_form.mt');
+        return;
+    }
+
+    for my $n ( keys %$obj ) {
+        $doc->{$n} = $obj->{$n};
+    }
+    $doc->{_id}  = $c->req->param('id');
+    $doc->{path} = $c->req->param('path');
+
+    $c->acore->put_document($doc);
+
+    $c->redirect(
+        $c->uri_for('/admin_console/document_form', { _t => time } )
+    );
+}
+
 
 1;
 
