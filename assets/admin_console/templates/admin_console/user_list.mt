@@ -19,7 +19,7 @@
               <dt class="data-operation"><a href="<?= $c->uri_for('/admin_console/user_form/', { name => $user->name } ) ?>"><?= $user->name ?></a></dt>
               <dd>
                 <p class="property">
-                  <span class="key">Roles:</span><span class="val"><?= $user->roles | list_join(", ") ?></span>
+                  <span class="key">Roles:</span><span class="val"><?= $user->roles | join(", ") ?></span>
                 </p>
               </dd>
             </dl>
