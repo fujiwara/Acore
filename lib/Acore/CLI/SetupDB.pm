@@ -18,6 +18,7 @@ sub run {
     );
     my $storage = Acore::Storage->new({ dbh => $dbh });
     $storage->setup();
+
     $dbh->commit;
     1;
 }

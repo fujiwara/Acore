@@ -16,6 +16,17 @@ sub {
 _END_OF_CODE_
 ;
 
+our $document_tags =<<'_END_OF_CODE_';
+sub {
+    my ($obj, $emit) = @_;
+    return if ref $obj->{tags} ne 'ARRAY';
+    for my $tag ( @{ $obj->{tags} } ) {
+        $emit->( $tag => $obj->{path} );
+    }
+}
+_END_OF_CODE_
+;
+
 sub new {
     my $class = shift;
     my $self  = $class->SUPER::new(@_);
@@ -39,6 +50,13 @@ sub setup {
         views => {
             all => {
                 map => $document_all,
+            },
+        },
+    });
+    $self->document->post( "_design/tags", {
+        views => {
+            all => {
+                map => $document_tags,
             },
         },
     });

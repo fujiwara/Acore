@@ -8,7 +8,7 @@ use Scalar::Util qw/ blessed /;
 use Data::Structure::Util qw/ unbless /;
 use UNIVERSAL::require;
 
-__PACKAGE__->mk_accessors(qw/ path content_type /);
+__PACKAGE__->mk_accessors(qw/ path content_type tags /);
 
 sub id {
     my $self = shift;
@@ -70,6 +70,12 @@ sub as_string {
     require Data::Dumper;
     local $Data::Dumper::Indent = 1;
     return Data::Dumper::Dumper($self);
+}
+
+sub tags {
+    my $self = shift;
+    $self->{tags} ||= [];
+    return wantarray ? @{ $self->{tags} } : $self->{tags};
 }
 
 1;

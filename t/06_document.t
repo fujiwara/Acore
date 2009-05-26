@@ -63,7 +63,7 @@ for my $cache ( undef, t::Cache->new({}) )
         $ac->get_document({ id => $doc4->id }),
     ];
 
-    my @doc = $ac->get_documents_by_id( $doc->id );
+    @doc = $ac->get_documents_by_id( $doc->id );
     is_deeply \@doc => [
         $ac->get_document({ id => $doc->id }),
     ];
@@ -73,7 +73,7 @@ for my $cache ( undef, t::Cache->new({}) )
         body => "This is a document baz.",
     }) );
 
-    my @doc = $ac->get_documents_by_id( $doc->id, $doc5->id );
+    @doc = $ac->get_documents_by_id( $doc->id, $doc5->id );
     is_deeply \@doc => [
         $ac->get_document({ id => $doc->id }),
         $ac->get_document({ id => $doc5->id }),
