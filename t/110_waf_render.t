@@ -22,6 +22,14 @@ use_ok("Acore::WAF::Render");
         my ($val, $reg, $rep) = split / +/, $_[0];
         $val | Acore::WAF::Render::replace($reg, $rep);
     }
+    sub _join {
+        my ($sep, @list) = split / +/, $_[0];
+        [ @list ] | Acore::WAF::Render::join($sep);
+    }
+    sub _fjoin {
+        my ($sep, @list) = split / +/, $_[0];
+        Acore::WAF::Render::join($sep, @list);
+    }
 }
 
 run_is input => 'expected';
@@ -65,3 +73,21 @@ B
 C
 --- expected chomp
 A<br/>B<br/>C
+
+=== pipe join
+--- input chomp _join
+, A B C
+--- expected chomp
+A,B,C
+
+=== pipe join
+--- input chomp _join
++ あ い う
+--- expected chomp
+あ+い+う
+
+=== functional join
+--- input chomp _fjoin
+, A B C
+--- expected chomp
+A,B,C
