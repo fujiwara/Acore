@@ -92,10 +92,7 @@ has debug => (
 
 sub _build_log {
     my $self = shift;
-    my $log  = Acore::WAF::Log->new;
-    $log->level( $self->config->{log}->{level} )
-        if defined $self->config->{log}->{level};
-    $log;
+    Acore::WAF::Log->new;
 }
 
 sub _build_renderer {
@@ -184,6 +181,9 @@ sub handle_request {
     $config->{include_path} ||= [];
     $self->encoding( $config->{encoding} )
         if $config->{encoding};
+
+    $self->log->level( $config->{log}->{level} )
+        if defined $config->{log}->{level};
 
     $self->request($req);
     $self->_decode_request;

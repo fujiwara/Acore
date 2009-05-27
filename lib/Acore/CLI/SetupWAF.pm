@@ -128,6 +128,7 @@ HTTP::Engine->new(
         module => 'MinimalCGI',
         request_handler => sub {
             my $app = <?=r app_name() ?>->new;
+            $app->log->timestamp(0);
             $app->handle_request($config, @_);
         },
     },

@@ -36,7 +36,19 @@ BEGIN {
 
     $log->caller(1);
     $log->error("error message"); my ($file, $line) = (__FILE__, __LINE__);
-
     like $log->buffer => qr{\Q at $file line $line\E};
+
+    $log->flush;
+    $log->caller(0);
+    $log->timestamp(1);
+    $log->error("error message");
+    my $t = scalar localtime;
+    like $log->buffer =>qr{^\[$t] \[error\] error message};
+
+    $log->flush;
+    $log->caller(0);
+    $log->timestamp(0);
+    $log->error("error message");
+    like $log->buffer =>qr{^\[error\] error message};
 }
 
