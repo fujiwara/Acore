@@ -5,7 +5,7 @@ use warnings;
 use Template 2.20;
 
 require Exporter;
-our @EXPORT = qw/ render render_part _build_renderer /;
+our @EXPORT = qw/ render_part _build_renderer /;
 
 no warnings 'redefine';
 
@@ -15,11 +15,6 @@ sub _build_renderer {
     $config->{ENCODING}     ||= 'utf-8';
     $config->{INCLUDE_PATH} ||= $c->path_to('templates')->stringify;
     Template->new($c->config->{tt});
-}
-
-sub render {
-    my $c = shift;
-    $c->res->body( $c->encoder->encode( $c->render_part(@_) ) );
 }
 
 sub render_part {

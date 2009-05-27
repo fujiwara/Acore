@@ -13,9 +13,8 @@ sub fillform {
     my $body = $c->res->body;
     return unless defined $body;
 
-    utf8::decode($body);
     $body = HTML::FillInForm->fill(\$body, $obj);
-    $c->res->body( $c->encode($body) );
+    $c->res->body($body);
 }
 
 1;

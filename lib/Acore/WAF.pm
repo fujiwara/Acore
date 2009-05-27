@@ -1,5 +1,6 @@
 package Acore::WAF;
 
+use v5.8.1;
 use strict;
 use warnings;
 use Any::Moose;
@@ -218,12 +219,10 @@ sub _output_stack_trace {
     $res->headers->content_type('text/html; charset=utf-8');
 
     if ( $self->debug ) {
-        my $body = $error->as_html(%args);
-        utf8::encode($body);
-        $res->body($body);
+        $res->body( $error->as_html(%args) );
     }
     else {
-        $res->body("Internal Server Error");
+        $res->body( HTTP::Status::status_message(500) );
     }
     $res;
 }
@@ -231,11 +230,13 @@ sub _output_stack_trace {
 sub finalize {
     my $self = shift;
 
-    my $c_type = $self->res->content_type || "text/html";
+    my $res  = $self->response;
+    my $c_type = $res->content_type || "text/html";
     if ( $c_type =~ m{^text/} && $c_type !~ m{; *charset=}i ) {
         $c_type .= "; charset=" . ($self->config->{charset} || $self->encoding)
     }
-    $self->res->content_type($c_type);
+    $res->content_type($c_type);
+    $res->body( $self->encode($res->body) ) if utf8::is_utf8($res->body);
     1;
 }
 
@@ -392,8 +393,7 @@ sub uri_for {
 
 sub render {
     my ($self, $tmpl) = @_;
-    my $html = $self->render_part($tmpl);
-    $self->res->body( $self->encoder->encode($html) );
+    $self->res->body( $self->render_part($tmpl) );
 }
 
 sub render_part {
@@ -608,7 +608,7 @@ Acore::WAF - AnyCMS web application framework
  sub foo {
      my ($self, $c) = @_;
      $c->request->param('foo');
-     $c->response->body( $c->encode($utf8_flagged_str) );
+     $c->response->body( $utf8_flagged_str );
  }
 
  #!/usr/bin/perl
