@@ -1,6 +1,6 @@
 # -*- mode:perl -*-
 use strict;
-use Test::More tests => 24;
+use Test::More tests => 26;
 
 BEGIN {
     use_ok 'Acore::WAF::Log';
