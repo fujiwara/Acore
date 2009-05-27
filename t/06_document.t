@@ -1,6 +1,6 @@
 # -*- mode:perl -*-
 use strict;
-use Test::More tests => 46;
+use Test::More tests => 50;
 use Test::Exception;
 use Data::Dumper;
 use t::Cache;
@@ -78,6 +78,12 @@ for my $cache ( undef, t::Cache->new({}) )
         $ac->get_document({ id => $doc->id }),
         $ac->get_document({ id => $doc5->id }),
     ];
+
+    {
+        my $id = $doc->id;
+        ok $ac->delete_document($doc);
+        ok !$ac->get_document({ id => $doc->id }),
+    }
 
     $dbh->commit;
 }

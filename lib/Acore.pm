@@ -249,6 +249,16 @@ sub search_documents_by_view {
     return wantarray ? @docs : \@docs;
 }
 
+sub delete_document {
+    my ($self, $doc) = @_;
+
+    if ( my $cache = $self->cache) {
+        $cache->remove("Acore::Document/id=". $doc->id);
+        $cache->remove("Acore::Document/path=". $doc->path);
+    }
+    $self->storage->document->delete($doc->id);
+}
+
 1;
 __END__
 
