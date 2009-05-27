@@ -53,6 +53,18 @@ sub join {
     }
 }
 
+sub js {
+    local $_ = shift;
+    return '' unless defined $_;
+
+    s{(['"])}{\\$1}g;
+    s{\n}{\\n}g;
+    s{\f}{\\f}g;
+    s{\r}{\\r}g;
+    s{\t}{\\t}g;
+    $_;
+}
+
 1;
 __END__
 
@@ -69,6 +81,7 @@ In Text::MicroTemplate like TT.
  <?=  $foo | uri ?>
  <?=  $foo | replace('a','b') ?>
  <?=  $array_ref | join(',') ?>
+ <?=  $foo | js ?>
 
 =head1 DESCRIPTION
 

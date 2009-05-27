@@ -1,4 +1,7 @@
-? my $c = $_[0];
+<?
+  my $c = $_[0];
+  $c->stash->{title} = "ユーザの管理";
+?>
 ?=r $c->render_part("admin_console/header.mt");
 ?=r $c->render_part("admin_console/container.mt");
     <div id="pagebody">

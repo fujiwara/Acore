@@ -132,6 +132,8 @@ sub document_list {
     );
     $c->error( 500 ) if $c->form->has_error;
 
+    $c->forward( $self => "_document_add_keys" );
+
     my $type  = $c->req->param('type');
     my $query = $c->req->param('q');
      if ( $type && $query ne '' ) {
@@ -157,6 +159,14 @@ sub document_list {
     $c->stash->{page}   = $page;
     $c->render('admin_console/document_list.mt');
     $c->fillform;
+}
+
+sub _document_add_keys {
+    my ($self, $c) = @_;
+
+    my @keys = grep /./, $c->req->param('keys');
+    $c->session->set( document_show_keys => \@keys );
+    $c->req->param('keys' => @keys);
 }
 
 sub document_form_GET {

@@ -1,4 +1,14 @@
-? my $c = $_[0];
+<?
+   my $c = $_[0];
+   $c->stash->{title} = "Document の管理";
+   sub smart {
+       joint {
+           my $arg = shift;
+           ref $arg eq 'ARRAY' ? "[" . join(", ", @$arg) . "]"
+                               : $arg;
+       };
+   }
+?>
 ?=r $c->render_part("admin_console/header.mt");
 ?=r $c->render_part("admin_console/container.mt");
     <div id="pagebody">
@@ -34,12 +44,21 @@
             <table class="data">
               <tbody>
                 <tr>
-                  <th class="first">id</th><th>path</th><th>作成日時</th><th>更新日時</th>
+                  <th class="first">id</th><th>path</th>
+? my $keys = $c->session->get('document_show_keys') || [];
+? for my $key ( @$keys ) {
+                  <th><?= $key ?></th>
+? }
+                  <th>作成日時</th><th>更新日時</th>
                 </tr>
 ? for my $doc ( @{ $c->stash->{all_documents} } ) {
                 <tr>
                   <td><a href="<?= $c->uri_for('/admin_console/document_form', { id => $doc->id } ) ?>" title="<?= $doc->{title} ?>"><?= $doc->id ?></a></td>
                   <td><?= $doc->path ?></td>
+? for my $key ( @$keys ) {
+                  <td><?= $doc->{$key} | smart ?></td>
+? }
+
                   <td><?= $doc->created_on ?></td>
                   <td><?= $doc->updated_on ?></td>
                 </tr>

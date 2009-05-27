@@ -1,4 +1,6 @@
 ? my $c = $_[0];
+? my $doc = $c->stash->{document};
+? $c->stash->{title} = "Document の編集 - " . ($doc ? $doc->{title} || "" : $doc->id);
 ?=r $c->render_part("admin_console/header.mt");
 ?=r $c->render_part("admin_console/container.mt");
     <div id="pagebody">
@@ -16,7 +18,6 @@
 
 ?=r $c->render_part('admin_console/document_serach_form.mt');
 
-? my $doc = $c->stash->{document};
 ? if (!$doc) {
               <p class="error">id = <?= $c->req->param('id') ?> の Document は存在しません</p>
 ? } else {
