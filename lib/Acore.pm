@@ -285,6 +285,8 @@ Acore - AnyCMS core
   @doc = $acore->all_documents({ offset => 0, limit => 10 });
   @doc = $acore->get_documents_by_id( 1, 2, 3 );
 
+  $acore->delete_document($doc);
+
 =head1 DESCRIPTION
 
 Acore is AnyCMS core module.
@@ -351,9 +353,16 @@ Store Acore::Document to storage.
 
 =item search_documents
 
-Search Acore::Documents from storage, path first match.
+Search Acore::Documents from storage, path (first match) or tag.
 
  @doc = $acore->search_documents({ path => "/foo/bar" });
+ @doc = $acore->search_documents({ tag  => "cat" });
+
+=item delete_document
+
+Delete the document from storage.
+
+ $acore->delete_document($doc);
 
 =item cache
 
