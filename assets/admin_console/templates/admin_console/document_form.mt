@@ -14,6 +14,8 @@
 
               <h2 class="icon"><div class="mimetype_kmultiple"><a href="<?= $c->uri_for('/admin_console/document_list') ?>">Document の管理</a></div></h2>
 
+?=r $c->render_part('admin_console/document_serach_form.mt');
+
 ? my $doc = $c->stash->{document};
 ? if (!$doc) {
               <p class="error">id = <?= $c->req->param('id') ?> の Document は存在しません</p>
@@ -48,17 +50,30 @@
                     <label for="updated_on">更新日時</label>
                     <?= $doc->updated_on ?>
                   </div>
+                  <div>
+                    <label for="class">Class</label>
+                    <?= $doc->{_class} ?>
+                  </div>
+                  <div>
+                    <label for="class">Content-Type</label>
+                    <?= $doc->content_type ?>
+                  </div>
                 </fieldset>
                 <fieldset>
                   <legend>Content</legend>
-                  <div>
-                    <label for="content">JSON</label>
 <?
-   my $json = JSON->new->pretty;
+   require YAML;
    my $obj = $doc->to_object;
    delete $obj->{$_} for qw/ _id _class path updated_on created_on /;
 ?>
-                    <textarea name="content" cols="60" rows="20"><?= $json->encode($obj) ?></textarea>
+                  <div>
+                    <? if ($c->stash->{yaml_error_message}) { ?>
+                    <p class="error">
+                    <?=r $c->stash->{yaml_error_message} | html | html_line_break ?>
+                    </p>
+                    <? } ?>
+                    <label for="content">YAML</label>
+                    <textarea name="content" cols="60" rows="20"><?= YAML::Dump($obj) ?></textarea>
                   </div>
                 </fieldset>
                 <div class="buttonrow">

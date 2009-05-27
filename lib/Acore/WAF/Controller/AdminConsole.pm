@@ -128,7 +128,7 @@ sub document_list {
     my $offset = ( $page - 1 ) * $limit;
 
     $c->form->check(
-        type => [['CHOICE', 'path', 'tag']],
+        type => [['CHOICE', 'path', 'tag', '']],
     );
     $c->error( 500 ) if $c->form->has_error;
 
@@ -146,8 +146,9 @@ sub document_list {
     else {
         $c->stash->{all_documents} = [
             $c->acore->all_documents({
-                offset => $offset,
-                limit  => $limit,
+                offset  => $offset,
+                limit   => $limit,
+                reverse => 1,
             }),
         ];
     }
@@ -185,11 +186,14 @@ sub document_form_POST {
         path => [qw/ NOT_NULL ASCII /],
     );
 
-    my $json = JSON->new;
-    my $obj  = eval { $json->decode( $c->req->param('content') ) };
+    require YAML;
+    my $obj  = eval { YAML::Load( $c->req->param('content') ) };
     if ($@ || !$obj) {
-        $c->log->error("invalid json. $@");
-        $c->form->set_error( content => "INVALID_JSON $@" );
+        $c->log->error("invalid YAML. $@");
+        $c->form->set_error( content => "INVALID_YAML" );
+        my $msg = $@;
+        $msg =~  s{at .+? line \d+}{};
+        $c->stash->{yaml_error_message} = $msg;
     }
 
     if ( $c->form->has_error ) {

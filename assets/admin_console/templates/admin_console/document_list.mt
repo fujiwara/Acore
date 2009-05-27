@@ -13,13 +13,9 @@
             <h2 class="icon"><div class="mimetype_kmultiple">Document の管理</div></h2>
           </div>
           <div class="data">
-            <form action="<?= $c->uri_for('/admin_console/document_list') ?>" method="get">
-              <select name="type">
-                <option value="path"> path </option>
-                <option value="tag"> tag </option>
-              </select> で <input type="text" name="q" size="20" /> を
-              <input type="submit" value="検索" />
-            </form>
+
+?=r $c->render_part('admin_console/document_serach_form.mt');
+
             <p>
 <?
    my $offset = $c->stash->{offset};
