@@ -497,6 +497,29 @@ Status: 200
 
 DELETE
 
+=== overload POST DELETE
+--- method
+POST
+--- uri
+http://localhost/act/rest?_method=DELETE
+--- response
+Content-Length: 6
+Content-Type: text/html; charset=utf-8
+Status: 200
+
+DELETE
+
+=== overload GET DELETE
+--- method
+GET
+--- uri
+http://localhost/act/rest?_method=DELETE
+--- response
+Content-Length: 3
+Content-Type: text/html; charset=utf-8
+Status: 200
+
+GET
 
 === form validator plugin ok
 --- uri

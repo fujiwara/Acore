@@ -269,7 +269,10 @@ sub _dispatch {
     $controller->require
         or $self->error( 500 => "Can't require $controller: $@" );
 
-    my $method = uc $self->req->method;
+    my $method = uc($self->req->method) eq 'POST'
+               ? uc ( $self->req->param('_method') || $self->req->method )
+               : uc ( $self->req->method );
+
     my $sub = $controller->can("${action}_${method}")
            || $controller->can($action);
 
