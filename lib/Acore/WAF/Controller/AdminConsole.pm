@@ -198,7 +198,7 @@ sub document_form_POST {
     );
 
     require YAML;
-    my $obj  = eval { YAML::Load( $c->req->param('content') ) };
+    my $obj  = eval { YAML::Load( $c->req->param('content') . "\r\n" ) };
     if ($@ || !$obj) {
         $c->log->error("invalid YAML. $@");
         $c->form->set_error( content => "INVALID_YAML" );
@@ -241,7 +241,7 @@ sub document_create_form_POST {
         path => [qw/ NOT_NULL ASCII /],
     );
     require YAML;
-    my $obj  = eval { YAML::Load( $c->req->param('content') ) };
+    my $obj  = eval { YAML::Load( $c->req->param('content') . "\r\n" ) };
     if ($@ || !$obj) {
         $c->log->error("invalid YAML. $@");
         $c->form->set_error( content => "INVALID_YAML" );
