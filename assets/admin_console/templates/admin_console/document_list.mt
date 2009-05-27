@@ -13,17 +13,27 @@
             <h2 class="icon"><div class="mimetype_kmultiple">Document の管理</div></h2>
           </div>
           <div class="data">
-            <h3>すべての Document</h3>
+            <form action="<?= $c->uri_for('/admin_console/document_list') ?>" method="get">
+              <select name="type">
+                <option value="path"> path </option>
+                <option value="tag"> tag </option>
+              </select> で <input type="text" name="q" size="20" /> を
+              <input type="submit" value="検索" />
+            </form>
             <p>
-? my $offset = $c->stash->{offset};
-? my $limit  = $c->stash->{limit};
-? my $page   = $c->stash->{page};
+<?
+   my $offset = $c->stash->{offset};
+   my $limit  = $c->stash->{limit};
+   my $page   = $c->stash->{page};
+   my $type   = $c->req->param('type');
+   my $query  = $c->req->param('q');
+?>
               <? if ( $page >= 2 ) { ?>
-              <a href="<?= $c->uri_for('/admin_console/document_list', { page => $page - 1 }) ?>">&lt;</a> |
+              <a href="<?= $c->uri_for('/admin_console/document_list', { page => $page - 1, type => $type, q => $query }) ?>">&lt;</a> |
               <? } ?>
               <?= $offset + 1 ?> 〜 <?= $offset + $limit ?>
               |
-              <a href="<?= $c->uri_for('/admin_console/document_list', { page => $page + 1 }) ?>">&gt;</a>
+              <a href="<?= $c->uri_for('/admin_console/document_list', { page => $page + 1, type => $type, q => $query }) ?>">&gt;</a>
             </p>
             <table class="data">
               <tbody>
@@ -32,7 +42,7 @@
                 </tr>
 ? for my $doc ( @{ $c->stash->{all_documents} } ) {
                 <tr>
-                  <td><a href="<?= $c->uri_for('/admin_console/document_form', { id => $doc->id } ) ?>"><?= $doc->id ?></a></td>
+                  <td><a href="<?= $c->uri_for('/admin_console/document_form', { id => $doc->id } ) ?>" title="<?= $doc->{title} ?>"><?= $doc->id ?></a></td>
                   <td><?= $doc->path ?></td>
                   <td><?= $doc->created_on ?></td>
                   <td><?= $doc->updated_on ?></td>

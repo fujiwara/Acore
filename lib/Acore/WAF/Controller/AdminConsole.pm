@@ -127,16 +127,35 @@ sub document_list {
     my $page   = int( $c->req->param('page') || 1 );
     my $offset = ( $page - 1 ) * $limit;
 
-    $c->stash->{all_documents} = [
-        $c->acore->all_documents({
-            offset => $offset,
-            limit  => $limit,
-        }),
-    ];
+    $c->form->check(
+        type => [['CHOICE', 'path', 'tag']],
+    );
+    $c->error( 500 ) if $c->form->has_error;
+
+    my $type  = $c->req->param('type');
+    my $query = $c->req->param('q');
+     if ( $type && $query ne '' ) {
+        $c->stash->{all_documents} = [
+            $c->acore->search_documents({
+                $type  => $query,
+                offset => $offset,
+                limit  => $limit,
+            }),
+        ];
+    }
+    else {
+        $c->stash->{all_documents} = [
+            $c->acore->all_documents({
+                offset => $offset,
+                limit  => $limit,
+            }),
+        ];
+    }
     $c->stash->{offset} = $offset;
     $c->stash->{limit}  = $limit;
     $c->stash->{page}   = $page;
     $c->render('admin_console/document_list.mt');
+    $c->fillform;
 }
 
 sub document_form_GET {
@@ -154,37 +173,41 @@ sub document_form_POST {
     my ($self, $c) = @_;
 
     $c->forward( $self => "is_logged_in" );
-
-    my $doc = $c->acore->get_document({ id => $c->req->param('id') });
+    my $id  = $c->req->param('id');
+    my $doc = $c->acore->get_document({ id => $id });
     $c->error( 404 => "document not found." )
         unless $doc;
 
+    $c->stash->{document} = $doc;
+
     $c->form->check(
-        id         => [qw/ NOT_NULL ASCII /],
-        path       => [qw/ NOT_NULL ASCII /],
+        id   => [qw/ NOT_NULL ASCII /],
+        path => [qw/ NOT_NULL ASCII /],
     );
 
     my $json = JSON->new;
     my $obj  = eval { $json->decode( $c->req->param('content') ) };
     if ($@ || !$obj) {
-        $c->form->set_error( content => "INVALID_JSON" );
+        $c->log->error("invalid json. $@");
+        $c->form->set_error( content => "INVALID_JSON $@" );
     }
 
     if ( $c->form->has_error ) {
         $c->render('admin_console/document_form.mt');
+        $c->fillform;
         return;
     }
 
     for my $n ( keys %$obj ) {
         $doc->{$n} = $obj->{$n};
     }
-    $doc->{_id}  = $c->req->param('id');
+    $doc->{_id}  = $id;
     $doc->{path} = $c->req->param('path');
 
     $c->acore->put_document($doc);
 
     $c->redirect(
-        $c->uri_for('/admin_console/document_form', { _t => time } )
+        $c->uri_for('/admin_console/document_form', { id => $id, _t => time } )
     );
 }
 

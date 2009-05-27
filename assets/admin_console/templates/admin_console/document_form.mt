@@ -12,13 +12,23 @@
           <div id="beta-inner">
             <div class="form-container">
 
-              <h2 class="icon"><div class="mimetype_kmultiple">Document の管理</div></h2>
-              <h3><a href="<?= $c->uri_for('/admin_console/document_list') ?>">すべての Document</a></h3>
+              <h2 class="icon"><div class="mimetype_kmultiple"><a href="<?= $c->uri_for('/admin_console/document_list') ?>">Document の管理</a></div></h2>
+
 ? my $doc = $c->stash->{document};
 ? if (!$doc) {
               <p class="error">id = <?= $c->req->param('id') ?> の Document は存在しません</p>
 ? } else {
               <form action="<?= $c->uri_for('/admin_console/document_form') ?>" method="post">
+?      if ($c->form->has_error) {
+              <p class="error">
+                エラーがあります
+                <ul>
+?          for my $msg ( @{ $c->form->{_error_ary} } ) {
+                  <li><?= $msg->[0] ?> <?= $msg->[1] ?></li>
+?          }
+                </ul>
+              </p>
+?      }
                 <fieldset>
                   <legend>Meta info</legend>
                   <div>
