@@ -218,12 +218,8 @@ sub _output_stack_trace {
     $res->status(500);
     $res->headers->content_type('text/html; charset=utf-8');
 
-    if ( $self->debug ) {
-        $res->body( $error->as_html(%args) );
-    }
-    else {
-        $res->body( HTTP::Status::status_message(500) );
-    }
+    $res->body( $self->debug ? $error->as_html(%args)
+                             : HTTP::Status::status_message(500) );
     $res;
 }
 
@@ -254,38 +250,34 @@ sub _dispatch {
             }
             : $self->req
         );
-    if ($rule) {
-        my $action = $rule->{action};
-        $self->error( 404 => "dispatch action $action is private." )
-            if $action =~ /^_/;
 
-        local $Data::Dumper::Indent = 1;
-        $self->log->debug(
-            "dispatch rule: " . Data::Dumper->Dump([$rule], ["rule"])
-        ) if $self->debug;
-        my $controller = $rule->{controller};
-        $controller->require
-            or die "Can't require $controller: $@\n";
+    $self->error(
+        404 => "dispatch rule is not found for " . $self->req->uri
+    ) unless $rule;
 
-        my $method = uc $self->req->method;
-        my $sub = $controller->can("${action}_${method}")
-               || $controller->can($action);
+    my $action = $rule->{action};
+    $self->error( 404 => "dispatch action $action is private." )
+        if $action =~ /^_/;
 
-        if ($sub) {
-            $sub->( $controller, $self, $rule->{args} );
-        }
-        else {
-            $self->error(
-                404 => "dispatch action (${controller}::${action} or ${controller}::${action}_${method}) is not found. for " . $self->req->uri
-            );
-        }
-    }
-    else {
-        $self->error(
-            404 => "dispatch rule is not found for " . $self->req->uri
-        );
-    }
-    $self;
+     if ($self->debug) {
+         local $Data::Dumper::Indent = 1;
+         $self->log->debug(
+             "dispatch rule: " . Data::Dumper->Dump([$rule], ["rule"])
+         );
+     }
+    my $controller = $rule->{controller};
+    $controller->require
+        or $self->error( 500 => "Can't require $controller: $@" );
+
+    my $method = uc $self->req->method;
+    my $sub = $controller->can("${action}_${method}")
+           || $controller->can($action);
+
+    $self->error(
+        404 => "dispatch action (${controller}::${action} or ${controller}::${action}_${method}) is not found. for " . $self->req->uri
+    ) unless $sub;
+
+    $sub->( $controller, $self, $rule->{args} );
 }
 
 sub error {
