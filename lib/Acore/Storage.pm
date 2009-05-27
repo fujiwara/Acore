@@ -21,7 +21,7 @@ sub {
     my ($obj, $emit) = @_;
     return if ref $obj->{tags} ne 'ARRAY';
     for my $tag ( @{ $obj->{tags} } ) {
-        $emit->( $tag => $obj->{path} );
+        $emit->( $tag => $obj->{path} ) if defined $tag;
     }
 }
 _END_OF_CODE_

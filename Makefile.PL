@@ -9,7 +9,7 @@ requires 'Class::Accessor::Fast';
 requires 'Clone';
 requires 'Crypt::SaltedHash';
 requires 'DBI';
-requires 'DBIx::CouchLike' => 0.05;
+requires 'DBIx::CouchLike' => 0.06;
 requires 'FormValidator::Lite';
 requires 'Getopt::Long';
 requires 'HTTP::Date';
