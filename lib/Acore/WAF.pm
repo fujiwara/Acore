@@ -259,12 +259,12 @@ sub _dispatch {
     $self->error( 404 => "dispatch action $action is private." )
         if $action =~ /^_/;
 
-     if ($self->debug) {
-         local $Data::Dumper::Indent = 1;
-         $self->log->debug(
-             "dispatch rule: " . Data::Dumper->Dump([$rule], ["rule"])
-         );
-     }
+    if ($self->debug) {
+        local $Data::Dumper::Indent = 1;
+        $self->log->debug(
+            "dispatch rule: " . Data::Dumper->Dump([$rule], ["rule"])
+        );
+    }
     my $controller = $rule->{controller};
     $controller->require
         or $self->error( 500 => "Can't require $controller: $@" );
