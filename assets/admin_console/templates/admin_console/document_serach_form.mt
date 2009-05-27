@@ -15,7 +15,7 @@
 ? }
               </span>
               <span id="add-document-key">追加</span>
-              <input type="submit" value="更新" id="add-keys-submit"/>
+              <input type="submit" value="更新" id="add-keys-submit" name="update_keys"/>
             </form>
             <script type="text/javascript">
               var type_changed = function() {

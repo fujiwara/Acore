@@ -21,6 +21,7 @@
         <div id="beta">
           <div id="beta-inner">
             <h2 class="icon"><div class="mimetype_kmultiple">Document の管理</div></h2>
+            <h3><a href="<?= $c->uri_for('/admin_console/document_create_form') ?>">新規作成</a></h3>
           </div>
           <div class="data">
 

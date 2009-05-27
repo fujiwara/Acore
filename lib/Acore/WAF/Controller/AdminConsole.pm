@@ -164,6 +164,7 @@ sub document_list {
 sub _document_add_keys {
     my ($self, $c) = @_;
 
+    return unless $c->req->param('update_keys');
     my @keys = grep /./, $c->req->param('keys');
     $c->session->set( document_show_keys => \@keys );
     $c->req->param('keys' => @keys);
@@ -216,7 +217,7 @@ sub document_form_POST {
         $doc->{$n} = $obj->{$n};
     }
     $doc->{_id}  = $id;
-    $doc->{path} = $c->req->param('path');
+    $doc->{$_} = $c->req->param($_) for qw/ path content_type /;
 
     $c->acore->put_document($doc);
 
@@ -225,6 +226,63 @@ sub document_form_POST {
     );
 }
 
+sub document_create_form_GET {
+    my ($self, $c) = @_;
+
+    $c->forward( $self => "is_logged_in" );
+    $c->render('admin_console/document_create_form.mt');
+}
+
+sub document_create_form_POST {
+    my ($self, $c) = @_;
+
+    $c->forward( $self => "is_logged_in" );
+    $c->form->check(
+        path => [qw/ NOT_NULL ASCII /],
+    );
+    require YAML;
+    my $obj  = eval { YAML::Load( $c->req->param('content') ) };
+    if ($@ || !$obj) {
+        $c->log->error("invalid YAML. $@");
+        $c->form->set_error( content => "INVALID_YAML" );
+        my $msg = $@;
+        $msg =~  s{at .+? line \d+}{};
+        $c->stash->{yaml_error_message} = $msg;
+    }
+
+    my $class = $c->req->param('_class');
+    if ( !$class->require || !$class->isa('Acore::Document') ) {
+        $c->set_error( _class => "INVALID" );
+    }
+
+    if ( $c->form->has_error ) {
+        $c->render('admin_console/document_create_form.mt');
+        $c->fillform;
+        return;
+    }
+
+    $obj->{$_} = $c->req->param($_) for qw/ path content_type /;
+    my $doc = $c->acore->put_document( $class->new($obj) );
+
+    $c->redirect(
+        $c->uri_for('/admin_console/document_form', { id => $doc->id, _t => time } )
+    );
+}
+
+sub document_DELETE {
+    my ($self, $c) = @_;
+
+    $c->forward( $self => "is_logged_in" );
+
+    my $id  = $c->req->param('id');
+    my $doc = $c->acore->get_document({ id => $id });
+    $c->error( 404 => "document not found." )
+        unless $doc;
+
+    $c->acore->delete_document($doc);
+
+    $c->render('admin_console/document_deleted.mt');
+}
 
 1;
 
