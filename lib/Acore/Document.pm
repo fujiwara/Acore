@@ -8,7 +8,7 @@ use Data::Structure::Util qw/ unbless /;
 use UNIVERSAL::require;
 use Acore::DateTime;
 use Any::Moose;
-use Mouse::Util::TypeConstraints;
+use Any::Moose 'Util::TypeConstraints';
 
 subtype 'DateTime'
     => as 'Object',
