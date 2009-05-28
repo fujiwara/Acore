@@ -96,6 +96,7 @@ sub setup_at_first_POST {
     );
     if ($c->form->has_error) {
         $c->render('admin_console/setup_at_first.mt');
+        $c->fillform;
         return;
     }
 
@@ -109,7 +110,7 @@ sub setup_at_first_POST {
     $c->render('admin_console/setup_done.mt');
 }
 
-sub user_list {
+sub user_list_GET {
     my ($self, $c) = @_;
 
     $c->forward( $self => "is_logged_in" );
@@ -118,7 +119,107 @@ sub user_list {
     $c->render('admin_console/user_list.mt');
 }
 
-sub document_list {
+sub user_form_GET {
+    my ($self, $c) = @_;
+
+    $c->forward( $self => "is_logged_in" );
+    my $name = $c->req->param('name');
+    $c->stash->{user} = $c->acore->get_user({ name => $name })
+        or $c->error( 404, "user name='$name' not found" );
+
+    $c->render('admin_console/user_form.mt');
+}
+
+sub user_form_POST {
+    my ($self, $c) = @_;
+
+    $c->forward( $self => "is_logged_in" );
+    my $name = $c->req->param('name');
+    my $user = $c->acore->get_user({ name => $name })
+        or $c->error( 404, "user name='$name' not found" );
+
+    if ( $c->req->param('password1') ne '' ) {
+        $c->form->check(
+            password1 => [qw/ NOT_NULL ASCII /],
+            { password => [qw/password1 password2/]} => ['DUP'],
+        );
+        if ($c->form->has_error) {
+            $c->stash->{user} = $user;
+            $c->render('admin_console/user_form.mt');
+            $c->fillform;
+            return;
+        }
+        $user->set_password($c->req->param('password1'));
+    }
+
+    my @roles = grep { /\A[\w:]+\z/ } $c->req->param('roles');
+    $user->roles(\@roles);
+    $c->acore->save_user($user);
+
+    $c->redirect(
+        $c->uri_for('/admin_console/user_form', { name => $name })
+    );
+}
+
+sub user_create_form_GET {
+    my ($self, $c) = @_;
+
+    $c->forward( $self => "is_logged_in" );
+    $c->render('admin_console/user_create_form.mt');
+}
+
+sub user_create_form_POST {
+    my ($self, $c) = @_;
+
+    $c->forward( $self => "is_logged_in" );
+    my $name = $c->req->param('name');
+    my $user = $c->acore->get_user({ name => $name });
+    if ($user) {
+        $c->form->set_error( name => 'EXISTS' );
+    }
+
+    $c->form->check(
+        password1 => [qw/ NOT_NULL ASCII /],
+        { password => [qw/password1 password2/]} => ['DUP'],
+    );
+    if ($c->form->has_error) {
+        $c->render('admin_console/user_create_form.mt');
+        $c->fillform;
+        return;
+    }
+
+    my $user = $c->acore->create_user({
+        name => $name,
+    });
+    my @roles = grep { /\A[\w:]+\z/ } $c->req->param('roles');
+    $user->roles(\@roles);
+    $user->set_password( $c->req->param('password1') );
+    $c->acore->save_user($user);
+
+    $c->redirect(
+        $c->uri_for('/admin_console/user_form', { name => $name })
+    );
+}
+
+sub user_DELETE {
+    my ($self, $c) = @_;
+
+    $c->forward( $self => "is_logged_in" );
+
+    my $name = $c->req->param('name');
+    my $user = $c->acore->get_user({ name => $name })
+        or $c->error( 404, "user name='$name' not found" );
+
+    if ($c->user->name eq $user->name) {
+        $c->error( 500, "Can't delete user logged in." );
+    }
+
+    $c->acore->delete_user($user);
+
+    $c->render('admin_console/user_deleted.mt');
+}
+
+sub document_list_GET {
     my ($self, $c) = @_;
 
     $c->forward( $self => "is_logged_in" );

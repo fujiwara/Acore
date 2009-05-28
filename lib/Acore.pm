@@ -95,6 +95,11 @@ sub save_user {
     $user;
 }
 
+sub delete_user {
+    my ($self, $user) = @_;
+    $self->storage->user->delete($user->name);
+}
+
 sub create_user {
     my $self = shift;
     my $args = shift;
@@ -259,6 +264,7 @@ sub delete_document {
     }
     $self->storage->document->delete($doc->id);
 }
+
 
 1;
 __END__
