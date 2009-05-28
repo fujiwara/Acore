@@ -51,6 +51,8 @@ sub login_form_GET {
 sub login_form_POST {
     my ($self, $c) = @_;
 
+    $c->session->regenerate_session_id("delete_old");
+
     my $r = $c->req;
     if ( $c->login( $r->param('name'), $r->param('password') ) ) {
         $c->log->info("login succeeded.");
