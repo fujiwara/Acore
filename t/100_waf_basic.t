@@ -654,6 +654,24 @@ Status: 200
 </select>
 </form>
 
+=== auto action no run
+--- uri
+http://localhost/auto/run
+--- response
+Content-Length: 0
+Content-Type: text/html; charset=utf-8
+Status: 200
+
+=== auto action run
+--- uri
+http://localhost/auto/run?auto=1
+--- response
+Content-Length: 33
+Content-Type: text/html; charset=utf-8
+Status: 200
+
+t::WAFTest::Controller::Auto::run
+
 === ovreride finalize
 --- preprocess
 {

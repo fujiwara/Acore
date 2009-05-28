@@ -280,6 +280,12 @@ sub _dispatch {
         404 => "dispatch action (${controller}::${action} or ${controller}::${action}_${method}) is not found. for " . $self->req->uri
     ) unless $sub;
 
+    my $auto = $controller->can("_auto");
+    if ($auto) {
+        $auto->( $controller, $self, $rule->{args} )
+            or return;
+    }
+
     $sub->( $controller, $self, $rule->{args} );
 }
 

@@ -23,6 +23,8 @@ __PACKAGE__->setup(qw/ Sample FormValidator Session FillInForm /);
         { controller => "t::WAFTest::Controller" };
     connect "adoc/:path",
         { controller => "t::WAFTest::Controller", action => "adoc" };
+    connect "auto/:action",
+        { controller => "t::WAFTest::Controller::Auto" };
 }
 
 1;
