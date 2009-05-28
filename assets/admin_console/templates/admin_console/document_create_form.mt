@@ -53,7 +53,8 @@
                     </p>
                     <? } ?>
                     <label for="content">YAML</label>
-                    <textarea name="content" cols="60" rows="20"></textarea>
+                    <textarea name="content" cols="60" rows="20">tags: []
+</textarea>
                   </div>
                 </fieldset>
                 <div class="buttonrow">

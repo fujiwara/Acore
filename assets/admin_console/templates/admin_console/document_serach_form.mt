@@ -14,7 +14,7 @@
                 <input type="text" name="keys" size="10" value="<?= $key ?>" alt="<?= $key ?>"/>
 ? }
               </span>
-              <span id="add-document-key">追加</span>
+              <input type="button" id="add-document-key" value="追加"/>
               <input type="submit" value="更新" id="add-keys-submit" name="update_keys"/>
             </form>
             <script type="text/javascript">
