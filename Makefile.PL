@@ -12,13 +12,19 @@ requires 'DBIx::CouchLike' => 0.06;
 requires 'FormValidator::Lite';
 requires 'Getopt::Long';
 requires 'HTTP::Date';
-requires 'HTTP::Engine';
+requires 'HTTP::Engine' => 0.001008;
 requires 'HTTP::Session';
 requires 'HTTPx::Dispatcher';
 requires 'MIME::Base64';
 requires 'Path::Class';
+requires 'Data::Structure::Util';
+requires 'Text::MicroTemplate';
+requires 'Want';
 requires 'Sub::Pipe';
+
 test_requires 'DBD::SQLite';
+test_requires 'Test::Base';
+test_requires 'Text::Diff';
 
 tests 't/*.t';
 author_tests 'xt';

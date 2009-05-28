@@ -11,7 +11,7 @@ BEGIN {
 
 for my $dt_class ("DateTimeX::Lite", "DateTime") {
 local $Acore::DateTime::DT_class = $dt_class;
-
+$dt_class->require;
 {
     my $d = Acore::DateTime->now;
     isa_ok $d => $Acore::DateTime::DT_class;
