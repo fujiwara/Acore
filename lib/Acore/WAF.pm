@@ -433,6 +433,9 @@ sub login {
         password => $password,
     });
     $self->log->info( "login: name=$name " . ($user ? "succeeded" : "failed") );
+    if ($user) {
+        $self->session->regenerate_session_id("delete_old");
+    }
     $self->session->set( user => $user );
     $self->user($user);
 }
