@@ -12,7 +12,9 @@ BEGIN {
 for my $cache ( undef, t::Cache->new({}) )
 {
     my $dbh = do "t/connect_db.pm";
-    my $ac = Acore->new({ dbh => $dbh, setup_db => 1, });
+    my $ac = Acore->new({ dbh => $dbh });
+    $ac->setup_db;
+
     $ac->cache($cache);
 
     isa_ok $ac => "Acore";

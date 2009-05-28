@@ -3,7 +3,6 @@ package Acore;
 use strict;
 use warnings;
 our $VERSION = '0.01';
-use base qw/ Class::Accessor::Fast /;
 use Acore::Storage;
 use Acore::User;
 use Acore::Document;
@@ -11,24 +10,38 @@ use Carp;
 use Data::Structure::Util qw/ unbless /;
 use Clone qw/ clone /;
 use utf8;
+use Any::Moose;
 
-__PACKAGE__->mk_accessors(qw/ storage user_class cache /);
+has storage => (
+    is         => "rw",
+    isa        => "Acore::Storage",
+    lazy_build => 1,
+    handles    => {
+        setup_db => "setup",
+    },
+);
 
-sub new {
-    my $class = shift;
-    my $args  = shift;
-    my $self  = $class->SUPER::new();
-    if ( $args->{dbh} ) {
-        $self->storage(
-            Acore::Storage->new({ dbh => $args->{dbh} })
-        );
-    }
-    if ( $args->{setup_db} ) {
-        $self->storage->setup();
-    }
-    $self->{user_class} ||= "Acore::User";
-    $self;
+has user_class => (
+    is      => "rw",
+    isa     => "Str",
+    default => "Acore::User",
+);
+
+has cache => (
+    is => "rw",
+);
+
+has dbh => (
+    is => "rw",
+);
+
+sub _build_storage {
+    my $self = shift;
+    Acore::Storage->new({ dbh => $self->{dbh} })
 }
+
+__PACKAGE__->meta->make_immutable;
+no Any::Moose;
 
 sub all_users {
     my $self = shift;
@@ -113,7 +126,7 @@ sub all_documents {
     $args->{exclude_designs} = 1;
     my @docs
         = map  {
-              $_->{value}->{_id} ||= $_->{id};
+              $_->{value}->{id} ||= $_->{id};
               $self->cache->set("Acore::Document/id=" . $_->{id} => $_->{value})
                   if $self->cache && $_;
 
@@ -223,24 +236,12 @@ sub search_documents {
         $args->{key} = delete $args->{tag};
         $view = "tags/all";
     }
+    elsif (defined $args->{view}) {
+        $view = delete $args->{view};
+    }
     else {
         croak("no arguments path or tags");
     }
-
-    my $itr = $self->storage->document->view( $view => $args );
-    my @docs = $itr
-        ? map { Acore::Document->from_object( $_->{document} ) } $itr->all
-        : ();
-    return wantarray ? @docs : \@docs;
-}
-
-sub search_documents_by_view {
-    my $self = shift;
-    my $args = shift;
-
-    my $view = delete $args->{view}
-        or croak("no arguments view");
-    $args->{include_docs} = 1;
 
     my $itr = $self->storage->document->view( $view => $args );
     my @docs = $itr
@@ -299,11 +300,13 @@ Acore is AnyCMS core module.
 
 Constractor.
 
- $acore = Acore->new({ dbh => $dbh, setup_db => 1 });
+ $acore = Acore->new({ dbh => $dbh });
 
 dbh: DBI database handle.
 
-setup_db: Flag of create tables.
+=item setup_db
+
+Create tables in Storage.
 
 =item get_user
 

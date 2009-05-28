@@ -216,8 +216,7 @@ sub document_form_POST {
     for my $n ( keys %$obj ) {
         $doc->{$n} = $obj->{$n};
     }
-    $doc->{_id}  = $id;
-    $doc->{$_} = $c->req->param($_) for qw/ path content_type /;
+    $doc->{$_} = $c->req->param($_) for qw/ id path content_type /;
 
     $c->acore->put_document($doc);
 

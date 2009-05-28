@@ -15,8 +15,8 @@ BEGIN {
     ok $u->has_authentication("Password"), "has_authentication Password";
     ok $u->can('set_password'), "can set_password";
     ok $u->set_password('bar');
-    ok $u->can('password');
-    ok $u->can('authenticate');
+    ok $u->can('password'), "can password";
+    ok $u->can('authenticate'), "can authenticate";
     ok $u->authenticate({ password => "bar" });
 }
 

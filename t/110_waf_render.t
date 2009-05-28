@@ -30,6 +30,9 @@ use_ok("Acore::WAF::Render");
         my ($sep, @list) = split / +/, $_[0];
         Acore::WAF::Render::join($sep, @list);
     }
+    sub js {
+        $_[0] | Acore::WAF::Render::js();
+    }
 }
 
 run_is input => 'expected';
@@ -91,3 +94,10 @@ A,B,C
 , A B C
 --- expected chomp
 A,B,C
+
+=== js
+--- input chomp js
+A	B
+"C"'D'
+--- expected chomp
+A\tB\n\"C\"\'D\'

@@ -12,7 +12,8 @@ BEGIN {
 
 {
     my $dbh = do "t/connect_db.pm";
-    my $ac  = Acore->new({ dbh => $dbh, setup_db => 1, });
+    my $ac  = Acore->new({ dbh => $dbh });
+    $ac->setup_db;
 
     for my $t ([qw/ dog cat /], [qw/ cat more less /], [qw/ cat cdr cnt /]) {
         $ac->put_document(
@@ -28,10 +29,10 @@ BEGIN {
     is scalar @docs => 3;
     like $_->{body} => qr{cat} for @docs;
 
-    my @docs = $ac->search_documents({ tag => "dog" });
+    @docs = $ac->search_documents({ tag => "dog" });
     is scalar @docs => 1;
     is $docs[0]->{body} => "tagged as dog cat";
-    is_deeply [ $docs[0]->tags ] => [qw/ dog cat /];
+    is_deeply $docs[0]->tags => [qw/ dog cat /];
 
     $dbh->commit;
 }

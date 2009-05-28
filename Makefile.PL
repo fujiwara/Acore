@@ -5,7 +5,6 @@ all_from 'lib/Acore.pm';
 build_requires 'Module::Install' => 0.77;
 requires 'Any::Moose';
 requires 'CGI::ExceptionManager' => 0.05;
-requires 'Class::Accessor::Fast';
 requires 'Clone';
 requires 'Crypt::SaltedHash';
 requires 'DBI';

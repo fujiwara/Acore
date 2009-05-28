@@ -13,17 +13,21 @@ BEGIN {
 for my $cache ( undef, t::Cache->new({}) )
 {
     my $dbh = do "t/connect_db.pm";
-    my $ac  = Acore->new({ dbh => $dbh, setup_db => 1, });
+    my $ac  = Acore->new({ dbh => $dbh });
+    $ac->setup_db;
+
     isa_ok $ac => "Acore";
     $ac->cache($cache);
 
     ok $ac->can('get_document'), "can get_document";
     ok $ac->can('put_document'), "can put_document";
 
-    my $doc = $ac->put_document( Acore::Document->new({
+    my $o = Acore::Document->new({
         path => "/foo/bar/baz",
         body => "This is a document.",
-    }) );
+    });
+    my $doc = $ac->put_document($o);
+
     ok $doc, "result doc";
     isa_ok $doc => "Acore::Document";
     ok $doc->id, "has id";
@@ -74,6 +78,7 @@ for my $cache ( undef, t::Cache->new({}) )
     }) );
 
     @doc = $ac->get_documents_by_id( $doc->id, $doc5->id );
+
     is_deeply \@doc => [
         $ac->get_document({ id => $doc->id }),
         $ac->get_document({ id => $doc5->id }),

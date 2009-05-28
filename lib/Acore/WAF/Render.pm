@@ -54,15 +54,17 @@ sub join {
 }
 
 sub js {
-    local $_ = shift;
-    return '' unless defined $_;
+    joint {
+        local $_ = shift;
+        return '' unless defined $_;
 
-    s{(['"])}{\\$1}g;
-    s{\n}{\\n}g;
-    s{\f}{\\f}g;
-    s{\r}{\\r}g;
-    s{\t}{\\t}g;
-    $_;
+        s{(['"])}{\\$1}g;
+        s{\n}{\\n}g;
+        s{\f}{\\f}g;
+        s{\r}{\\r}g;
+        s{\t}{\\t}g;
+        $_;
+    };
 }
 
 1;

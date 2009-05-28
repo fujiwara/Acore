@@ -3,10 +3,42 @@ package Acore::Storage;
 use strict;
 use warnings;
 our $VERSION = '0.01';
-use base qw/ Class::Accessor::Fast /;
+use Any::Moose;
 use DBIx::CouchLike "0.03";
 
-__PACKAGE__->mk_accessors(qw/ dbh user document /);
+has dbh  => ( is => "rw" );
+
+has user => (
+    is         => "rw",
+    isa        => "DBIx::CouchLike",
+    lazy_build => 1,
+);
+
+has document => (
+    is         => "rw",
+    isa        => "DBIx::CouchLike",
+    lazy_build => 1,
+);
+
+__PACKAGE__->meta->make_immutable;
+no Any::Moose;
+
+sub _build_user {
+    my $self = shift;
+    DBIx::CouchLike->new({
+        dbh   => $self->dbh,
+        table => "acore_user",
+    })
+}
+
+sub _build_document {
+    my $self = shift;
+    DBIx::CouchLike->new({
+        dbh   => $self->dbh,
+        table => "acore_document",
+    })
+}
+
 
 our $document_all =<<'_END_OF_CODE_';
 sub {
@@ -26,21 +58,6 @@ sub {
 }
 _END_OF_CODE_
 ;
-
-sub new {
-    my $class = shift;
-    my $self  = $class->SUPER::new(@_);
-
-    for my $table (qw/ user document /) {
-        $self->$table(
-            DBIx::CouchLike->new({
-                dbh   => $self->dbh,
-                table => "acore_$table",
-            })
-        );
-    }
-    return $self;
-}
 
 sub setup {
     my $self = shift;

@@ -2,8 +2,15 @@ package Acore::Document::Struct;
 
 use strict;
 use warnings;
-use base qw/ Acore::Document /;
+use Any::Moose;
 
-__PACKAGE__->mk_accessors(qw/ title description body /);
+extends 'Acore::Document';
+
+has title => ( is => "rw" );
+has body  => ( is => "rw" );
+has description => ( is => "rw" );
+
+__PACKAGE__->meta->make_immutable;
+no Any::Moose;
 
 1;

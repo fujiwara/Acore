@@ -2,11 +2,17 @@ package Acore::Document::File;
 
 use strict;
 use warnings;
-use base qw/ Acore::Document /;
 use Path::Class;
 our $AUTOLOAD;
+use Any::Moose;
 
-__PACKAGE__->mk_accessors(qw/ file_path /);
+extends 'Acore::Document';
+
+has file_path => ( is => "rw" );
+
+__PACKAGE__->meta->make_immutable;
+no Any::Moose;
+
 
 sub AUTOLOAD {
     my $self   = shift;

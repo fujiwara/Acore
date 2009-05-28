@@ -3,17 +3,30 @@ package Acore::User;
 use strict;
 use warnings;
 our $VERSION = '0.01';
-use base qw/ Class::Accessor::Fast /;
+use Any::Moose;
 use UNIVERSAL::require;
-__PACKAGE__->mk_accessors(qw/ name /);
+
+has name => (
+    is => "rw",
+);
+
+__PACKAGE__->meta->make_immutable;
+no Any::Moose;
 
 sub init {
     my $self = shift;
 
     $self->{authentications} ||= ["Password"];
     $self->{roles}           ||= ["Reader"];
-    _auth_class($_)->require for $self->authentications;
-    _role_class($_)->require for $self->roles;
+    for ( $self->authentications ) {
+        my $class = _auth_class($_);
+        $class->use
+            or die "Can't use $class: $@";
+    }
+    for ( $self->roles ) {
+        my $class = _role_class($_);
+        $class->require;
+    }
 
     $self;
 }

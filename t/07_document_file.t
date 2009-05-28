@@ -11,7 +11,9 @@ BEGIN {
 };
 
 {
-    my $ac = Acore->new({ dbh => $dbh, setup_db => 1, });
+    my $ac = Acore->new({ dbh => $dbh });
+    $ac->setup_db;
+
     isa_ok $ac => "Acore";
 
     mkdir "t/tmp";

@@ -102,7 +102,8 @@ sub create_adoc {
 
     unlink "t/tmp/test.sqlite";
     my $dbh = DBI->connect(@{ $config->{dsn} });
-    my $app = Acore->new({ dbh => $dbh, setup_db => 1, });
+    my $app = Acore->new({ dbh => $dbh });
+    $app->setup_db;
     {
         package Acore::Document::Test;
         use Any::Moose;
@@ -128,7 +129,9 @@ sub create_user {
 
     unlink "t/tmp/test.sqlite";
     my $dbh = DBI->connect(@{ $config->{dsn} });
-    my $app = Acore->new({ dbh => $dbh, setup_db => 1, });
+    my $app = Acore->new({ dbh => $dbh });
+    $app->setup_db;
+
     my $user = $app->create_user({
         name => "root",
     });

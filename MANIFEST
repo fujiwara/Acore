@@ -58,7 +58,7 @@ t/101_waf_log.t
 t/102_waf.t
 t/103_waf_uri_for.t
 t/104_waf_plugin.t
-t/105_waf_plugin_t.t
+t/105_waf_plugin_tt.t
 t/106_minimal_cgi.t
 t/107_waf_config_loader.t
 t/WAFTest.pm

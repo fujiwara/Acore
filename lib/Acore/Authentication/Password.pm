@@ -10,15 +10,20 @@ sub validate {
     Crypt::SaltedHash->validate($user->{password}, $args->{password});
 }
 
-sub Acore::User::set_password {
-    my ( $user, $password ) = @_;
+{
+    package Acore::User;
+    use Any::Moose;
+    has password => ( is => "rw" );
 
-    my $crypt = Crypt::SaltedHash->new( algorithm => 'SHA-1' );
-    $crypt->add($password);
-    $user->{password} = $crypt->generate;
+    sub set_password {
+        my ( $user, $password ) = @_;
+
+        my $crypt = Crypt::SaltedHash->new( algorithm => 'SHA-1' );
+        $crypt->add($password);
+        $user->{password} = $crypt->generate;
+    }
+    no Any::Moose;
 }
-
-Acore::User->mk_accessors(qw/ password /);
 
 1;
 __END__
