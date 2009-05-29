@@ -9,6 +9,7 @@ use UNIVERSAL::require;
 use Acore::DateTime;
 use Any::Moose;
 use Any::Moose 'Util::TypeConstraints';
+use Carp;
 
 subtype 'DateTime'
     => as 'Object',
@@ -96,6 +97,20 @@ sub as_string {
     require Data::Dumper;
     local $Data::Dumper::Indent = 1;
     return Data::Dumper::Dumper($self);
+}
+
+our $AUTOLOAD;
+sub AUTOLOAD {
+    my $self = shift;
+    my $name = $AUTOLOAD =~ /::(\w+)$/ ? $1 : undef;
+
+    return if (!defined $name) || ($name eq 'DESTROY');
+
+    carp("$self has no method $name, AUTLOADed");
+    if (@_) {
+        $self->{$name} = shift;
+    }
+    $self->{$name};
 }
 
 1;

@@ -7,10 +7,12 @@ use Template 2.20;
 {
     package Acore::WAF;
     use Any::Moose;
+
     has renderer_tt => (
         is         => "rw",
         lazy_build => 1,
     );
+
     sub _build_renderer_tt {
         my $c = shift;
         my $config = $c->config->{tt};

@@ -1,6 +1,7 @@
 # -*- mode:perl -*-
 use strict;
-use Test::More tests => 16;
+use Test::More tests => 23;
+use Test::Exception;
 use Data::Dumper;
 use Clone qw/ clone /;
 
@@ -36,5 +37,19 @@ BEGIN {
 
     is_deeply $d2->created_on => $dt_c, "same datetime object";
     is_deeply $d2->updated_on => $dt_u, "same datetime object";
+}
+
+{
+    my $d = Acore::Document->new({
+        foo => 123,
+    });
+    is $d->{foo}    => 123, "hashref";
+    is $d->foo      => 123, "autoload method get";
+    is $d->foo(234) => 234, "autoload method set";
+    is $d->{foo}    => 234, "hashref";
+
+    is $d->bar(333) => 333;
+    is $d->bar      => 333;
+    is $d->{bar}    => 333;
 }
 
