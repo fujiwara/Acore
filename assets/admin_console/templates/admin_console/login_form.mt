@@ -16,13 +16,19 @@
               <form class="login" action="<? $c->uri_for('/admin_console/login_form') ?>" method="post">
                 <fieldset>
                   <legend>ログインしてください</legend>
-? if ($c->form->has_error) {
-                  <p class="error">エラーがあります</p>
-                  <ul>
-?                 for my $msg ( @{ $c->form->{_error_ary} } ) {
-                    <li><?= $msg->[0] ?> <?= $msg->[1] ?></li>
+<?
+   if ($c->form->has_error) {
+       $c->form->set_message_data({
+           param    => {},
+           function => {},
+           message  => { "login.failed" => "ログインに失敗しました" },
+       });
+?>
+                  <p class="error">
+?                 for my $msg ( $c->form->get_error_messages ) {
+                  <?= $msg ?><br/>
 ?                 }
-                  </ul>
+                  </p>
 ? }
                   <div>
                     <label for="uname">ユーザ名:</label>
