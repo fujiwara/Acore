@@ -99,3 +99,82 @@ sub as_string {
 }
 
 1;
+__END__
+
+=head1 NAME
+
+Acore::Document - document base class
+
+=head1 SYNOPSIS
+
+  package YourDocument;
+  use Any::Moose;
+  extends 'Acore::Document';
+  has foo => (
+     is => "rw",
+  );
+
+  $doc = YourDocument->new({
+      path => "/foo/bar",
+      foo  => "bar",
+  });
+  $acore->put_document($doc);
+
+=head1 DESCRIPTION
+
+Acore::Document is AnyCMS schema less document class.
+
+=head1 ATTRIBUTES
+
+=over 4
+
+=item id
+
+=item path
+
+=item tags
+
+=item content_type
+
+=item created_on
+
+=item updated_on
+
+=back
+
+=head1 METHODS
+
+=over 4
+
+=item new
+
+Constractor.
+
+=item to_object
+
+Convert to plain object (hash ref). Called before Acore->put_document().
+
+ $hash_ref = $doc->to_object;
+
+=item from_object
+
+Class method.
+
+Convert from plain object (hash ref). Called after Acore->get_document().
+
+ $doc = YourDocument->from_object($hash_ref);
+
+=back
+
+=head1 AUTHOR
+
+FUJIWARA E<lt>fujiwara@topicmaker.comE<gt>
+
+=head1 SEE ALSO
+
+=head1 LICENSE
+
+This library is free software; you can redistribute it and/or modify
+it under the same terms as Perl itself.
+
+=cut
