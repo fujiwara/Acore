@@ -18,11 +18,9 @@
                   <legend>ログインしてください</legend>
 <?
    if ($c->form->has_error) {
-       $c->form->set_message_data({
-           param    => {},
-           function => {},
-           message  => { "login.failed" => "ログインに失敗しました" },
-       });
+       $c->form->set_message(
+           { "login.failed" => "ログインに失敗しました" },
+       );
 ?>
                   <p class="error">
 ?                 for my $msg ( $c->form->get_error_messages ) {
