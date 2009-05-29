@@ -67,9 +67,6 @@ sub BUILD {
     $self;
 }
 
-__PACKAGE__->meta->make_immutable;
-no Any::Moose;
-
 sub to_object {
     my $self = shift;
     my $obj  = clone $self;
@@ -101,17 +98,20 @@ sub as_string {
 
 our $AUTOLOAD;
 sub AUTOLOAD {
-    my $self = shift;
-    my $name = $AUTOLOAD =~ /::(\w+)$/ ? $1 : undef;
+    my $self  = shift;
+    my $name  = $AUTOLOAD =~ /::(\w+)$/ ? $1 : undef;
 
     return if (!defined $name) || ($name eq 'DESTROY');
 
     carp("$self has no method $name, AUTLOADed");
-    if (@_) {
-        $self->{$name} = shift;
-    }
-    $self->{$name};
+
+    has $name => ( is => "rw" );
+
+    $self->$name(@_);
 }
+
+__PACKAGE__->meta->make_immutable;
+no Any::Moose;
 
 1;
 __END__
