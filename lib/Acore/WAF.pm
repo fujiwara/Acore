@@ -218,8 +218,13 @@ sub _output_stack_trace {
     $res->status(500);
     $res->headers->content_type('text/html; charset=utf-8');
 
-    $res->body( $self->debug ? $error->as_html(%args)
-                             : HTTP::Status::status_message(500) );
+    $res->body(
+        $self->debug ? do {
+            my $body = $error->as_html(%args);
+            $body =~ s{</h1><p>(.+?)</p>}{</h1><pre>$1</pre>}sm;
+            $body;
+        } : HTTP::Status::status_message(500)
+    );
     $res;
 }
 
