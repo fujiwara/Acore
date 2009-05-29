@@ -17,14 +17,17 @@
           </div>
           <div class="form-container">
               <form action="<?= $c->uri_for('/admin_console/user_form') ?>" method="post" id="user-form">
-?      if ($c->form->has_error) {
+<?      if ($c->form->has_error) {
+            $c->form->set_message(
+               "password.dup"       => "パスワードが確認入力と一致しません",
+               "password1.not_null" => "パスワードを入力してください",
+               "password1.ascii"    => "パスワードは半角で入力してください",
+            );
+?>
               <p class="error">
-                エラーがあります
-                <ul>
-?          for my $msg ( @{ $c->form->{_error_ary} } ) {
-                  <li><?= $msg->[0] ?> <?= $msg->[1] ?></li>
+?          for my $msg ( $c->form->get_error_messages ) {
+                  <?= $msg ?><br/>
 ?          }
-                </ul>
               </p>
 ?      }
 ?      my $user = $c->stash->{user};
