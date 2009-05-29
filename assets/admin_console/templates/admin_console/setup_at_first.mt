@@ -16,21 +16,20 @@
               <form class="login" action="<? $c->uri_for('/admin_console/setup_at_first') ?>" method="post">
                 <fieldset>
                   <legend>最初の管理ユーザを作成します</legend>
-<?
-   if ($c->stash->{user_exists}) {
-?>
+? if ($c->stash->{user_exists}) {
                   <p class="error">すでにユーザが存在します。</p>
                   <p>
                     <a href="<?= $c->uri_for('/admin_console/login_form') ?>">ログインしてください</a>
                   </p>
-? } elsif ($c->form->has_error) {
+? } else {
+?     if ($c->form->has_error) {
                   <p class="error">エラーがあります</p>
                   <ul>
 ?                 for my $msg ( @{ $c->form->{_error_ary} } ) {
                     <li><?= $msg->[0] ?> <?= $msg->[1] ?></li>
 ?                 }
                   </ul>
-? }
+?     }
                   <div>
                     <label for="uname">ユーザ名:</label>
                     <input type="text" name="name" value="" size="20">
@@ -44,6 +43,7 @@
                     <input type="password" name="password2" value="" size="20">
                   </div>
                   <br/>
+? }
                 </fieldset>
                 <div class="buttonrow">
                   <input type="submit" value="ユーザを作成する" class="button">

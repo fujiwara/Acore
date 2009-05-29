@@ -166,7 +166,11 @@ use warnings;
 use Any::Moose;
 extends 'Acore::WAF';
 
-my @plugins = qw/ Session /;
+my @plugins = qw/
+    Session
+    FormValidator
+    FillInForm
+/;
 __PACKAGE__->setup(@plugins);
 
 __PACKAGE__->meta->make_immutable;
@@ -180,6 +184,16 @@ connect "static/:filename",
     { controller => "<?=r app_name() ?>", action => "dispatch_static" };
 connect "favicon.ico",
     { controller => "<?=r app_name() ?>", action => "dispatch_favicon" };
+
+# Admin console
+connect "admin_console/",
+    { controller => "Acore::WAF::Controller::AdminConsole",
+      action     => "index" };
+connect "admin_console/static/:filename",
+    { controller => "Acore::WAF::Controller::AdminConsole",
+      action     => "static" };
+connect "admin_console/:action",
+    { controller => "Acore::WAF::Controller::AdminConsole" };
 
 1;
     _END_OF_FILE_
