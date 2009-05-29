@@ -11,12 +11,12 @@ sub index {
 sub render {
     my ($self, $c) = @_;
     $c->stash->{value} = "<html>";
-    $c->render("test.tt");
+    $c->render_tt("test.tt");
 }
 
 sub render_broken_tt {
     my ($self, $c) = @_;
-    $c->render("broken.tt");
+    $c->render_tt("broken.tt");
 }
 
 1;

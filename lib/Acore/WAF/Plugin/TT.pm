@@ -4,29 +4,37 @@ use strict;
 use warnings;
 use Template 2.20;
 
-require Exporter;
-our @EXPORT = qw/ render_part _build_renderer /;
+{
+    package Acore::WAF;
+    use Any::Moose;
+    has renderer_tt => (
+        is         => "rw",
+        lazy_build => 1,
+    );
+    sub _build_renderer_tt {
+        my $c = shift;
+        my $config = $c->config->{tt};
+        $config->{ENCODING}     ||= 'utf-8';
+        $config->{INCLUDE_PATH} ||= $c->path_to('templates')->stringify;
+        Template->new($c->config->{tt});
+    }
 
-no warnings 'redefine';
+    sub render_tt {
+        my ($self, $tmpl) = @_;
+        $self->res->body( $self->render_part_tt($tmpl) );
+    }
 
-sub _build_renderer {
-    my $c = shift;
-    my $config = $c->config->{tt};
-    $config->{ENCODING}     ||= 'utf-8';
-    $config->{INCLUDE_PATH} ||= $c->path_to('templates')->stringify;
-    Template->new($c->config->{tt});
-}
-
-sub render_part {
-    my $c      = shift;
-    my $tmpl   = shift;
-    my $output = "";
-    $c->renderer->process(
-        $tmpl,
-        { c => $c, %{ $c->stash } },
-        \$output,
-    ) or die $c->renderer->error();
-    $output;
+    sub render_part_tt {
+        my $c      = shift;
+        my $tmpl   = shift;
+        my $output = "";
+        $c->renderer_tt->process(
+            $tmpl,
+            { c => $c, %{ $c->stash } },
+            \$output,
+        ) or die $c->renderer_tt->error();
+        $output;
+    }
 }
 
 1;
@@ -46,7 +54,7 @@ Acore::WAF::Plugin::TT - AnyCMS Template-Toolkit plugin
  package YourApp::Controller;
  sub foo {
      my ($self, $c) = @_;
-     $c->render('foo.tt');
+     $c->render_tt('foo.tt');
  }
 
 =head1 DESCRIPTION
@@ -58,18 +66,17 @@ Default TT options are
   INCLUDE_PATH => "root/templates",
   ENCODING     => "utf-8",
 
-
 =head1 EXPORT METHODS
 
 =over 4
 
-=item render
+=item render_tt
 
-Override default $c->render.
+Render TT template and set result to $c->res->body;
 
-=item render_part
+=item render_part_tt
 
-Override default $c->render_part.
+Render TT template.
 
 =back
 
