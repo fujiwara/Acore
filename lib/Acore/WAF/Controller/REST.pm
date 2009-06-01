@@ -50,6 +50,11 @@ sub document_PUT {
         next if $key =~ /\A(?:id|created_on|updated_on|_class)\z/;
         $doc->{$key} = $object->{$key};
     }
+    for my $key (keys %$doc) {
+        next if $key =~ /\A(?:id|created_on|updated_on|_class)\z/;
+        delete $doc->{$key} if !exists $object->{$key};
+    }
+
     $c->acore->put_document($doc);
     $c->res->body("OK");
 }

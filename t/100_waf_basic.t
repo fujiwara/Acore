@@ -718,7 +718,7 @@ PUT
 --- uri
 http://localhost/rest/document/id/12345
 --- body
-{"id":12345,"foo":"FOOO","bar":[2,3,4],"baz":"英語"}
+{"id":12345,"bar":[2,3,4],"baz":"英語"}
 --- response
 Content-Length: 2
 Content-Type: text/html; charset=utf-8
@@ -736,11 +736,11 @@ http://localhost/rest/document/id/12345
     ($d, $d);
 }
 --- response
-Content-Length: 203
+Content-Length: 190
 Content-Type: application/json; charset=utf-8
 Status: 200
 
-{"baz":"英語","updated_on":"%s+09:00","tags":[],"_class":"Acore::Document","content_type":"text/plain","bar":[2,3,4],"created_on":"%s+09:00","id":"12345","foo":"FOOO"}
+{"baz":"英語","updated_on":"%s+09:00","tags":[],"_class":"Acore::Document","content_type":"text/plain","bar":[2,3,4],"created_on":"%s+09:00","id":"12345"}
 
 === rest delete
 --- method
