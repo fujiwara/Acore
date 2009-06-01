@@ -297,27 +297,14 @@ sub document_form_POST {
         id   => [qw/ NOT_NULL ASCII /],
         path => [qw/ NOT_NULL ASCII /],
     );
-
-    require YAML;
-    my $obj  = eval { YAML::Load( $c->req->param('content') . "\r\n" ) };
-    if ($@ || !$obj) {
-        $c->log->error("invalid YAML. $@");
-        $c->form->set_error( content => "INVALID_YAML" );
-        my $msg = $@;
-        $msg =~  s{at .+? line \d+}{};
-        $c->stash->{yaml_error_message} = $msg;
-    }
+    $doc->validate_to_update($c);
 
     if ( $c->form->has_error ) {
         $c->render('admin_console/document_form.mt');
         $c->fillform;
         return;
     }
-
-    for my $n ( keys %$obj ) {
-        $doc->{$n} = $obj->{$n};
-    }
-    $doc->{$_} = $c->req->param($_) for qw/ id path content_type /;
+    $doc->$_( $c->req->param($_) ) for qw/ path content_type /;
 
     $c->acore->put_document($doc);
 
@@ -330,6 +317,13 @@ sub document_create_form_GET {
     my ($self, $c) = @_;
 
     $c->forward( $self => "is_logged_in" );
+    $c->stash->{_class} = $c->req->param('_class') || "Acore::Document";
+
+    my $class = $c->req->param('_class') || "Acore::Document";
+    if ( !$class->require || !$class->isa('Acore::Document') ) {
+        die "Invalid class $@";
+    }
+
     $c->render('admin_console/document_create_form.mt');
 }
 
@@ -340,20 +334,14 @@ sub document_create_form_POST {
     $c->form->check(
         path => [qw/ NOT_NULL ASCII /],
     );
-    require YAML;
-    my $obj  = eval { YAML::Load( $c->req->param('content') . "\r\n" ) };
-    if ($@ || !$obj) {
-        $c->log->error("invalid YAML. $@");
-        $c->form->set_error( content => "INVALID_YAML" );
-        my $msg = $@;
-        $msg =~  s{at .+? line \d+}{};
-        $c->stash->{yaml_error_message} = $msg;
-    }
 
     my $class = $c->req->param('_class');
     if ( !$class->require || !$class->isa('Acore::Document') ) {
         $c->set_error( _class => "INVALID" );
     }
+   $c->stash->{_class} = $class;
+
+    my $doc = $class->validate_to_create($c);
 
     if ( $c->form->has_error ) {
         $c->render('admin_console/document_create_form.mt');
@@ -361,8 +349,7 @@ sub document_create_form_POST {
         return;
     }
 
-    $obj->{$_} = $c->req->param($_) for qw/ path content_type /;
-    my $doc = $c->acore->put_document( $class->new($obj) );
+    $doc = $c->acore->put_document($doc);
 
     $c->redirect(
         $c->uri_for('/admin_console/document_form', { id => $doc->id, _t => time } )

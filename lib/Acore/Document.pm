@@ -110,6 +110,87 @@ sub AUTOLOAD {
     $self->$name(@_);
 }
 
+sub html_form_to_create {
+    my $class = shift;
+    my $tmpl = q{
+? my ($c) = @_;
+<fieldset>
+  <legend>Content</legend>
+  <div>
+? if ($c->stash->{yaml_error_message}) {
+    <p class="error">
+      <?=r $c->stash->{yaml_error_message} | html | html_line_break ?>
+    </p>
+? }
+    <label for="content">YAML</label>
+    <textarea name="content" cols="60" rows="20">tags: []
+</textarea>
+  </div>
+</fieldset>
+};
+}
+
+sub html_form_to_update {
+    my $self = shift;
+    my $tmpl = q{
+? my ($c, $doc) = @_;
+<fieldset>
+  <legend>Content</legend>
+<?
+   require YAML;
+   my $obj = $doc->to_object;
+   delete $obj->{$_} for qw/ id _id _class content_type path updated_on created_on /;
+?>
+  <div>
+? if ($c->stash->{yaml_error_message}) {
+    <p class="error">
+      <?=r $c->stash->{yaml_error_message} | html | html_line_break ?>
+    </p>
+? }
+    <label for="content">YAML</label>
+      <textarea name="content" cols="60" rows="20"><?= YAML::Dump($obj) ?></textarea>
+  </div>
+</fieldset>
+};
+
+}
+
+sub validate_to_update {
+    my ($self, $c) = @_;
+
+    require YAML;
+    my $obj  = eval { YAML::Load( $c->req->param('content') . "\r\n" ) };
+    if ($@ || !$obj) {
+        $c->log->error("invalid YAML. $@");
+        $c->form->set_error( content => "INVALID_YAML" );
+        my $msg = $@;
+        $msg =~  s{at .+? line \d+}{};
+        $c->stash->{yaml_error_message} = $msg;
+    }
+
+    for my $n ( keys %$obj ) {
+        $self->{$n} = $obj->{$n};
+    }
+    $self->{$_} = $c->req->param($_) for qw/ id path content_type /;
+    $self;
+}
+
+sub validate_to_create {
+    my ($class, $c) = @_;
+
+    require YAML;
+    my $obj  = eval { YAML::Load( $c->req->param('content') . "\r\n" ) };
+    if ($@ || !$obj) {
+        $c->log->error("invalid YAML. $@");
+        $c->form->set_error( content => "INVALID_YAML" );
+        my $msg = $@;
+        $msg =~  s{at .+? line \d+}{};
+        $c->stash->{yaml_error_message} = $msg;
+    }
+    $obj->{$_} = $c->req->param($_) for qw/ path content_type /;
+    $class->new($obj);
+}
+
 __PACKAGE__->meta->make_immutable;
 no Any::Moose;
 
@@ -155,6 +236,14 @@ Acore::Document is AnyCMS schema less document class.
 
 =item updated_on
 
+=item html_form_to_create
+
+Returns HTML form template string (for Text::MicroTemplate) for using create form.
+
+=item html_form_to_update
+
+Returns HTML form template string (for Text::MicroTemplate) for using update form.
+
 =back
 
 =head1 METHODS
@@ -178,6 +267,10 @@ Class method.
 Convert from plain object (hash ref). Called after Acore->get_document().
 
  $doc = YourDocument->from_object($hash_ref);
+
+=item validate_to_create($class, $c)
+
+=item validate_to_update($self, $c)
 
 =back
 

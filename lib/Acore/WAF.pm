@@ -421,6 +421,14 @@ sub render_part {
     return $self->renderer->render_file( $tmpl, $self )->as_string;
 }
 
+sub render_string {
+    my ($self, $tmpl_str, @args) = @_;
+    {
+        package Acore::WAF::Render;
+        Text::MicroTemplate::render_mt($tmpl_str, $self, @args)->as_string;
+    }
+}
+
 sub dispatch_favicon {
     my ($self, $c) = @_;
     $c->serve_static_file( $c->path_to("static/favicon.ico") );

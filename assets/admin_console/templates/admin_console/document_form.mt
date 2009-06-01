@@ -61,23 +61,9 @@
                     <input type="text" name="content_type" value="<?= $doc->content_type ?>" size="20" />
                   </div>
                 </fieldset>
-                <fieldset>
-                  <legend>Content</legend>
-<?
-   require YAML;
-   my $obj = $doc->to_object;
-   delete $obj->{$_} for qw/ id _id _class content_type path updated_on created_on /;
-?>
-                  <div>
-                    <? if ($c->stash->{yaml_error_message}) { ?>
-                    <p class="error">
-                    <?=r $c->stash->{yaml_error_message} | html | html_line_break ?>
-                    </p>
-                    <? } ?>
-                    <label for="content">YAML</label>
-                    <textarea name="content" cols="60" rows="20"><?= YAML::Dump($obj) ?></textarea>
-                  </div>
-                </fieldset>
+
+                <?=r $c->render_string( $doc->html_form_to_update, $doc ) ?>
+
                 <div class="buttonrow">
                   <input type="submit" value="更新する" class="button"/>
                   <input type="hidden" name="sid" value="<?= $c->session->session_id ?>"/>

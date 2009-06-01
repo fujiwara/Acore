@@ -37,26 +37,15 @@
                   </div>
                   <div>
                     <label for="class">Class</label>
-                    <input type="text" size="20" name="_class" value="Acore::Document"/>
+                    <input type="text" size="20" name="_class" value="<?= $c->stash->{_class} ?>" id="document-class" />
+                    <input type="button" value="変更" id="document-class-change-button" />
                   </div>
                   <div>
                     <label for="class">Content-Type</label>
                     <input type="text" size="20" name="content_type" value="text/plain"/>
                   </div>
                 </fieldset>
-                <fieldset>
-                  <legend>Content</legend>
-                  <div>
-                    <? if ($c->stash->{yaml_error_message}) { ?>
-                    <p class="error">
-                    <?=r $c->stash->{yaml_error_message} | html | html_line_break ?>
-                    </p>
-                    <? } ?>
-                    <label for="content">YAML</label>
-                    <textarea name="content" cols="60" rows="20">tags: []
-</textarea>
-                  </div>
-                </fieldset>
+                <?=r $c->render_string( $c->stash->{_class}->html_form_to_create ) ?>
                 <div class="buttonrow">
                   <input type="submit" value="作成する" class="button"/>
                   <input type="hidden" name="sid" value="<?= $c->session->session_id ?>"/>
@@ -71,5 +60,12 @@
         </div>
       </div>
     </div>
+    <script type="text/javascript">
+      $('#document-class-change-button').click( function() {
+        var url = "<? $c->uri_for('/admin_console/document_create_form') | js ?>";
+        url = url + "?_class=" + $('#document-class').val();
+        location.href = url;
+      });
+    </script>
 </body>
 </html>
