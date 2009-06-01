@@ -2,7 +2,6 @@ package Acore::WAF::Plugin::FillInForm;
 
 use strict;
 use warnings;
-use HTML::FillInForm;
 require Exporter;
 our @EXPORT = qw/ fillform /;
 
@@ -13,6 +12,7 @@ sub fillform {
     my $body = $c->res->body;
     return unless defined $body;
 
+    require HTML::FillInForm;
     $body = HTML::FillInForm->fill(\$body, $obj);
     $c->res->body($body);
 }
