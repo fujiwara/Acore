@@ -48,8 +48,9 @@ run {
     my $method = $block->method || "GET";
     my $req = HTTP::Request->new( $method => $block->uri );
     $req->protocol('HTTP/1.0');
+    $req->content( $block->body ) if $block->body;
     $req->header(
-        "Content-Length" => 0,
+        "Content-Length" => $block->body ? length($block->body) : 0,
         "Content-Type"   => "text/plain",
     );
     $req->header(
@@ -671,6 +672,98 @@ Content-Type: text/html; charset=utf-8
 Status: 200
 
 t::WAFTest::Controller::Auto::run
+
+=== rest post
+--- method
+POST
+--- uri
+http://localhost/rest/document
+--- body
+{"id":12345,"foo":"FOO","bar":[1,2,3],"baz":"日本語"}
+--- response
+Location: http://localhost/rest/document/id/12345
+Content-Length: 0
+Content-Type: text/html; charset=utf-8
+Status: 201
+
+=== rest get
+--- uri
+http://localhost/rest/document/id/12345
+--- preprocess
+{
+    require DateTime;
+    my $d = DateTime->now(time_zone=>"local")->strftime('%Y-%m-%dT%H:%M:%S');
+    ($d, $d);
+}
+--- response
+Content-Length: 205
+Content-Type: application/json; charset=utf-8
+Status: 200
+
+{"baz":"日本語","updated_on":"%s+09:00","tags":[],"_class":"Acore::Document","content_type":"text/plain","bar":[1,2,3],"created_on":"%s+09:00","id":"12345","foo":"FOO"}
+
+=== rest get not found
+--- uri
+http://localhost/rest/document/id/123456
+--- response
+Content-Length: 9
+Content-Type: text/html; charset=utf-8
+Status: 404
+
+Not Found
+
+=== rest put
+--- method
+PUT
+--- uri
+http://localhost/rest/document/id/12345
+--- body
+{"id":12345,"foo":"FOOO","bar":[2,3,4],"baz":"英語"}
+--- response
+Content-Length: 2
+Content-Type: text/html; charset=utf-8
+Status: 200
+
+OK
+
+=== rest get
+--- uri
+http://localhost/rest/document/id/12345
+--- preprocess
+{
+    require DateTime;
+    my $d = DateTime->now(time_zone=>"local")->strftime('%Y-%m-%dT%H:%M:%S');
+    ($d, $d);
+}
+--- response
+Content-Length: 203
+Content-Type: application/json; charset=utf-8
+Status: 200
+
+{"baz":"英語","updated_on":"%s+09:00","tags":[],"_class":"Acore::Document","content_type":"text/plain","bar":[2,3,4],"created_on":"%s+09:00","id":"12345","foo":"FOOO"}
+
+=== rest delete
+--- method
+DELETE
+--- uri
+http://localhost/rest/document/id/12345
+--- response
+Content-Length: 2
+Content-Type: text/html; charset=utf-8
+Status: 200
+
+OK
+
+=== rest get deleted
+--- uri
+http://localhost/rest/document/id/12345
+--- response
+Content-Length: 9
+Content-Type: text/html; charset=utf-8
+Status: 404
+
+Not Found
+
 
 === ovreride finalize
 --- preprocess

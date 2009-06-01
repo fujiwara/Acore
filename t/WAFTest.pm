@@ -25,6 +25,13 @@ __PACKAGE__->setup(qw/ Sample FormValidator Session FillInForm /);
         { controller => "t::WAFTest::Controller", action => "adoc" };
     connect "auto/:action",
         { controller => "t::WAFTest::Controller::Auto" };
+
+    connect "rest/document/id/:id",
+        { controller => "Acore::WAF::Controller::REST", action => "document" };
+    connect "rest/document/path/:path",
+        { controller => "Acore::WAF::Controller::REST", action => "document" };
+    connect "rest/document",
+        { controller => "Acore::WAF::Controller::REST", action => "new_document" };
 }
 
 1;

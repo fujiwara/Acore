@@ -386,3 +386,17 @@ sub document_DELETE {
 
 1;
 
+__END__
+
+=head1 DISPATCH TABLE
+
+ connect "admin_console/",
+    { controller => "Acore::WAF::Controller::AdminConsole",
+      action     => "index" };
+ connect "admin_console/static/:filename",
+    { controller => "Acore::WAF::Controller::AdminConsole",
+      action     => "static" };
+ connect "admin_console/:action",
+    { controller => "Acore::WAF::Controller::AdminConsole" };
+
+=end

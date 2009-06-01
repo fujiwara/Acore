@@ -232,11 +232,14 @@ sub finalize {
     my $self = shift;
 
     my $res  = $self->response;
-    my $c_type = $res->content_type || "text/html";
-    if ( $c_type =~ m{^text/} && $c_type !~ m{; *charset=}i ) {
-        $c_type .= "; charset=" . ($self->config->{charset} || $self->encoding)
+    my ($c_type, $charset) = $res->content_type;
+    $c_type  ||= "text/html";
+    $charset ||= "";
+
+    if ( $c_type =~ m{^text/} && $charset !~ m{charset=}i ) {
+        $charset = "charset=" . ($self->config->{charset} || $self->encoding)
     }
-    $res->content_type($c_type);
+    $res->content_type( $c_type . ( $charset ? "; $charset" : "" ) );
     $res->body( $self->encode($res->body) ) if utf8::is_utf8($res->body);
     1;
 }
@@ -380,8 +383,9 @@ sub redirect {
     $to;
 }
 
-sub uri_for {
+sub _uri_for {
     my $self = shift;
+    my $base = shift;
     my $path = shift;
 
     my @path = map { uri_escape_utf8($_) } grep {! ref $_ } @_;
@@ -389,12 +393,22 @@ sub uri_for {
     $path =~ s{^/}{};
 
     my $uri = URI->new($path);
-    $uri = $uri->abs( $self->req->base );
+    $uri = $uri->abs($base);
 
     $uri->query_form(%{ $_[-1] })
         if ref $_[-1] eq 'HASH';
 
     return $uri;
+}
+
+sub uri_for {
+    my $self = shift;
+    $self->_uri_for( $self->req->base, @_ );
+}
+
+sub rel_uri_for {
+    my $self = shift;
+    $self->_uri_for( $self->req->uri, @_ );
 }
 
 sub render {
