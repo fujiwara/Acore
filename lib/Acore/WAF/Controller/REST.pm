@@ -3,7 +3,7 @@ use strict;
 use warnings;
 use JSON;
 
-sub get_document {
+sub _get_document {
     my ($self, $c, $args) = @_;
     my $doc
         = defined $args->{id}
@@ -16,9 +16,23 @@ sub get_document {
     $doc;
 }
 
+sub _decode_body {
+    my ($self, $c) = @_;
+
+    my $body = $c->request->raw_body;
+    utf8::decode($body) unless utf8::is_utf8($body);
+
+    my $json   = JSON->new;
+    my $object = eval { $json->decode($body) };
+    if ( $@ || !$object || ref $object ne "HASH" ) {
+        $c->error( 400 => "Can't decode json. $@" );
+    }
+    $object;
+}
+
 sub document_GET {
     my ($self, $c, $args) = @_;
-    my $doc = $c->forward( $self => "get_document", $args );
+    my $doc = $c->forward( $self => "_get_document", $args );
 
     my $object = $doc->to_object;
     $object->{id} = delete $object->{_id};
@@ -29,16 +43,9 @@ sub document_GET {
 
 sub document_PUT {
     my ($self, $c, $args) = @_;
-    my $doc = $c->forward( $self => "get_document", $args );
+    my $doc = $c->forward( $self => "_get_document", $args );
+    my $object = $c->forward( $self => "_decode_body" );
 
-    my $body = $c->request->raw_body;
-    utf8::decode($body) unless utf8::is_utf8($body);
-
-    my $json   = JSON->new;
-    my $object = eval { $json->decode($body) };
-    if ( $@ || !$object || ref $object ne "HASH" ) {
-        $c->error( 400 => "Can't decode json. $@" );
-    }
     for my $key (keys %$object) {
         next if $key =~ /\A(?:id|created_on|updated_on|_class)\z/;
         $doc->{$key} = $object->{$key};
@@ -49,24 +56,18 @@ sub document_PUT {
 
 sub document_DELETE {
     my ($self, $c, $args) = @_;
-    my $doc = $c->forward( $self => "get_document", $args );
+    my $doc = $c->forward( $self => "_get_document", $args );
     $c->acore->delete_document($doc);
     $c->res->body("OK");
 }
 
 sub new_document_POST {
     my ($self, $c, $args) = @_;
-    my $body = $c->request->raw_body;
-    utf8::decode($body) unless utf8::is_utf8($body);
 
-    my $json   = JSON->new;
-    my $object = eval { $json->decode($body) };
-    if ( $@ || !$object || ref $object ne "HASH" ) {
-        $c->error( 400 => "Can't decode json. $@" );
-    }
-    my $doc_class = $object->{_class} || "Acore::Document";
-    my $doc = $c->acore->put_document( $doc_class->new($object) );
-    my $uri = $c->rel_uri_for( "document/id/", $doc->id );
+    my $object = $c->forward( $self => "_decode_body" );
+    my $class  = $object->{_class} || "Acore::Document";
+    my $doc    = $c->acore->put_document( $class->new($object) );
+    my $uri    = $c->rel_uri_for( "document/id/", $doc->id );
     $c->res->header( Location => $uri );
     $c->res->status(201); # created
 }
@@ -84,4 +85,4 @@ __END__
     connect "rest/document",
         { controller => "Acore::WAF::Controller::REST", action => "new_document" };
 
-=end
+

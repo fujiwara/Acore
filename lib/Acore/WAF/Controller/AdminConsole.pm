@@ -399,4 +399,3 @@ __END__
  connect "admin_console/:action",
     { controller => "Acore::WAF::Controller::AdminConsole" };
 
-=end
