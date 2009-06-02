@@ -83,3 +83,31 @@ sub authenticate_openid {
 }
 
 1;
+
+__END__
+
+=head1 NAME
+
+Acore::WAF::Plugin::OpenID
+
+=head1 SYNOPSIS
+
+ package YourApp::Dispatcher;
+ connect "openid",
+     { Controller => "YourApp::Controller", action => "openid" };
+
+ package YourApp::Controller;
+ sub openid {
+     my ($self, $c) = @_;
+     if ( $c->authenticate_openid ) {
+         $c->user; # open id user info
+     }
+     else {
+         $c->render('openid_form.mt');
+     }
+ }
+
+ <form action="<?= $c->uri_for('/openid') ?>" method="post">
+   <input type="text" name="openid_identifier" />
+ </form>
+
