@@ -1,6 +1,6 @@
 # -*- mode:perl -*-
 use strict;
-use Test::More tests => 11;
+use Test::More tests => 13;
 use Data::Dumper;
 use Clone qw/ clone /;
 
