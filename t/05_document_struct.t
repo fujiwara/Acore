@@ -30,5 +30,8 @@ BEGIN {
     is $d->title       => "foo", "title";
     is $d->description => "bar", "description";
     is_deeply $d->body => { key1 => "value1", key2 => "value2" };
+
+    like $d->html_form_to_create => qr{<input type="text"};
+    like $d->html_form_to_update => qr{<input type="text"};
 }
 

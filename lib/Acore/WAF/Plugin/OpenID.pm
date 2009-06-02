@@ -94,7 +94,7 @@ Acore::WAF::Plugin::OpenID
 
  package YourApp::Dispatcher;
  connect "openid",
-     { Controller => "YourApp::Controller", action => "openid" };
+     { controller => "YourApp::Controller", action => "openid" };
 
  package YourApp::Controller;
  sub openid {

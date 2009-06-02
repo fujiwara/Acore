@@ -46,6 +46,21 @@ sub render {
     $c->render("test.mt");
 }
 
+sub render_string {
+    my ($self, $c) = @_;
+    $c->stash->{value} = "<html>";
+    my $body = $c->render_string(<<'END'
+? my $c = $_[0];
+uri: <?= $c->req->uri ?>
+html: <?= $c->stash->{value} ?>
+raw: <?=r $c->stash->{value} ?>
+日本語は UTF-8 で書きます
+?= $c->render_part("include.mt");
+END
+);
+    $c->res->body($body);
+}
+
 sub sample_plugin {
     my ($self, $c) = @_;
     $c->sample_method;

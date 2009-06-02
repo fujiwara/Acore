@@ -365,6 +365,20 @@ raw: <html>
 日本語は UTF-8 で書きます
 include file
 
+=== render_string
+--- uri
+http://localhost/act/render_string
+--- response
+Content-Length: 120
+Content-Type: text/html; charset=utf-8
+Status: 200
+
+uri: http://localhost/act/render_string
+html: &lt;html&gt;
+raw: <html>
+日本語は UTF-8 で書きます
+include file
+
 === plugin
 --- uri
 http://localhost/act/sample_plugin
@@ -764,6 +778,19 @@ Status: 404
 
 Not Found
 
+=== rest put bad
+--- method
+POST
+--- uri
+http://localhost/rest/document
+--- body
+[1,2,3]
+--- response
+Content-Length: 11
+Content-Type: text/html; charset=utf-8
+Status: 400
+
+Bad Request
 
 === ovreride finalize
 --- preprocess
