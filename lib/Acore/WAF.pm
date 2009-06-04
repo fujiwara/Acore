@@ -124,7 +124,10 @@ sub _build_acore {
 
 sub _build_user {
     my $self = shift;
-    $self->session->get('user');
+    my $user = $self->session->get('user');
+    my $class = blessed $user;
+    do { $class->require or die $! } if $class;
+    $user;
 }
 
 __PACKAGE__->meta->make_immutable;
