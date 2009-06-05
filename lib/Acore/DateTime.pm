@@ -6,17 +6,19 @@ use UNIVERSAL::require;
 our $DT_class = "DateTime";
 $DT_class->require;
 
+our $TZ = "Asia/Tokyo";
+
 sub now {
     my $class = shift;
     my %args  = @_;
-    $args{time_zone} ||= 'UTC';
+    $args{time_zone} ||= $TZ;
     $DT_class->now(%args);
 }
 
 sub new {
     my $class = shift;
     my %args  = @_;
-    $args{time_zone} ||= 'UTC';
+    $args{time_zone} ||= $TZ;
     $DT_class->new(%args);
 }
 

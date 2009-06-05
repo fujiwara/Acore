@@ -1,6 +1,6 @@
 # -*- mode:perl -*-
 use strict;
-use Test::More tests => 58;
+use Test::More tests => 60;
 use Test::Exception;
 use Data::Dumper;
 
@@ -66,17 +66,20 @@ $dt_class->require;
     );
     is $d->ymd => "2009-05-13";
     is $d->hms => "09:47:33";
-    is $d->time_zone->name => "UTC", "default tz is UTC";
-
-    $d->set_time_zone("Asia/Tokyo");
-    my $tz = $d->time_zone;
-    is $tz->name => 'Asia/Tokyo', "tz name";
-
-    is $d->ymd => "2009-05-13";
-    is $d->hms => "18:47:33";
+    is $d->time_zone->name => "Asia/Tokyo", "default tz is Asia/Tokyo";
 
     my $formated = Acore::DateTime->format_datetime($d);
-    is $formated => "2009-05-13T18:47:33+09:00";
+    is $formated => "2009-05-13T09:47:33+09:00";
+
+    $d->set_time_zone("UTC");
+    my $tz = $d->time_zone;
+    is $tz->name => 'UTC', "tz name";
+
+    is $d->ymd => "2009-05-13";
+    is $d->hms => "00:47:33";
+
+    $formated = Acore::DateTime->format_datetime($d);
+    is $formated => "2009-05-13T00:47:33Z";
 }
 
 }

@@ -52,11 +52,11 @@ has updated_on => (
 );
 
 sub _build_created_on {
-    Acore::DateTime->now( time_zone => "local" )
+    Acore::DateTime->now();
 }
 
 sub _build_updated_on {
-    Acore::DateTime->now( time_zone => "local" )
+    Acore::DateTime->now();
 }
 
 sub BUILD {
