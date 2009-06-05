@@ -183,6 +183,24 @@ sub form {
     $c->fillform();
 }
 
+sub anti_csrf_GET {
+    my ($self, $c) = @_;
+    $c->res->body(
+        $c->render_string(q{
+? my $c = $_[0];
+<input type="hidden" name="<?= $c->config->{anti_csrf}->{param} ?>" value="<?= $c->onetime_token ?>">})
+    );
+}
+
+sub anti_csrf_POST {
+    my ($self, $c) = @_;
+
+    $c->csrf_proof
+        or $c->error( 400 => "bad request" );
+    $c->res->body("ok");
+}
+
+
 
 package t::WAFTest::Controller::X;
 

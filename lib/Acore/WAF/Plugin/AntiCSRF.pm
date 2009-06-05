@@ -39,7 +39,7 @@ sub csrf_proof {
     }
 
     my $name  = $config->{anti_csrf}->{param};
-    my $value = $c->req->params->{$name}->[0];
+    my $value = $c->req->params->{$name}->[0] || '';
     my $match = $c->session->{onetime_token};
 
     if ( $value eq '' || $value ne $match ) {
