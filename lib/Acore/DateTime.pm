@@ -3,7 +3,7 @@ package Acore::DateTime;
 use strict;
 use warnings;
 use UNIVERSAL::require;
-our $DT_class = "DateTimeX::Lite";
+our $DT_class = "DateTime";
 $DT_class->require;
 
 sub now {
