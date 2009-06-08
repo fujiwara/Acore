@@ -7,7 +7,7 @@ our @EXPORT = qw/ onetime_token csrf_proof /;
 use Digest::SHA;
 
 our $base    = qq{anti_csrf};
-our $VERSION = 0.21.1;
+our $VERSION = '0.21.1';
 
 sub setup {
     my ($class, $controller) = @_;
@@ -39,7 +39,7 @@ sub csrf_proof {
     }
 
     my $name  = $config->{anti_csrf}->{param};
-    my $value = $c->req->params->{$name}->[0] || '';
+    my $value = $c->req->param($name) || '';
     my $match = $c->session->{onetime_token};
 
     if ( $value eq '' || $value ne $match ) {
