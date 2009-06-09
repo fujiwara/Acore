@@ -66,10 +66,17 @@ sub _build_updated_on {
     Acore::DateTime->now();
 }
 
+my $xpath_callback = {
+    key_does_not_exist            => sub {},
+    index_does_not_exist          => sub {},
+    retrieve_index_from_non_array => sub {},
+    retrieve_key_from_non_hash    => sub {},
+};
+
 sub _build_xpath {
     my $self = shift;
     require Data::Path;
-    Data::Path->new($self);
+    Data::Path->new( $self, $xpath_callback );
 }
 
 sub BUILD {
@@ -108,6 +115,14 @@ sub as_string {
     require Data::Dumper;
     local $Data::Dumper::Indent = 1;
     return Data::Dumper::Dumper($self);
+}
+
+sub param {
+    my $self = shift;
+    my $name = shift;
+
+    return ( $name =~ /^\// ) ? $self->xpath->get($name)
+                              : $self->{$name};
 }
 
 our %AUTOLOADED;

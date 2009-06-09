@@ -63,6 +63,13 @@
                 </fieldset>
 
                 <?=r $c->render_string( $doc->html_form_to_update, $doc ) | fillform($doc) ?>
+                <fieldset>
+                  <legend id="show-document-yaml">Raw</legend>
+                  <div>
+? require YAML;
+                    <pre id="document-yaml"><?= YAML::Dump($doc->to_object) ?></pre>
+                  </div>
+                </fieldset>
 
                 <div class="buttonrow">
                   <input type="submit" value="更新する" class="button"/>
@@ -87,6 +94,10 @@
           $('#document-form').submit();
         }
       })
+      $('#document-yaml').hide();
+      $('#show-document-yaml').click( function() {
+         $('#document-yaml').toggle();
+      }).css({ cursor: "pointer" })
     </script>
 </body>
 </html>

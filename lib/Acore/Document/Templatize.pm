@@ -11,14 +11,6 @@ sub create_template {}
 sub edit_template   {}
 sub view_template   {}
 
-sub param {
-    my $self = shift;
-    my $name = shift;
-
-    return ( $name =~ /^\// ) ? $self->xpath->get($name)
-                              : $self->{$name};
-}
-
 sub html_form_to_create {
     my $class = shift;
 
@@ -43,13 +35,13 @@ sub validate_to_create {
 
     return super(@_) unless $class->create_template;
 
-    my $obj = {};
+    my $self = $class->new;
     for my $name ( grep /^\//, $c->req->param ) {
         my @value = $c->req->param($name);
-        (my $key = $name) =~ s{^/}{};
-        $obj->{$key} = ( @value == 1 ) ? $value[0] : \@value;
+        $self->xpath->set(
+            $name => ( @value == 1 ) ? $value[0] : \@value
+        );
     }
-    $class->new($obj);
 }
 
 sub validate_to_update {
@@ -60,8 +52,9 @@ sub validate_to_update {
 
     for my $name ( grep /^\//, $c->req->param ) {
         my @value = $c->req->param($name);
-        (my $key = $name) =~ s{^/}{};
-        $self->{$key} = ( @value == 1 ) ? $value[0] : \@value;
+        $self->xpath->set(
+            $name => ( @value == 1 ) ? $value[0] : \@value
+        );
     }
     $self;
 }
