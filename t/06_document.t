@@ -1,6 +1,6 @@
 # -*- mode:perl -*-
 use strict;
-use Test::More tests => 50;
+use Test::More tests => 52;
 use Test::Exception;
 use Data::Dumper;
 use t::Cache;
@@ -26,6 +26,7 @@ for my $cache ( undef, t::Cache->new({}) )
         path => "/foo/bar/baz",
         body => "This is a document.",
     });
+    is $o->xpath->get('/body') => "This is a document.";
     my $doc = $ac->put_document($o);
 
     ok $doc, "result doc";

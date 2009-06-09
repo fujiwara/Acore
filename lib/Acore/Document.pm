@@ -89,6 +89,7 @@ sub to_object {
     $obj->{updated_on} = Acore::DateTime->format_datetime( $obj->updated_on );
     $obj->{_class}     = ref $self;
     $obj->{_id} = delete $obj->{id} if $obj->{id};
+    delete $obj->{xpath};
     unbless $obj;
 
     return $obj;
