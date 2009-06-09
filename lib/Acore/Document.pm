@@ -225,6 +225,35 @@ sub validate_to_create {
     $class->new($obj);
 }
 
+sub Data::Path::set {
+    my $self  = shift;
+    my $xpath = shift;
+    my $value = shift;
+
+    my (undef, @nodes) = split /\//, $xpath;
+    my $ref   = $self->{data};
+    my $last  = pop @nodes;
+    for my $n (@nodes) {
+        if ( $n =~ m{\A(\w+)\[(\d+)\]\z} ) {
+            my ($name, $index) = ($1, $2);
+            $ref = $ref->{$name}  ||= [];
+            $ref = $ref->[$index] ||= {};
+        }
+        else {
+            $ref = $ref->{$n} ||= {};
+        }
+    }
+    if ( $last =~ m{\A(\w+)\[(\d+)\]\z} ) {
+        my ($name, $index) = ($1, $2);
+        $ref = $ref->{$name} ||= [];
+        $ref = $ref->[$index] = $value;
+    }
+    else {
+        $ref->{$last} = $value;
+    }
+    $self;
+}
+
 __PACKAGE__->meta->make_immutable;
 no Any::Moose;
 
@@ -258,6 +287,7 @@ Acore::Document - document base class
   });
   $doc->xpath->get('/foo/bar');     # "baz"
   $doc->xpath->get('/foo/list[0]'); # 1
+  $doc->xpath->set('/foo/bar' => $value); # $doc->{foo}->{bar} = $value
 
 =head1 DESCRIPTION
 
@@ -284,6 +314,7 @@ Acore::Document is AnyCMS schema less document class.
 Data::Path object for xpath like accessing.
 
  $doc->xpath->get("/foo/bar");
+ $doc->xpath->set("/foo/bar" => $value);
 
 =item html_form_to_create
 

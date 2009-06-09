@@ -1,6 +1,6 @@
 # -*- mode:perl -*-
 use strict;
-use Test::More tests => 40;
+use Test::More tests => 48;
 use Test::Exception;
 use Data::Dumper;
 use Clone qw/ clone /;
@@ -93,4 +93,14 @@ BEGIN {
     is $d->xpath->get("/xxx") => undef;
     $d->{xxx} = "XXX";
     is $d->xpath->get("/xxx") => "XXX";
+
+    ok $d->xpath->set('/xxx' => 'YYY');
+    is $d->xpath->get("/xxx") => "YYY";
+    ok $d->xpath->set("/html/body/list[1]" => "BBB");
+    is $d->xpath->get("/html/body/list[0]") => "A";
+    is $d->xpath->get("/html/body/list[1]") => "BBB";
+    is $d->xpath->get("/html/body/list[2]") => "C";
+
+    ok $d->xpath->set("/html/head/title" => "NOTITLE");
+    is $d->xpath->get("/html/head/title") => "NOTITLE";
 }
