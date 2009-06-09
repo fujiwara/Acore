@@ -33,6 +33,10 @@ use_ok("Acore::WAF::Render");
     sub js {
         $_[0] | Acore::WAF::Render::js();
     }
+    sub fillform {
+        $_[0] | Acore::WAF::Render::fillform({ foo => 1, bar => 2 });
+    }
+
 }
 
 run_is input => 'expected';
@@ -101,3 +105,12 @@ A	B
 "C"'D'
 --- expected chomp
 A\tB\n\"C\"\'D\'
+
+=== fillform
+--- input chomp fillform
+<input type="text" name="foo" value=""/>
+<input type="text" name="bar" value=""/>
+--- expected chomp
+<input value="1" name="foo" type="text" />
+<input value="2" name="bar" type="text" />
+

@@ -144,6 +144,7 @@ sub update_from_hashref {
 
 sub html_form_to_create {
     my $class = shift;
+
     my $tmpl = q{
 ? my ($c) = @_;
 <fieldset>
@@ -164,6 +165,7 @@ sub html_form_to_create {
 
 sub html_form_to_update {
     my $self = shift;
+
     my $tmpl = q{
 ? my ($c, $doc) = @_;
 <fieldset>

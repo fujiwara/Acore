@@ -67,6 +67,15 @@ sub js {
     };
 }
 
+sub fillform {
+    my ($obj) = @_;
+    joint {
+        my ($html) = @_;
+        require HTML::FillInForm;
+        HTML::FillInForm->fill(\$html, $obj);
+    };
+}
+
 1;
 __END__
 
@@ -84,6 +93,7 @@ In Text::MicroTemplate like TT.
  <?=  $foo | replace('a','b') ?>
  <?=  $array_ref | join(',') ?>
  <?=  $foo | js ?>
+ <?=  $html | fillform($c->req) ?>
 
 =head1 DESCRIPTION
 
@@ -112,6 +122,10 @@ Replace from matchs by $regexp to $replacement.
 =item join($separator)
 
 Join array ref by $separator.
+
+=item fillform($obj)
+
+Fill in form by $obj.
 
 =back
 

@@ -188,7 +188,7 @@ sub user_create_form_POST {
         return;
     }
 
-    my $user = $c->acore->create_user({
+    $user = $c->acore->create_user({
         name => $name,
     });
     my @roles = grep { /\A[\w:]+\z/ } $c->req->param('roles');
@@ -320,7 +320,7 @@ sub document_create_form_GET {
     $c->stash->{_class} = $c->req->param('_class') || "Acore::Document";
 
     my $class = $c->req->param('_class') || "Acore::Document";
-    if ( !$class->require || !$class->isa('Acore::Document') ) {
+    if ( !$class->use || !$class->isa('Acore::Document') ) {
         die "Invalid class $@";
     }
 

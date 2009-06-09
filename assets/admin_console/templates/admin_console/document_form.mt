@@ -62,7 +62,7 @@
                   </div>
                 </fieldset>
 
-                <?=r $c->render_string( $doc->html_form_to_update, $doc ) ?>
+                <?=r $c->render_string( $doc->html_form_to_update, $doc ) | fillform($doc) ?>
 
                 <div class="buttonrow">
                   <input type="submit" value="更新する" class="button"/>
