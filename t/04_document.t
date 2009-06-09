@@ -1,6 +1,6 @@
 # -*- mode:perl -*-
 use strict;
-use Test::More tests => 31;
+use Test::More tests => 40;
 use Test::Exception;
 use Data::Dumper;
 use Clone qw/ clone /;
@@ -69,4 +69,28 @@ BEGIN {
     is $d->a  => 4;
     is $d->b  => undef;
     is $d->c  => 5;
+}
+
+{
+    my $d = Acore::Document->new({
+        id => 1,
+        html => {
+            head => {
+                title => "TITLE",
+            },
+            body => {
+                list => [qw/ A B C /],
+            },
+        },
+    });
+    ok $d->xpath, "xpath ok";
+    is $d->xpath->get("/id") => 1, "/id";
+    is $d->xpath->get("/html/head/title") => "TITLE";
+    is $d->xpath->get("/html/body/list[0]") => "A";
+    is $d->xpath->get("/html/body/list[1]") => "B";
+    is $d->xpath->get("/html/body/list[2]") => "C";
+    is $d->xpath->get("/html/body/list[3]") => undef;
+    is $d->xpath->get("/xxx") => undef;
+    $d->{xxx} = "XXX";
+    is $d->xpath->get("/xxx") => "XXX";
 }

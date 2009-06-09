@@ -52,12 +52,24 @@ has updated_on => (
     coerce     => 1,
 );
 
+has xpath => (
+    is         => "rw",
+    isa        => "Data::Path",
+    lazy_build => 1,
+);
+
 sub _build_created_on {
     Acore::DateTime->now();
 }
 
 sub _build_updated_on {
     Acore::DateTime->now();
+}
+
+sub _build_xpath {
+    my $self = shift;
+    require Data::Path;
+    Data::Path->new($self);
 }
 
 sub BUILD {
@@ -235,6 +247,15 @@ Acore::Document - document base class
   });
   $acore->put_document($doc);
 
+  $doc = Acore::Document->new({
+    foo => {
+        bar  => "baz",
+        list => [ 1, 2, 3 ],
+    }
+  });
+  $doc->xpath->get('/foo/bar');     # "baz"
+  $doc->xpath->get('/foo/list[0]'); # 1
+
 =head1 DESCRIPTION
 
 Acore::Document is AnyCMS schema less document class.
@@ -254,6 +275,12 @@ Acore::Document is AnyCMS schema less document class.
 =item created_on
 
 =item updated_on
+
+=item xpath
+
+Data::Path object for xpath like accessing.
+
+ $doc->xpath->get("/foo/bar");
 
 =item html_form_to_create
 
@@ -298,6 +325,8 @@ Convert from plain object (hash ref). Called after Acore->get_document().
 FUJIWARA E<lt>fujiwara@topicmaker.comE<gt>
 
 =head1 SEE ALSO
+
+L<Data::Path>
 
 =head1 LICENSE
 
