@@ -83,7 +83,9 @@ Acore::Document::Templatize - templatize document base class
     <legend>YourDocument</legend>
     <div>
       <input type="text" name="/foo" value=""/>
-      <input type="text" name="/bar" value=""/>
+      <input type="text" name="/bar/baz[0]" value=""/>
+      <input type="text" name="/bar/baz[1]" value=""/>
+      <input type="text" name="/bar/baz[2]" value=""/>
     </div>
   </fieldset>
 
