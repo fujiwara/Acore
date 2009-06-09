@@ -122,7 +122,8 @@ sub update_from_hashref {
 
     my $class = blessed $self;
     for my $n ( keys %$self ) {
-        # autoload で生成されたメソッド名の key は削除しない
+        # 渡された hash ref に存在しない key の扱い
+        # メソッド名の key は削除しない (ただし AUTOLOAD で生成されたものは除く)
         next if $self->can($n) && !$AUTOLOADED{"${class}::$n"};
         delete $self->{$n} unless exists $obj->{$n};
     }
