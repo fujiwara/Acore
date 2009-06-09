@@ -70,3 +70,39 @@ __PACKAGE__->meta->make_immutable;
 no Any::Moose;
 
 1;
+
+__END__
+
+=head1 NAME
+
+Acore::Document::Templatize - templatize document base class
+
+=head1 SYNOPSIS
+
+  package YourDocument;
+  use Any::Moose;
+  extends 'Acore::Document::Templatize';
+  use constant create_template => "create.mt";
+  use constant edit_template   => "edit.mt";
+
+  # create.mt
+  <fieldset>
+    <legend>YourDocument</legend>
+    <div>
+      <input type="text" name="/foo" value=""/>
+      <input type="text" name="/bar" value=""/>
+    </div>
+  </fieldset>
+
+=head1 AUTHOR
+
+FUJIWARA E<lt>fujiwara@topicmaker.comE<gt>
+
+=head1 SEE ALSO
+
+=head1 LICENSE
+
+This library is free software; you can redistribute it and/or modify
+it under the same terms as Perl itself.
+
+=cut
