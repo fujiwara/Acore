@@ -10,6 +10,7 @@ use Acore::DateTime;
 use Any::Moose;
 use Any::Moose 'Util::TypeConstraints';
 use Carp;
+use List::MoreUtils qw/ uniq /;
 
 subtype 'DateTime'
     => as 'Object',
@@ -96,18 +97,36 @@ sub as_string {
     return Data::Dumper::Dumper($self);
 }
 
+our %AUTOLOADED;
 our $AUTOLOAD;
 sub AUTOLOAD {
-    my $self  = shift;
-    my $name  = $AUTOLOAD =~ /::(\w+)$/ ? $1 : undef;
+    my $self = shift;
+    my $name = $AUTOLOAD =~ /::(\w+)$/ ? $1 : undef;
 
     return if (!defined $name) || ($name eq 'DESTROY');
 
     carp("$self has no method $name, AUTLOADed");
 
     has $name => ( is => "rw" );
+    $AUTOLOADED{$AUTOLOAD} = 1;
 
     $self->$name(@_);
+}
+
+sub update_from_hashref {
+    my ($self, $obj) = @_;
+
+    for my $n ( keys %$obj ) {
+        $self->{$n} = $obj->{$n};
+    }
+
+    my $class = blessed $self;
+    for my $n ( keys %$self ) {
+        # autoload で生成されたメソッド名の key は削除しない
+        next if $self->can($n) && !$AUTOLOADED{"${class}::$n"};
+        delete $self->{$n} unless exists $obj->{$n};
+    }
+    $self;
 }
 
 sub html_form_to_create {
@@ -168,9 +187,8 @@ sub validate_to_update {
         $c->stash->{yaml_error_message} = $msg;
     }
 
-    for my $n ( keys %$obj ) {
-        $self->{$n} = $obj->{$n};
-    }
+    $self->update_from_hashref($obj);
+
     $self->{$_} = $c->req->param($_) for qw/ id path content_type /;
     $self;
 }

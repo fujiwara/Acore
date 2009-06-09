@@ -1,6 +1,6 @@
 # -*- mode:perl -*-
 use strict;
-use Test::More tests => 23;
+use Test::More tests => 31;
 use Test::Exception;
 use Data::Dumper;
 use Clone qw/ clone /;
@@ -53,3 +53,20 @@ BEGIN {
     is $d->{bar}    => 333;
 }
 
+
+{
+    my $d = Acore::Document->new({
+        id  => 1,
+        a   => 2,
+        b   => 3,
+    });
+    is $d->id => 1;
+    is $d->a  => 2;
+    is $d->b  => 3;
+
+    ok $d->update_from_hashref({ a => 4, c => 5 });
+    is $d->id => 1;
+    is $d->a  => 4;
+    is $d->b  => undef;
+    is $d->c  => 5;
+}
