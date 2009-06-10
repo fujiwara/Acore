@@ -33,24 +33,31 @@ sub validate_to_create {
     my $class = shift;
     my ($c)   = @_;
 
-    return super(@_) unless $class->create_template;
+    $c->log->debug("${class}->validate_to_create");
+    return $class->SUPER::validate_to_create(@_)
+        unless $class->create_template;
 
     my $self = $class->new;
     for my $name ( grep /^\//, $c->req->param ) {
+        $c->log->debug("setting $name");
         my @value = $c->req->param($name);
         $self->xpath->set(
             $name => ( @value == 1 ) ? $value[0] : \@value
         );
     }
+    $self;
 }
 
 sub validate_to_update {
     my $self = shift;
     my ($c)  = @_;
 
-    return super(@_) unless $self->edit_template;
+    $c->log->debug("${self}->validate_to_update");
+    return $self->SUPER::validate_to_update(@_)
+        unless $self->edit_template;
 
     for my $name ( grep /^\//, $c->req->param ) {
+        $c->log->debug("setting $name");
         my @value = $c->req->param($name);
         $self->xpath->set(
             $name => ( @value == 1 ) ? $value[0] : \@value

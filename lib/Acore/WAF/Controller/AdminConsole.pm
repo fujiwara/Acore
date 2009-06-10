@@ -337,17 +337,22 @@ sub document_create_form_POST {
 
     my $class = $c->req->param('_class');
     if ( !$class->require || !$class->isa('Acore::Document') ) {
-        $c->set_error( _class => "INVALID" );
+        $c->log->error($@);
+        $c->form->set_error( _class => "INVALID" );
     }
-   $c->stash->{_class} = $class;
+    $c->stash->{_class} = $class;
 
+    $c->form->check(
+        path => [qw/ NOT_NULL ASCII /],
+    );
     my $doc = $class->validate_to_create($c);
 
-    if ( $c->form->has_error ) {
+    if ( $c->form->has_error || !$doc ) {
         $c->render('admin_console/document_create_form.mt');
         $c->fillform;
         return;
     }
+    $doc->$_( $c->req->param($_) ) for qw/ path content_type /;
 
     $doc = $c->acore->put_document($doc);
 
