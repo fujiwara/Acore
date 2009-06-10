@@ -21,6 +21,11 @@
               <div class="item">
                 <a class="mimetype_kmultiple" href="<?= $c->uri_for('/admin_console/document_list') ?>">Document の管理</a>
               </div>
+
+              <div class="item">
+                <a class="mimetype_source" href="<?= $c->uri_for('/admin_console/doc_class') ?>">Document Class の作成</a>
+              </div>
+
               <!-- /menu -->
             </div>
           </div>

@@ -380,6 +380,59 @@ sub document_DELETE {
     $c->render('admin_console/document_deleted.mt');
 }
 
+sub doc_class_GET {
+    my ($self, $c) = @_;
+    $c->forward( $self => "is_logged_in" );
+    $c->render('admin_console/doc_class.mt');
+}
+
+sub _doc_class_validate {
+    my ($self, $c) = @_;
+
+    $c->form->check(
+        class => [['REGEX', qr/\A[A-Z]([_a-zA-Z0-9]+|::)*[_a-zA-Z0-9]+\z/]],
+    );
+
+    my $class = $c->req->param('class');
+    $class->require
+        and $c->form->set_error( class => "EXISTS" );
+    if ($c->form->has_error) {
+        $c->render('admin_console/doc_class.mt');
+        $c->fillform;
+        $c->detach;
+    }
+    $c->stash->{class} = $class;
+    ( $c->stash->{class_filename} = $class ) =~ s{::}{_}g;
+    1;
+}
+
+sub doc_class_pm_GET {
+    my ($self, $c) = @_;
+    $c->forward( $self => "is_logged_in" );
+    $c->forward( $self => "_doc_class_validate" );
+
+    $c->render('admin_console/doc_class_pm.mt');
+
+    $c->res->header(
+        "Content-Type"        => "text/plain",
+        "Content-Disposition" =>
+            sprintf("attachment; filename=%s.pm", $c->stash->{class_filename}),
+    );
+}
+
+sub doc_class_tmpl_GET {
+    my ($self, $c) = @_;
+    $c->forward( $self => "is_logged_in" );
+    $c->forward( $self => "_doc_class_validate" );
+    $c->render('admin_console/doc_class_tmpl.mt');
+
+    $c->res->header(
+        "Content-Type"        => "text/plain",
+        "Content-Disposition" =>
+            sprintf("attachment; filename=%s_create_form.mt", $c->stash->{class_filename}),
+    );
+}
+
 1;
 
 __END__
