@@ -394,8 +394,8 @@ sub _doc_class_validate {
     );
 
     my $class = $c->req->param('class');
-    $class->require
-        and $c->form->set_error( class => "EXISTS" );
+#    $class->require
+#        and $c->form->set_error( class => "EXISTS" );
     if ($c->form->has_error) {
         $c->render('admin_console/doc_class.mt');
         $c->fillform;
