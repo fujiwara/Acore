@@ -317,12 +317,16 @@ sub document_create_form_GET {
     my ($self, $c) = @_;
 
     $c->forward( $self => "is_logged_in" );
-    $c->stash->{_class} = $c->req->param('_class') || "Acore::Document";
 
-    my $class = $c->req->param('_class') || "Acore::Document";
+    my $classes = $c->config->{admin_console}->{document_classes};
+    $c->log->debug("document_classes: @$classes");
+    my $class = $c->req->param('_class')
+             || ( (ref $classes eq 'ARRAY') ? $classes->[0]
+                                          : "Acore::Document" );
     if ( !$class->use || !$class->isa('Acore::Document') ) {
         die "Invalid class $@";
     }
+    $c->stash->{_class} = $class;
 
     $c->render('admin_console/document_create_form.mt');
 }

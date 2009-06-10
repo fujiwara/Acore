@@ -37,7 +37,15 @@
                   </div>
                   <div>
                     <label for="class">Class</label>
+? if ( ref $c->config->{admin_console}->{document_classes} eq 'ARRAY' ) {
+                    <select name="_class" id="document-class">
+?   for my $class (@{ $c->config->{admin_console}->{document_classes} }) {
+                      <option value="<?= $class ?>"<?=r ' selected="selected"' if $c->stash->{_class} eq $class ?>><?= $class ?></option>
+?   }
+                    </select>
+? } else {
                     <input type="text" size="20" name="_class" value="<?= $c->stash->{_class} ?>" id="document-class" />
+? }
                     <input type="button" value="変更" id="document-class-change-button" />
                   </div>
                   <div>
