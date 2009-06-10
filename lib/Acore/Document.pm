@@ -250,23 +250,21 @@ sub Data::Path::set {
     my $last  = pop @nodes;
     for my $n (@nodes) {
         if ( $n =~ m{\A(\w+)\[(\d+)\]\z} ) {
-            my ($name, $index) = ($1, $2);
-            $ref = $ref->{$name}  ||= [];
-            $ref = $ref->[$index] ||= {};
+            $ref = $ref->{$1} ||= [];
+            $ref = $ref->[$2] ||= {};
         }
         else {
             $ref = $ref->{$n} ||= {};
         }
     }
     if ( $last =~ m{\A(\w+)\[(\d+)\]\z} ) {
-        my ($name, $index) = ($1, $2);
-        $ref = $ref->{$name} ||= [];
-        $ref = $ref->[$index] = $value;
+        $ref = $ref->{$1} ||= [];
+        $ref = $ref->[$2]   = $value;
     }
     else {
         $ref->{$last} = $value;
     }
-    $self;
+    $value;
 }
 
 __PACKAGE__->meta->make_immutable;
