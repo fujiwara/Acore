@@ -2,7 +2,7 @@ package Acore::WAF::Plugin::Cache;
 
 use strict;
 use warnings;
-require Exporter;
+use Exporter 'import';
 our @EXPORT = qw/ cache /;
 
 sub cache {

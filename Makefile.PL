@@ -21,10 +21,13 @@ requires 'Data::Structure::Util';
 requires 'Text::MicroTemplate';
 requires 'Want';
 requires 'Sub::Pipe';
+requires 'Data::Path';
+requires 'HTML::FillInForm';
 
 test_requires 'DBD::SQLite';
 test_requires 'Test::Base';
 test_requires 'Text::Diff';
+test_requires 'Cache::MemoryCache';
 
 tests 't/*.t';
 author_tests 'xt';

@@ -3,7 +3,7 @@ package Acore::WAF::Plugin::FormValidator;
 use strict;
 use warnings;
 use FormValidator::Lite;
-require Exporter;
+use Exporter 'import';
 our @EXPORT = qw/ form /;
 
 FormValidator::Lite->load_constraints(qw/Japanese/);

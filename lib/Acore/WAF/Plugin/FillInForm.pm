@@ -2,7 +2,7 @@ package Acore::WAF::Plugin::FillInForm;
 
 use strict;
 use warnings;
-require Exporter;
+use Exporter 'import';
 our @EXPORT = qw/ fillform /;
 
 sub fillform {

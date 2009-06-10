@@ -2,7 +2,7 @@ package Acore::WAF::Plugin::AntiCSRF;
 
 use strict;
 use warnings;
-require Exporter;
+use Exporter 'import';
 our @EXPORT = qw/ onetime_token csrf_proof /;
 use Digest::SHA;
 

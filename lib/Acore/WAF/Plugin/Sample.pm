@@ -2,7 +2,7 @@ package Acore::WAF::Plugin::Sample;
 
 use strict;
 use warnings;
-require Exporter;
+use Exporter 'import';
 our @EXPORT = qw/ sample_method /;
 
 sub setup {

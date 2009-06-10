@@ -3,7 +3,7 @@ package Acore::WAF::Plugin::Session;
 use strict;
 use warnings;
 use Want;
-require Exporter;
+use Exporter 'import';
 our @EXPORT = qw/ session /;
 
 sub setup {
