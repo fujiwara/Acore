@@ -453,7 +453,9 @@ sub view_form_GET {
     $c->forward( $self => "is_logged_in" );
 
     my $id = $c->req->param('id');
-    $c->stash->{design} = $c->acore->storage->document->get($id);
+    my $design = $c->acore->storage->document->get($id)
+        or $c->error( 404 => "design not found" );
+    $c->stash->{design} = $design;
     $c->render('admin_console/view_form.mt');
 }
 
@@ -461,15 +463,11 @@ sub view_test_POST {
     my ($self, $c) = @_;
     $c->forward( $self => "is_logged_in" );
 
-    my $map = $c->req->param('map');
-    $map =~ s{\A +}{}smg;
-    $map =~ s{ +\z}{}smg;
-    $map = eval $map;
+    my $map = eval $c->req->param('map');
     if ($@) {
         return $c->res->body("Error in eval map.: $@");
     }
-    if (!ref $map eq 'CODE') {
-        $c->res->body("Error in eval map.: $@");
+    if (ref $map ne 'CODE') {
         return $c->res->body("no CODE ref.");
     }
     my @pair;
@@ -484,14 +482,10 @@ sub view_test_POST {
     };
     my @docs = $c->acore->all_documents({ limit => 10 });
     for my $doc (@docs) {
-        my $local_c = $c;
         eval {
-            $c = undef;
             $map->( $doc->to_object, $emit );
-            $c = $local_c;
         };
         if ($@) {
-            $c = $local_c;
             return $c->res->body("Error at mapping.: $@");
         }
     }
