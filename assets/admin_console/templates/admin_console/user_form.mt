@@ -24,11 +24,11 @@
                "password1.ascii"    => "パスワードは半角で入力してください",
             );
 ?>
-              <p class="error">
+              <div class="errors">
 ?          for my $msg ( $c->form->get_error_messages ) {
                   <?= $msg ?><br/>
 ?          }
-              </p>
+              </div>
 ?      }
 ?      my $user = $c->stash->{user};
                 <fieldset>

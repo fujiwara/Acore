@@ -20,11 +20,11 @@
 
 ?=r $c->render_part('admin_console/document_serach_form.mt');
 
-              <div>
-                <h3>削除されました</h3>
-              </div>
-              <div>
-                <a href="<?= $c->uri_for('/admin_console/document_list') ?>">一覧へ</a>
+              <div class="result-message">
+                <h2>削除されました</h2>
+                <p>
+                  <a href="<?= $c->uri_for('/admin_console/document_list') ?>">一覧へ</a>
+                </p>
               </div>
 
             </div>

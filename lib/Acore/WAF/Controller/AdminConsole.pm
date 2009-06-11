@@ -435,6 +435,70 @@ sub doc_class_POST {
     }
 }
 
+sub view_GET {
+    my ($self, $c) = @_;
+
+    $c->forward( $self => "is_logged_in" );
+
+    my @design = $c->acore->storage->document->all_designs;
+    $c->stash->{all_views} = [
+        map { $_->{value}->{id} = $_->{id}; $_->{value} } @design
+    ];
+    $c->render('admin_console/view.mt');
+}
+
+sub view_form_GET {
+    my ($self, $c) = @_;
+
+    $c->forward( $self => "is_logged_in" );
+
+    my $id = $c->req->param('id');
+    $c->stash->{design} = $c->acore->storage->document->get($id);
+    $c->render('admin_console/view_form.mt');
+}
+
+sub view_test_POST {
+    my ($self, $c) = @_;
+    $c->forward( $self => "is_logged_in" );
+
+    my $map = $c->req->param('map');
+    $map =~ s{\A +}{}smg;
+    $map =~ s{ +\z}{}smg;
+    $map = eval $map;
+    if ($@) {
+        return $c->res->body("Error in eval map.: $@");
+    }
+    if (!ref $map eq 'CODE') {
+        $c->res->body("Error in eval map.: $@");
+        return $c->res->body("no CODE ref.");
+    }
+    my @pair;
+    require JSON;
+    my $json = JSON->new;
+    my $emit = sub {
+        my ( $k, $v ) = @_;
+        push @pair, [
+            $k,
+            ref $v ? $json->encode($v) : $v,
+        ];
+    };
+    my @docs = $c->acore->all_documents({ limit => 10 });
+    for my $doc (@docs) {
+        my $local_c = $c;
+        eval {
+            $c = undef;
+            $map->( $doc->to_object, $emit );
+            $c = $local_c;
+        };
+        if ($@) {
+            $c = $local_c;
+            return $c->res->body("Error at mapping.: $@");
+        }
+    }
+    $c->stash->{pairs} = \@pair;
+    $c->render("admin_console/view_test.mt");
+}
+
 1;
 
 __END__

@@ -20,14 +20,14 @@
 
               <form action="<?= $c->uri_for('/admin_console/document_create_form') ?>" method="post">
 ?      if ($c->form->has_error) {
-              <p class="error">
-                エラーがあります
+              <div class="errors">
+                <p><em>下記の項目の入力にエラーがあります。</em></p>
                 <ul>
 ?          for my $msg ( @{ $c->form->{_error_ary} } ) {
                   <li><?= $msg->[0] ?> <?= $msg->[1] ?></li>
 ?          }
                 </ul>
-              </p>
+              </div>
 ?      }
                 <fieldset>
                   <legend>Meta info</legend>
