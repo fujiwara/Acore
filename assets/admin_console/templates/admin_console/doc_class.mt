@@ -1,6 +1,7 @@
 <?
   my $c = $_[0];
   $c->stash->{title} = "Document Class 作成";
+  $c->stash->{load_jquery_ui} = 1;
 ?>
 ?=r $c->render_part("admin_console/header.mt");
 ?=r $c->render_part("admin_console/container.mt");
@@ -16,15 +17,36 @@
             <h2 class="icon"><div class="mimetype_source">Document Class の作成</div></h2>
           </div>
           <div class="data">
-            作成するクラス名 <input type="text" id="document-class" size="20" name="class" /><br/>
-            <div id="name-error" style="color: #c33;">先頭が大文字から始まる 2文字以上の英数で入力してください</div>
-            <? if ($c->form->has_error) { ?>
-            <div id="exists-error" style="color: #c33;">すでにシステムに同じクラスが存在します</div>
-            <? } ?>
-            <ul id="downloads">
-              <li><a id="download-pm">クラス定義ファイル(.pm) をダウンロード</a></li>
-              <li><a id="download-tmpl">フォームテンプレート(.mt) をダウンロード</a></li>
-            </ul>
+            <form action="<?= $c->uri_for('/admin_console/doc_class') ?>" method="post">
+              <input type="hidden" name="sid" value="<?= $c->session->session_id ?>"/>
+              <h3>作成するクラス名</h3>
+              <input type="text" id="document-class" size="20" name="class" /><br/>
+              <div id="name-error" style="color: #c33;">先頭が大文字から始まる 2文字以上の英数で入力してください</div>
+              
+              <div id="form-generator">
+                <h3>フォーム要素</h3>
+                <div id="create-form">
+                  ラベル <input type="text" id="element-label" value="" size="20"/>
+                  要素名 (xpath)<input type="text" id="element-name" value="/" size="20"/>
+                  <select id="element-type">
+                    <option value="text">テキストボックス</option>
+                    <option value="textarea">テキストエリア</option>
+                    <option value="radio">ラジオボタン</option>
+                    <option value="checkbox">チェックボックス</option>
+                    <option value="select">セレクトボックス</option>
+                  </select>
+                  <input type="button" id="element-add-button" value="追加"/>
+                </div>
+                <h3>生成されたフォーム</h3>
+                <div id="form-elements"></div>
+                <h3>HTML</h3>
+                <textarea id="form-html" name="form-html" rows="15" cols="80"></textarea>
+                <ul id="downloads">
+                  <li><input type="submit" name="download-pm" value="クラス定義ファイル(.pm) をダウンロード"/></li>
+                  <li><input type="submit" name="download-tmpl" value="フォームテンプレート(.mt) をダウンロード"/></li>
+                </ul>
+              </div>
+            </form>
           </div>
         </div>
         <div id="gamma">
@@ -39,23 +61,48 @@
         if (name.match(/^[A-Z]([_a-zA-Z0-9]+|::)*[_a-zA-Z0-9]+$/)) {
           name = encodeURIComponent(name);
           $('#name-error').hide();
-          $('#downloads').show();
-          $('#download-pm').attr({ href: "<?= $c->uri_for('/admin_console/doc_class_pm') | js ?>?class=" + name });
-          $('#download-tmpl').attr({ href: "<?= $c->uri_for('/admin_console/doc_class_tmpl') | js ?>?class=" + name });
-         }
-         else {
-           $('#name-error').show();
-           $('#downloads').hide();
-           $('#download-pm').removeAttr('href');
-           $('#download-tmpl').removeAttr('href');
-         }
+          $('#form-generator').show();
+        }
+        else {
+          $('#name-error').show();
+          $('#form-generator').hide();
+        }
       }
       $('#document-class').keyup( function() {
         $("#exists-error").hide();
         validate_name();
       });
-      $('#downloads').hide();
+      $('#form-generator').hide();
       validate_name();
+
+      $('#element-add-button').click( function() {
+        var name = $('#element-name').val();
+        var html = '';
+        if (name == '/' || !name.match(/^\//)) { return }
+
+        switch ($('#element-type').val()) {
+          case "text":
+            html = "<input type='text' name='_NAME_' size='20'/>"; break;
+          case "textarea":
+            html = "<textarea name='_NAME_' rows='3' cols='20'></textarea>"; break;
+          case "checkbox":
+            html = "<input type='checkbox' name='_NAME_' value=''/>"; break;
+          case "radio"   :
+            html = "<input type='radio' name='_NAME_' value=''/>"; break;
+          case "select"  :
+            html = "<select name='_NAME_'>\n    <option value=''></option>\n  </select>"; break;
+          default : break;
+        }
+        html = "<div>\n  <label for='_NAME_'>" + $('#element-label').val() + "</label>\n  " + html + "\n</div>\n";
+        html = html.replace(/_NAME_/g, name );
+        $('#form-elements').append(html);
+
+        $('#form-html').val( $('#form-elements').html() );
+      })
+      $('#form-html').change( function() {
+        $('#form-elements').html( $('#form-html').val() );
+      });
+
     </script>
 </body>
 </html>

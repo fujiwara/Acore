@@ -3,6 +3,8 @@ package Acore::WAF::Controller::AdminConsole;
 use strict;
 use warnings;
 use Data::Dumper;
+use List::MoreUtils;
+use List::Util;
 
 my $PermitRole = "AdminConsoleLogin";
 
@@ -394,8 +396,6 @@ sub _doc_class_validate {
     );
 
     my $class = $c->req->param('class');
-#    $class->require
-#        and $c->form->set_error( class => "EXISTS" );
     if ($c->form->has_error) {
         $c->render('admin_console/doc_class.mt');
         $c->fillform;
@@ -406,31 +406,31 @@ sub _doc_class_validate {
     1;
 }
 
-sub doc_class_pm_GET {
+sub doc_class_POST {
     my ($self, $c) = @_;
     $c->forward( $self => "is_logged_in" );
     $c->forward( $self => "_doc_class_validate" );
 
-    $c->render('admin_console/doc_class_pm.mt');
+    if ($c->req->param('download-pm')) {
+        my $html = $c->req->param('form-html');
+        my @names = ($html =~ m/name=['"]\/(\w+)['"]/g );
+        $c->stash->{names} = [ List::MoreUtils::uniq(@names) ];
 
-    $c->res->header(
-        "Content-Type"        => "text/plain",
-        "Content-Disposition" =>
-            sprintf("attachment; filename=%s.pm", $c->stash->{class_filename}),
-    );
-}
-
-sub doc_class_tmpl_GET {
-    my ($self, $c) = @_;
-    $c->forward( $self => "is_logged_in" );
-    $c->forward( $self => "_doc_class_validate" );
-    $c->render('admin_console/doc_class_tmpl.mt');
-
-    $c->res->header(
-        "Content-Type"        => "text/plain",
-        "Content-Disposition" =>
-            sprintf("attachment; filename=%s_create_form.mt", $c->stash->{class_filename}),
-    );
+        $c->render('admin_console/doc_class_pm.mt');
+        $c->res->header(
+            "Content-Type"        => "text/plain",
+            "Content-Disposition" =>
+                sprintf("attachment; filename=%s.pm", $c->stash->{class_filename}),
+        );
+    }
+    elsif ($c->req->param('download-tmpl')) {
+        $c->render('admin_console/doc_class_tmpl.mt');
+        $c->res->header(
+            "Content-Type"        => "text/plain",
+            "Content-Disposition" =>
+                sprintf("attachment; filename=%s_create_form.mt", $c->stash->{class_filename}),
+        );
+    }
 }
 
 1;

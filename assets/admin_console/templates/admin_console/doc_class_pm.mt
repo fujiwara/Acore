@@ -5,6 +5,10 @@ use warnings;
 use Any::Moose;
 use utf8;
 
+? for my $name ( @{ $c->stash->{names} } ) {
+has "<?=r $name ?>" => ( is => "rw" );
+? }
+
 extends 'Acore::Document::Templatize';
 
 use constant create_template => "<?=r $c->stash->{class_filename} ?>_create_form.mt";
