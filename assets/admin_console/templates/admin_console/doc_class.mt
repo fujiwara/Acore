@@ -37,10 +37,15 @@
                   </select>
                   <input type="button" id="element-add-button" value="追加"/>
                 </div>
-                <h3>生成されたフォーム</h3>
-                <div id="form-elements"></div>
+                <h3></h3>
+                <div class="form-container">
+                  <fieldset>
+                    <legend>生成されたフォーム</legend>
+                    <div id="form-elements"></div>
+                  </fieldset>
+                </div>
                 <h3>HTML</h3>
-                <textarea id="form-html" name="form-html" rows="15" cols="80"></textarea>
+                <textarea id="form-html" name="form-html" rows="15" cols="60"></textarea>
                 <ul id="downloads">
                   <li><input type="submit" name="download-pm" value="クラス定義ファイル(.pm) をダウンロード"/></li>
                   <li><input type="submit" name="download-tmpl" value="フォームテンプレート(.mt) をダウンロード"/></li>
