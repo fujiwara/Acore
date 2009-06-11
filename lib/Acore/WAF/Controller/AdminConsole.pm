@@ -424,7 +424,9 @@ sub doc_class_POST {
         );
     }
     elsif ($c->req->param('download-tmpl')) {
-        $c->render('admin_console/doc_class_tmpl.mt');
+        my $body = $c->render_part('admin_console/doc_class_tmpl.mt');
+        $body =~ s/\r*\n/\n/g;
+        $c->res->body( $body );
         $c->res->header(
             "Content-Type"        => "text/plain",
             "Content-Disposition" =>
