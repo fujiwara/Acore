@@ -41,10 +41,9 @@ use_ok("Acore::WAF::Render");
         my ($key) = split / +/, $_[0];
 
         my $arr_ref = [
-            {num=>100,name=>'beta'},
-            {num=>200,name=>'alpha'}
+            { num => 1000, name => 'beta'  },
+            { num => 200,  name => 'alpha' }
         ];
-
         my $expct = '';
         for my $d ( @{ $arr_ref | Acore::WAF::Render::sort_by($key) } ) {
             $expct .= $d->{name};
@@ -52,13 +51,14 @@ use_ok("Acore::WAF::Render");
 
         $expct;
     }
+
     sub nsort_by {
         my ($key) = split / +/, $_[0];
 
-        my $arr_ref;
-        push @{$arr_ref}, Acore::Document->new({num=>100,name=>'beta'});
-        push @{$arr_ref}, Acore::Document->new({num=>200,name=>'alpha'});
-
+        my $arr_ref = [
+            { num => 1000, name => 'beta'  },
+            { num => 200,  name => 'alpha' }
+        ];
         my $expct = '';
         for my $d ( @{ $arr_ref | Acore::WAF::Render::nsort_by($key) } ) {
             $expct .= $d->{name};
@@ -160,7 +160,6 @@ betaalpha
 name
 --- expected chomp
 betaalpha
-
 
 === nsort_by number
 --- input chomp nsort_by

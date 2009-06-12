@@ -76,29 +76,19 @@ sub fillform {
     };
 }
 
-sub sort_by($) {
+sub sort_by($) { ## no critic
     my $key = shift;
     joint {
         return if ref($_[0]) ne 'ARRAY';
-        if ( $_[0]->[0]->{$key} =~ /^\d+$/ ) {
-            [ sort { $a->{$key} <=> $b->{$key} } @{$_[0]} ];
-        }
-        else {
-            [ sort { $a->{$key} cmp $b->{$key} } @{$_[0]} ];
-        }
+        [ sort { $a->{$key} cmp $b->{$key} } @{$_[0]} ];
     }
 }
 
-sub nsort_by($) {
+sub nsort_by($) { ## no critic
     my $key = shift;
     joint {
         return if ref($_[0]) ne 'ARRAY';
-        if ( $_[0]->[0]->{$key} =~ /^\d+$/ ) {
-            [ sort { $b->{$key} <=> $a->{$key} } @{$_[0]} ];
-        }
-        else {
-            [ sort { $b->{$key} cmp $a->{$key} } @{$_[0]} ];
-        }
+        [ sort { $a->{$key} <=> $b->{$key} } @{$_[0]} ];
     }
 }
 
@@ -157,11 +147,11 @@ Fill in form by $obj.
 
 =item sort_by($key)
 
-Hash and Acore::Document sort by key.
+Hashref or Acore::Document sort by key.
 
 =item nsort_by($key)
 
-Hash and Acore::Document nsort by key.
+Hashref or Acore::Document numeric sort by key.
 
 =back
 
