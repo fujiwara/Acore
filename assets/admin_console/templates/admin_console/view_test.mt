@@ -16,7 +16,7 @@
 ? for my $pair (@{ $c->stash->{pairs} }) {
   <tr>
     <td><?= $pair->[0] ?></td>
-    <td><?= $pair->[1] ?></td>
+    <td><?= ref $pair->[1] ? ($pair->[1] | json) : $pair->[1] ?></td>
   </tr>
 ? }
 </table>

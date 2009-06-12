@@ -105,6 +105,7 @@ sub to_object {
 sub from_object {
     my $class = shift;
     my $obj   = shift;
+    return unless $obj->{_class};
     $obj->{_class}->require;
     $obj->{id} = delete $obj->{_id} if $obj->{_id};
     $obj->{_class}->new($obj);

@@ -459,26 +459,117 @@ sub view_form_GET {
     $c->render('admin_console/view_form.mt');
 }
 
+sub view_form_POST {
+    my ($self, $c) = @_;
+
+    $c->forward( $self => "is_logged_in" );
+
+    $c->form->check(
+        id => [['REGEX', qr{\A_design/\w+\z}]],
+    );
+
+    my $id     = $c->req->param('id');
+    my $design = $c->acore->storage->document->get($id)
+              || {
+                    _id   => $id,
+                    views => { all => { map => "", reduce => "" } },
+                 };
+
+    for my $view ( $c->req->param('views') ) {
+        $c->form->check(
+            "${view}_name" => ['NOT_NULL', 'ASCII'],
+        );
+    TYPE:
+        for my $type (qw/ map reduce /) {
+            my $code = $c->req->param("${view}_${type}");
+            next TYPE unless $code;
+            my $sub  = eval $code;
+            if ($@) {
+                $c->form->set_error( "${view}_${type}" => 'SYNTAX_ERROR' );
+            }
+            elsif (ref $sub ne 'CODE') {
+                $c->form->set_error( "${view}_${type}" => 'NOT_CODE_REF' );
+            }
+            else {
+                $design->{views}->{$view}->{$type} = $code;
+            }
+        }
+    }
+    if ($c->form->has_error) {
+        $c->stash->{design} = $design;
+        $c->render('admin_console/view_form.mt');
+        return $c->fillform;
+    }
+
+    my $backend = $c->acore->storage->document;
+    $backend->put($design);
+    $backend->create_view( $design->{_id}, $design );
+
+    $c->redirect(
+        $c->uri_for(
+            '/admin_console/view_form',
+            { id => $design->{_id}, _t => time },
+        )
+    );
+}
+
+sub view_create_form_GET {
+    my ($self, $c) = @_;
+
+    $c->forward( $self => "is_logged_in" );
+
+    my $map = q{
+sub {
+    my ($obj, $emit) = @_;
+    # $emit->( $key, $value );
+}
+};
+    my $design = {
+        _id   => "",
+        views => { all => { map => $map, reduce => "" } },
+    };
+    $c->stash->{design} = $design;
+    $c->render('admin_console/view_form.mt');
+}
+
+
 sub view_test_POST {
     my ($self, $c) = @_;
     $c->forward( $self => "is_logged_in" );
-
-    my $map = eval $c->req->param('map');
-    if ($@) {
-        return $c->res->body("Error in eval map.: $@");
-    }
-    if (ref $map ne 'CODE') {
-        return $c->res->body("no CODE ref.");
-    }
-    my @pair;
     require JSON;
-    my $json = JSON->new;
+
+    my $map  = $c->forward( $self => "_eval_code", $c->req->param('map') );
+    my @pair = $c->forward( $self => "_do_map", $map );
+    if ( $c->req->param('reduce') ) {
+        my $reduce =
+            $c->forward( $self => "_eval_code", $c->req->param('reduce') );
+        @pair = $c->forward( $self => "_do_reduce", $reduce, @pair );
+    }
+    $c->stash->{pairs} = \@pair;
+    $c->render("admin_console/view_test.mt");
+}
+
+sub _eval_code {
+    my ($self, $c, $code) = @_;
+
+    $code = eval $code;
+    if ($@) {
+        $c->res->body("Error in eval map.: $@");
+        $c->detach;
+    }
+    if (ref $code ne 'CODE') {
+        $c->res->body("not CODE ref.");
+        $c->detach;
+    }
+    $code;
+}
+
+sub _do_map {
+    my ($self, $c, $map) = @_;
+
+    my @pair;
     my $emit = sub {
-        my ( $k, $v ) = @_;
-        push @pair, [
-            $k,
-            ref $v ? $json->encode($v) : $v,
-        ];
+        push @pair, [ $_[0], $_[1] ];
     };
     my @docs = $c->acore->all_documents({ limit => 10 });
     for my $doc (@docs) {
@@ -489,8 +580,38 @@ sub view_test_POST {
             return $c->res->body("Error at mapping.: $@");
         }
     }
-    $c->stash->{pairs} = \@pair;
-    $c->render("admin_console/view_test.mt");
+    sort { $a->[0] cmp $b->[0] } @pair;
+}
+
+sub _do_reduce {
+    my ($self, $c, $reduce, @pair) = @_;
+    use Data::Dumper;
+
+    my @result;
+    my $pre_key = $pair[0]->[0];
+    my @pre_values;
+    for my $pair (@pair) {
+        my ($key, $value) = @$pair;
+        if ($key ne $pre_key) {
+            my $result = eval { $reduce->( $pre_key, \@pre_values ) };
+            if ($@) {
+                $c->res->body("Error at reducing.: $@");
+                $c->detach;
+            }
+            push @result, [ $pre_key, $result ];
+            $pre_key    = $key;
+            @pre_values = ();
+        }
+        push @pre_values, $value;
+    }
+
+    my $result = eval { $reduce->( $pre_key, \@pre_values ) };
+    if ($@) {
+        return $c->res->body("Error at reducing.: $@");
+    }
+    push @result, [ $pre_key, $result ];
+
+    @result;
 }
 
 1;
