@@ -92,6 +92,14 @@ sub nsort_by($) { ## no critic
     }
 }
 
+my $Json;
+sub json {
+    joint {
+        $Json ||= do { require JSON; JSON->new };
+        $Json->encode($_[0]);
+    };
+}
+
 1;
 __END__
 

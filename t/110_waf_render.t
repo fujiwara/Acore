@@ -66,6 +66,8 @@ use_ok("Acore::WAF::Render");
 
         $expct;
     }
+
+    sub json { eval($_[0]) | Acore::WAF::Render::json() };
 }
 
 run_is input => 'expected';
@@ -166,4 +168,10 @@ betaalpha
 num
 --- expected chomp
 alphabeta
+
+=== json
+--- input chomp json
+{ A => 1, B => 2 }
+--- expected chomp
+{"A":1,"B":2}
 
