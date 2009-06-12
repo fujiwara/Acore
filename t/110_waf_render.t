@@ -2,6 +2,7 @@
 use strict;
 use Test::Base;
 use utf8;
+use Acore::Document;
 
 plan tests => ( 1 + (1 * blocks) );
 
@@ -36,7 +37,35 @@ use_ok("Acore::WAF::Render");
     sub fillform {
         $_[0] | Acore::WAF::Render::fillform({ foo => 1, bar => 2 });
     }
+    sub sort_by {
+        my ($key) = split / +/, $_[0];
 
+        my $arr_ref = [
+            {num=>100,name=>'beta'},
+            {num=>200,name=>'alpha'}
+        ];
+
+        my $expct = '';
+        for my $d ( @{ $arr_ref | Acore::WAF::Render::sort_by($key) } ) {
+            $expct .= $d->{name};
+        }
+
+        $expct;
+    }
+    sub nsort_by {
+        my ($key) = split / +/, $_[0];
+
+        my $arr_ref;
+        push @{$arr_ref}, Acore::Document->new({num=>100,name=>'beta'});
+        push @{$arr_ref}, Acore::Document->new({num=>200,name=>'alpha'});
+
+        my $expct = '';
+        for my $d ( @{ $arr_ref | Acore::WAF::Render::nsort_by($key) } ) {
+            $expct .= $d->{name};
+        }
+
+        $expct;
+    }
 }
 
 run_is input => 'expected';
@@ -113,4 +142,29 @@ A\tB\n\"C\"\'D\'
 --- expected chomp
 <input value="1" name="foo" type="text" />
 <input value="2" name="bar" type="text" />
+
+=== sort_by string
+--- input chomp sort_by
+name
+--- expected chomp
+alphabeta
+
+=== sort_by number
+--- input chomp sort_by
+num
+--- expected chomp
+betaalpha
+
+=== nsort_by string
+--- input chomp nsort_by
+name
+--- expected chomp
+betaalpha
+
+
+=== nsort_by number
+--- input chomp nsort_by
+num
+--- expected chomp
+alphabeta
 

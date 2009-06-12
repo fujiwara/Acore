@@ -76,6 +76,32 @@ sub fillform {
     };
 }
 
+sub sort_by($) {
+    my $key = shift;
+    joint {
+        return if ref($_[0]) ne 'ARRAY';
+        if ( $_[0]->[0]->{$key} =~ /^\d+$/ ) {
+            [ sort { $a->{$key} <=> $b->{$key} } @{$_[0]} ];
+        }
+        else {
+            [ sort { $a->{$key} cmp $b->{$key} } @{$_[0]} ];
+        }
+    }
+}
+
+sub nsort_by($) {
+    my $key = shift;
+    joint {
+        return if ref($_[0]) ne 'ARRAY';
+        if ( $_[0]->[0]->{$key} =~ /^\d+$/ ) {
+            [ sort { $b->{$key} <=> $a->{$key} } @{$_[0]} ];
+        }
+        else {
+            [ sort { $b->{$key} cmp $a->{$key} } @{$_[0]} ];
+        }
+    }
+}
+
 1;
 __END__
 
@@ -94,6 +120,8 @@ In Text::MicroTemplate like TT.
  <?=  $array_ref | join(',') ?>
  <?=  $foo | js ?>
  <?=  $html | fillform($c->req) ?>
+ <?=  $array_ref | sort_by('foo') ?>
+ <?=  $array_ref | nsort_by('bar') ?>
 
 =head1 DESCRIPTION
 
@@ -126,6 +154,14 @@ Join array ref by $separator.
 =item fillform($obj)
 
 Fill in form by $obj.
+
+=item sort_by($key)
+
+Hash and Acore::Document sort by key.
+
+=item nsort_by($key)
+
+Hash and Acore::Document nsort by key.
 
 =back
 
