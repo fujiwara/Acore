@@ -1,6 +1,9 @@
-? my $c = $_[0];
-? my $doc = $c->stash->{document};
-? $c->stash->{title} = "Document の編集 - " . ($doc && $doc->{title} or "" );
+<?
+   my $c = $_[0];
+   my $doc = $c->stash->{document};
+   $c->stash->{title} = "Document の編集 - " . ($doc && $doc->{title} or "" );
+   $c->stash->{load_jquery_ui} = 1;
+?>
 ?=r $c->render_part("admin_console/header.mt");
 ?=r $c->render_part("admin_console/container.mt");
     <div id="pagebody">
@@ -86,13 +89,36 @@
         </div>
       </div>
     </div>
+    <div id="delete-dialog" title="確認">
+      <span class="ui-icon ui-icon-alert" style="float:left; margin:0 7px 20px 0;"></span>
+      本当に削除しますか?
+    </div>
     <script type="text/javascript">
-      $('#delete-button').click( function() {
-        if (confirm('削除してよろしいですか?')) {
-          $('#document-form').attr({'action' : '<?= $c->uri_for('/admin_console/document') | js ?>'});
-          $('#document-form').append('<input type="hidden" name="_method" value="DELETE"/>');
-          $('#document-form').submit();
+      $('#delete-dialog').dialog({
+        bgiframe: true,
+        resizable: false,
+        height:140,
+        modal: true,
+        overlay: {
+          backgroundColor: '#000',
+          opacity: 0.5
+        },
+        buttons: {
+          '削除する': function() {
+            $('#document-form').attr({'action' : '<?= $c->uri_for('/admin_console/document') | js ?>'});
+            $('#document-form').append('<input type="hidden" name="_method" value="DELETE"/>');
+            $(this).dialog('close');
+            $('#document-form').submit();
+          },
+          Cancel: function() {
+             $(this).dialog('close');
+          }
         }
+      });
+      $('#delete-dialog').dialog('close');
+
+      $('#delete-button').click( function() {
+        $('#delete-dialog').dialog('open');
       })
       $('#document-yaml').hide();
       $('#show-document-yaml').click( function() {

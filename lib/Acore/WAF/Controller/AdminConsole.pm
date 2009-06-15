@@ -513,6 +513,19 @@ sub view_form_POST {
     );
 }
 
+sub view_form_DELETE {
+    my ($self, $c) = @_;
+
+    $c->forward( $self => "is_logged_in" );
+
+    my $id = $c->req->param('id');
+    my $design = $c->acore->storage->document->get($id)
+        or $c->error( 404 => "design not found" );
+
+    $c->acore->storage->document->delete($design->{_id});
+    $c->render('admin_console/view_deleted.mt');
+}
+
 sub view_create_form_GET {
     my ($self, $c) = @_;
 
