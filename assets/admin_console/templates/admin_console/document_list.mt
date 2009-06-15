@@ -50,7 +50,8 @@
 ? for my $key ( @$keys ) {
                   <th><?= $key ?></th>
 ? }
-                  <th>作成日時</th><th>更新日時</th>
+                  <th>作成日時</th>
+                  <th class="last">更新日時</th>
                 </tr>
 ? for my $doc ( @{ $c->stash->{all_documents} } ) {
                 <tr>

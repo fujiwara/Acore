@@ -21,7 +21,7 @@
               <tbody>
                 <tr>
                   <th class="first" style="width: 20%;">id</th>
-                  <th>views</th>
+                  <th class="last">views</th>
                 </tr>
 ? for my $doc ( @{ $c->stash->{all_views} } ) {
                 <tr>
