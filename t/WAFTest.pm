@@ -32,6 +32,11 @@ __PACKAGE__->setup(qw/ Sample FormValidator Session FillInForm /);
         { controller => "Acore::WAF::Controller::REST", action => "document" };
     connect "rest/document",
         { controller => "Acore::WAF::Controller::REST", action => "new_document" };
+
+    connect "sites/",
+        { controller => "Acore::WAF::Controller::Sites", action => "page" };
+    connect "sites/:page",
+        { controller => "Acore::WAF::Controller::Sites", action => "page" };
 }
 
 1;

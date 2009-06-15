@@ -792,6 +792,31 @@ Status: 400
 
 Bad Request
 
+=== sites index
+--- uri
+http://localhost/sites/
+--- response
+Content-Length: 42
+Content-Type: text/html; charset=utf-8
+Status: 200
+
+<h1>Sites index.mt</h1>
+http://localhost/
+
+=== sites page
+--- uri
+http://localhost/sites/page
+--- response
+Content-Length: 41
+Content-Type: text/html; charset=utf-8
+Status: 200
+
+<h1>Sites page.mt</h1>
+http://localhost/
+
+
+
+
 === ovreride finalize
 --- preprocess
 {

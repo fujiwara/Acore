@@ -483,7 +483,7 @@ sub view_form_POST {
         for my $type (qw/ map reduce /) {
             my $code = $c->req->param("${view}_${type}");
             next TYPE unless $code;
-            my $sub  = eval $code;
+            my $sub = eval $code;     ## no critic
             if ($@) {
                 $c->form->set_error( "${view}_${type}" => 'SYNTAX_ERROR' );
             }
@@ -565,7 +565,7 @@ sub view_test_POST {
 sub _eval_code {
     my ($self, $c, $code) = @_;
 
-    $code = eval $code;
+    $code = eval $code;  ## no critic
     if ($@) {
         $c->res->body("Error in eval map.: $@");
         $c->detach;
@@ -584,7 +584,7 @@ sub _do_map {
     my $emit = sub {
         push @pair, [ $_[0], $_[1] ];
     };
-    my @docs = $c->acore->all_documents({ limit => 10 });
+    my @docs = $c->acore->all_documents({ limit => 20 });
     for my $doc (@docs) {
         eval {
             $map->( $doc->to_object, $emit );
@@ -598,7 +598,6 @@ sub _do_map {
 
 sub _do_reduce {
     my ($self, $c, $reduce, @pair) = @_;
-    use Data::Dumper;
 
     my @result;
     my $pre_key = $pair[0]->[0];
