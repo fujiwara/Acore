@@ -195,6 +195,12 @@ connect "admin_console/static/:filename",
 connect "admin_console/:action",
     { controller => "Acore::WAF::Controller::AdminConsole" };
 
+# Sites
+connect "sites/",
+    { controller => "Acore::WAF::Controller::Sites", action => "page" };
+connect "sites/:page",
+    { controller => "Acore::WAF::Controller::Sites", action => "page" };
+
 1;
     _END_OF_FILE_
     );
