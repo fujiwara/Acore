@@ -814,8 +814,25 @@ Status: 200
 <h1>Sites page.mt</h1>
 http://localhost/
 
+=== sites page deep
+--- uri
+http://localhost/sites/page/foo/bar
+--- response
+Content-Length: 22
+Content-Type: text/html; charset=utf-8
+Status: 200
 
+<h1>Sites bar.mt</h1>
 
+=== sites path
+--- uri
+http://localhost/sites/path/foo/bar
+--- response
+Content-Length: 22
+Content-Type: text/html; charset=utf-8
+Status: 200
+
+<h1>Sites foo.mt</h1>
 
 === ovreride finalize
 --- preprocess
