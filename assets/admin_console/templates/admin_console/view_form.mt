@@ -49,9 +49,10 @@
               <input type="text" name="id" value="_design/" size="20"/>
 ?   }
               <fieldset>
-                <legend><?= $c->req->param('id') ?>
+                <legend><? if ($design->{_id}) { ?>
+                  <?= $design->{_id} ?>
                   <input type="button" id="delete-button" value="削除する"/>
-                </legend>
+                  <? } ?></legend>
 ? for my $view ( sort keys %{ $design->{views} } ) {
                 <div>
                   <label for="<?= $view ?>_name">Name</label>

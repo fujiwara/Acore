@@ -1,6 +1,7 @@
 package Acore::WAF::Controller::Sites;
 use strict;
 use warnings;
+use Scalar::Util qw/ blessed /;
 
 sub page {
     my ($self, $c, $args) = @_;
@@ -15,11 +16,15 @@ sub page {
     eval {
         $c->render("sites/$template");
     };
-    if ($@ =~ /could not find template file/) {
+    my $error = $@;
+    if ($error=~ /could not find template file/) {
         $c->error( 404 => $@ );
     }
-    elsif ($@) {
-        $c->error( 500 => $@ );
+    elsif (blessed $error && $error->isa('CGI::ExceptionManager::Exception') ) {
+        $c->detach;
+    }
+    elsif ($error) {
+        $c->error( 500 => $error );
     }
 }
 
