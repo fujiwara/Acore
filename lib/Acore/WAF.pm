@@ -117,9 +117,12 @@ sub _build_acore {
 
     require Acore;
     require DBI;
-    my $dbh  = DBI->connect( @{ $self->config->{dsn} } )
+    my $dbh = DBI->connect( @{ $self->config->{dsn} } )
         or die "Can't connect DB: " . DBI->errstr;
-    Acore->new({ dbh => $dbh });
+    Acore->new({
+        dbh   => $dbh,
+        cache => $self->can('cache') ? $self->cache : undef,
+    });
 }
 
 sub _build_user {
