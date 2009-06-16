@@ -1,6 +1,6 @@
 # -*- mode:perl -*-
 use strict;
-use Test::More tests => 23;
+use Test::More tests => 27;
 use Test::Exception;
 use Data::Dumper;
 use t::Cache;
@@ -21,11 +21,13 @@ BEGIN {
     isa_ok $loader => "Acore::DocumentLoader";
     is     $loader->acore => $ac;
     can_ok $loader, qw/ load has_error add_error debug /;
+    is     $loader->loaded => 0;
     $loader->debug(1);
 
     my $source = source();
     $loader->load($source);
     ok !$loader->has_error, "no error";
+    is $loader->loaded => 2;
 
     my $doc1 = $ac->get_document({ id => 1234 });
     is        $doc1->id => 1234;
@@ -45,6 +47,7 @@ BEGIN {
     my $handle = IO::Scalar->new(\$source);
     $loader->load($handle);
     ok !$loader->has_error, "no error";
+    is $loader->loaded => 2;
 
     $doc1 = $ac->get_document({ id => 1234 });
     is        $doc1->id => 1234;
@@ -57,6 +60,8 @@ BEGIN {
     isa_ok    $doc2 => "t::MyDocument";
     is        $doc2->foo => "BAR";
     is_deeply $doc2->list => ['X', 'Y', 'Z'];
+
+    isa_ok $ac->document_loader => "Acore::DocumentLoader";
 }
 
 sub source {

@@ -5,6 +5,7 @@ use warnings;
 use Data::Dumper;
 use List::MoreUtils;
 use List::Util;
+use utf8;
 
 my $PermitRole = "AdminConsoleLogin";
 
@@ -624,6 +625,44 @@ sub _do_reduce {
     push @result, [ $pre_key, $result ];
 
     @result;
+}
+
+sub upload_document_GET {
+    my ($self, $c) = @_;
+    $c->forward( $self => "is_logged_in" );
+    $c->render('admin_console/upload_document.mt');
+}
+
+sub upload_document_POST {
+    my ($self, $c) = @_;
+    $c->forward( $self => "is_logged_in" );
+
+    my $upload = $c->req->upload('file');
+    my $loader = $c->acore->document_loader;
+
+    my $auto_commit =  $c->acore->dbh->{AutoCommit};
+    $c->acore->dbh->{AutoCommit} = 0;
+    eval {
+        $loader->load( $upload->fh );
+    };
+
+    if ($@) {
+        $c->form->set_error( exception => $@ );
+        $c->acore->dbh->rollback;
+    }
+    if ( $loader->has_error ) {
+        for my $error ( @{ $loader->errors } ) {
+            $c->form->set_error( loader => $error );
+        }
+        $c->acore->dbh->rollback;
+    }
+    else {
+        $c->stash->{notice}
+            = sprintf "%d 件の Document が投入されました", $loader->loaded;
+    }
+    $c->acore->dbh->{AutoCommit} = $auto_commit;
+
+    $c->render('admin_console/upload_document.mt');
 }
 
 1;

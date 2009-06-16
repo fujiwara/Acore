@@ -30,6 +30,10 @@
                 <a class="action_viewmag" href="<?= $c->uri_for('/admin_console/view') ?>">View の管理</a>
               </div>
 
+              <div class="item">
+                <a class="action_db_add" href="<?= $c->uri_for('/admin_console/upload_document') ?>">Document の一括投入</a>
+              </div>
+
               <!-- /menu -->
             </div>
           </div>

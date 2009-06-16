@@ -35,9 +35,20 @@ has dbh => (
     is => "rw",
 );
 
+has document_loader => (
+    is         => "rw",
+    lazy_build => 1,
+);
+
 sub _build_storage {
     my $self = shift;
     Acore::Storage->new({ dbh => $self->{dbh} })
+}
+
+sub _build_document_loader {
+    my $self = shift;
+    require Acore::DocumentLoader;
+    Acore::DocumentLoader->new({ acore => $self });
 }
 
 __PACKAGE__->meta->make_immutable;

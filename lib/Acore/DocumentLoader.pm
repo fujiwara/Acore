@@ -24,10 +24,16 @@ has debug => (
     default => 0,
 );
 
+has loaded => (
+    is      => "rw",
+    default => 0,
+);
+
 sub load {
     my $self = shift;
     my $arg  = shift;
 
+    $self->loaded(0);
     if (ref $arg) {
         $self->_load_from_stream($arg);
     }
@@ -55,6 +61,7 @@ sub _load_from_stream {
     my $count  = 0;
  LINE:
     while ( my $line = <$handle> ) {
+        utf8::decode($line) unless utf8::is_utf8($line);
         $count++;
         if ( $line =~ /^$Separator$/ && $buffer ) {
             $self->_load_object($buffer, $count);
@@ -63,7 +70,7 @@ sub _load_from_stream {
         }
         $buffer .= $line;
     }
-    $self->_load_object($buffer);
+    $self->_load_object($buffer) if $buffer;
 }
 
 sub _load_from_string {
@@ -77,22 +84,29 @@ sub _load_from_string {
     }
 }
 use Data::Dumper;
-
 sub _load_object {
     my $self   = shift;
     my ($yaml, $count) = @_;
     my $object = eval { YAML::Load($yaml) };
-    if ($@ || !$object) {
+    if ($@ || ! ref $object eq 'HASH') {
         $self->add_error("Can't load from YAML at line $count. $@");
         return;
     }
 
-    my $class = $object->{_class} || "Acore::Document";
+    my $class = $object->{_class} ||= "Acore::Document";
     $class->require
         or return $self->add_error("Cant't require $class at line $count. $@");
 
     my $document = $class->from_object($object);
-    $self->acore->put_document($document);
+    eval {
+        $self->acore->put_document($document);
+    };
+    if ($@) {
+        $self->add_error("Can't load into Acore. $@");
+    }
+    else {
+        $self->{loaded}++;
+    }
 }
 
 1;
