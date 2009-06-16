@@ -232,20 +232,33 @@ sub document_list_GET {
     my $offset = ( $page - 1 ) * $limit;
 
     $c->form->check(
-        type => [['CHOICE', 'path', 'tag', '']],
+        type => ['ASCII'],
     );
-    $c->error( 500 ) if $c->form->has_error;
+    $c->error( 500 => "invalid type" ) if $c->form->has_error;
 
     $c->forward( $self => "_document_add_keys" );
 
     my $type  = $c->req->param('type');
     my $query = $c->req->param('q');
-     if ( $type && $query ne '' ) {
+    if ( $type =~ /\A(?:path|tags)\z/ && $query ne '' ) {
         $c->stash->{all_documents} = [
             $c->acore->search_documents({
                 $type  => $query,
                 offset => $offset,
                 limit  => $limit,
+            }),
+        ];
+    }
+    elsif ( $type && $query ne '' ) {
+        my @args = ($c->req->param('match') eq 'like')
+                 ? ( key_like => $query . "%" )
+                 : ( key      => $query       );
+        $c->stash->{all_documents} = [
+            $c->acore->search_documents({
+                view   => "${type}/all",
+                offset => $offset,
+                limit  => $limit,
+                @args,
             }),
         ];
     }

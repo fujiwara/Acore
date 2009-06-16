@@ -29,20 +29,21 @@
    my $page   = $c->stash->{page};
    my $type   = $c->req->param('type');
    my $query  = $c->req->param('q');
+   my $match  = $c->req->param('match');
 ?>
               <? if ( $page >= 2 ) { ?>
-              <a href="<?= $c->uri_for('/admin_console/document_list', { page => $page - 1, type => $type, q => $query }) ?>">&lt;</a> |
+              <a href="<?= $c->uri_for('/admin_console/document_list', { page => $page - 1, type => $type, q => $query, match => $match }) ?>">&lt;</a> |
               <? } ?>
               <?= $offset + 1 ?> 〜 <?= $offset + $limit ?>
               |
-              <a href="<?= $c->uri_for('/admin_console/document_list', { page => $page + 1, type => $type, q => $query }) ?>">&gt;</a>
+              <a href="<?= $c->uri_for('/admin_console/document_list', { page => $page + 1, type => $type, q => $query, match => $match }) ?>">&gt;</a>
             </p>
             <form action="<?= $c->uri_for('/admin_console/document') ?>" method="post" id="delete-form">
               <input type="hidden" name="sid" value="<?= $c->session->session_id ?>"/>
             <table class="data">
               <tbody>
                 <tr>
-                  <th class="first">
+                  <th class="first" style="width: 1em;">
                     <span id="toggle-all-check">＋</span>
                   </th>
                   <th>id</th>

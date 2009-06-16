@@ -1,8 +1,10 @@
 ? my $c = $_[0];
             <form action="<?= $c->uri_for('/admin_console/document_list') ?>" method="get" id="document-search-form">
               <select name="type" id="type-selector">
-                <option value="path"> path </option>
-                <option value="tag"> tag </option>
+? for my $design ( $c->acore->storage->document->all_designs ) {
+?     (my $name = $design->{id}) =~ s{^_design/}{};
+                <option value="<?= $name ?>"><?= $name ?></option>
+? }
               </select> で <input type="text" name="q" size="20" /> を
               <span id="selector-notice"></span>
               <input type="submit" value="検索" />
@@ -23,8 +25,11 @@
                 if (type === 'path') {
                   $('#selector-notice').html('前方一致');
                 }
-                else {
+                else if (type === 'tags') {
                   $('#selector-notice').html('完全一致');
+                }
+                else {
+                  $('#selector-notice').html('<select name="match"><option value="like">前方一致</option><option value="full">完全一致</option></select>');
                 }
               }
               type_changed();
