@@ -1,6 +1,7 @@
 <?
    my $c = $_[0];
-   $c->stash->{title} = "Document の管理";
+   $c->stash->{title}          = "Document の管理";
+   $c->stash->{load_jquery_ui} = 1;
 ?>
 ?=r $c->render_part("admin_console/header.mt");
 ?=r $c->render_part("admin_console/container.mt");
@@ -14,7 +15,8 @@
         <div id="beta">
           <div id="beta-inner">
             <h2 class="icon"><div class="mimetype_kmultiple">Document の管理</div></h2>
-            <h3><a href="<?= $c->uri_for('/admin_console/document_create_form') ?>">新規作成</a></h3>
+            <h3 class="icon"><div class="mimetype_document_s"><a href="<?= $c->uri_for('/admin_console/document_create_form') ?>">新規作成</a></div></h3>
+            <h3 class="icon"><div class="action_db_add_s"><a href="<?= $c->uri_for('/admin_console/upload_document') ?>">一括投入</a></div></h3>
           </div>
           <div class="data">
 
@@ -35,10 +37,16 @@
               |
               <a href="<?= $c->uri_for('/admin_console/document_list', { page => $page + 1, type => $type, q => $query }) ?>">&gt;</a>
             </p>
+            <form action="<?= $c->uri_for('/admin_console/document') ?>" method="post" id="delete-form">
+              <input type="hidden" name="sid" value="<?= $c->session->session_id ?>"/>
             <table class="data">
               <tbody>
                 <tr>
-                  <th class="first">id</th><th>path</th>
+                  <th class="first">
+                    <span id="toggle-all-check">＋</span>
+                  </th>
+                  <th>id</th>
+                  <th>path</th>
 ? my $keys = $c->session->get('document_show_keys') || [];
 ? for my $key ( @$keys ) {
                   <th><?= $key ?></th>
@@ -48,6 +56,7 @@
                 </tr>
 ? for my $doc ( @{ $c->stash->{all_documents} } ) {
                 <tr>
+                  <td><input type="checkbox" name="id" value="<?= $doc->id ?>" class="document-id-check"/></td>
                   <td><a href="<?= $c->uri_for('/admin_console/document_form', { id => $doc->id } ) ?>" title="<?= $doc->{title} ?>"><?= $doc->id ?></a></td>
                   <td><?= $doc->path ?></td>
 ? for my $key ( @$keys ) {
@@ -60,6 +69,8 @@
 ? }
               </tbody>
             </table>
+            <input type="button" value="チェックした Document を削除" id="delete-button" />
+            </form>
           </div>
         </div>
         <div id="gamma">
@@ -68,5 +79,65 @@
         </div>
       </div>
     </div>
+
+    <div id="delete-dialog" title="確認">
+      <span class="ui-icon ui-icon-alert" style="float:left; margin:0 7px 20px 0;"></span>
+      選択されたドキュメントを削除しますか?
+    </div>
+    <script type="text/javascript">
+      $('#delete-dialog').dialog({
+        bgiframe: true,
+        resizable: false,
+        height:180,
+        modal: true,
+        overlay: {
+          backgroundColor: '#000',
+          opacity: 0.5
+        },
+        buttons: {
+          '削除する': function() {
+             $(this).dialog('close');
+             $('#delete-form')
+               .append('<input type="hidden" name="_method" value="DELETE" />')
+               .submit();
+          },
+          Cancel: function() {
+             $(this).dialog('close');
+          }
+        }
+      }).dialog('close');
+
+      $('#delete-button').click( function () {
+         $('#delete-dialog').dialog('open');
+      });
+    </script>
+    <script type="text/javascript">
+      var show_delete_button = function () {
+        if ( $('input.document-id-check[checked=true]')[0] ) {
+          $('#delete-button').show();
+        }
+        else {
+          $('#delete-button').hide();
+        }
+      }
+      show_delete_button();
+
+      $('input.document-id-check').click(show_delete_button);
+
+      $('#toggle-all-check')
+        .css({ cursor: "pointer" })
+        .click( function() {
+           var flag = false;
+           if ($(this).html() == '＋') {
+             flag = true;
+             $(this).html('ー');
+           }
+           else {
+             $(this).html('＋');
+           }
+           $('input.document-id-check').attr("checked", flag);
+           show_delete_button();
+        })
+    </script>
 </body>
 </html>

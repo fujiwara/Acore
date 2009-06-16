@@ -290,17 +290,23 @@ sub _dispatch {
     my $sub = $controller->can("${action}_${method}")
            || $controller->can($action);
 
+    my $dispatch_to
+        = $controller->can("${action}_${method}") ? "${action}_${method}"
+                      : $controller->can($action) ? $action
+                      :                             undef;
+
     $self->error(
         404 => "dispatch action (${controller}::${action} or ${controller}::${action}_${method}) is not found. for " . $self->req->uri
-    ) unless $sub;
+    ) unless $dispatch_to;
 
     my $auto = $controller->can("_auto");
     if ($auto) {
         $auto->( $controller, $self, $rule->{args} )
             or return;
     }
+    $self->log->debug("dispatch to ${controller}->$dispatch_to");
 
-    $sub->( $controller, $self, $rule->{args} );
+    $controller->$dispatch_to( $self, $rule->{args} );
 }
 
 sub error {

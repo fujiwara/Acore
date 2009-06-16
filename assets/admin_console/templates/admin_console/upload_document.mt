@@ -32,9 +32,13 @@
 ?      }
 
 ?      if ($c->stash->{notice}) {
-               <div class="notice">
-                 <p><?= $c->stash->{notice} ?></p>
-               </div>
+            <div class="ui-widget">
+              <div class="ui-state-highlight ui-corner-all" style="margin-top: 20px; padding: 0 .7em;">
+                <p><span class="ui-icon ui-icon-info" style="float: left; margin-right: .3em;"></span>
+                <p><?= $c->stash->{notice} ?></p>
+                <p><a href="<?= $c->uri_for('/admin_console/document_list') ?>">一覧へ</a></p>
+              </div>
+            </div>
 ?      }
               <fieldset>
                 <legend>YAML</legend>

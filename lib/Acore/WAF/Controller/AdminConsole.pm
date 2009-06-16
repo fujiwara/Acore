@@ -227,8 +227,8 @@ sub document_list_GET {
 
     $c->forward( $self => "is_logged_in" );
 
-    my $limit  = 20;
-    my $page   = int( $c->req->param('page') || 1 );
+    my $limit  = int( $c->req->param('limit') || 20 );
+    my $page   = int( $c->req->param('page')  || 1  );
     my $offset = ( $page - 1 ) * $limit;
 
     $c->form->check(
@@ -373,13 +373,11 @@ sub document_DELETE {
 
     $c->forward( $self => "is_logged_in" );
 
-    my $id  = $c->req->param('id');
-    my $doc = $c->acore->get_document({ id => $id });
-    $c->error( 404 => "document not found." )
-        unless $doc;
-
-    $c->acore->delete_document($doc);
-
+    for my $id ( $c->req->param('id') ) {
+        my $doc = $c->acore->get_document({ id => $id });
+        next unless $doc;
+        $c->acore->delete_document($doc);
+    }
     $c->render('admin_console/document_deleted.mt');
 }
 
