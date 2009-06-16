@@ -1,13 +1,6 @@
 <?
    my $c = $_[0];
    $c->stash->{title} = "Document の管理";
-   sub smart {
-       joint {
-           my $arg = shift;
-           ref $arg eq 'ARRAY' ? "[" . join(", ", @$arg) . "]"
-                               : $arg;
-       };
-   }
 ?>
 ?=r $c->render_part("admin_console/header.mt");
 ?=r $c->render_part("admin_console/container.mt");
@@ -58,7 +51,7 @@
                   <td><a href="<?= $c->uri_for('/admin_console/document_form', { id => $doc->id } ) ?>" title="<?= $doc->{title} ?>"><?= $doc->id ?></a></td>
                   <td><?= $doc->path ?></td>
 ? for my $key ( @$keys ) {
-                  <td><?= $doc->{$key} | smart ?></td>
+                  <td><?= $doc->{$key} | json ?></td>
 ? }
 
                   <td><?= $doc->created_on ?></td>
