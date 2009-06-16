@@ -96,7 +96,7 @@ my $Json;
 sub json {
     joint {
         $Json ||= do { require JSON; JSON->new };
-        $Json->encode($_[0]);
+        ref $_[0] ? $Json->encode($_[0]) : $_[0];
     };
 }
 
