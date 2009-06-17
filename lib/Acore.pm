@@ -248,15 +248,15 @@ sub search_documents {
         $args->{key_like} = delete($args->{path}) . "%";
         $view = "path/all";
     }
-    elsif (defined $args->{tag}) {
-        $args->{key} = delete $args->{tag};
+    elsif (defined $args->{tag} || defined $args->{tags}) {
+        $args->{key} = delete $args->{tag} || delete $args->{tags};
         $view = "tags/all";
     }
     elsif (defined $args->{view}) {
         $view = delete $args->{view};
     }
     else {
-        croak("no arguments path or tags");
+        croak("no arguments path or tags or view");
     }
 
     my $itr = $self->storage->document->view( $view => $args );
