@@ -62,7 +62,7 @@
                   <td><a href="<?= $c->uri_for('/admin_console/document_form', { id => $doc->id } ) ?>" title="<?= $doc->{title} ?>"><?= $doc->id ?></a></td>
                   <td><?= $doc->path ?></td>
 ? for my $key ( @$keys ) {
-                  <td><?= $doc->{$key} | json ?></td>
+                  <td><?= $doc->param($key) | json ?></td>
 ? }
 
                   <td><?= $doc->created_on ?></td>

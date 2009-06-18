@@ -516,9 +516,11 @@ sub view_form_POST {
         return $c->fillform;
     }
 
+    $c->forward( $self, "_off_auto_commit" );
     my $backend = $c->acore->storage->document;
     $backend->put($design);
     $backend->create_view( $design->{_id}, $design );
+    $c->forward( $self, "_restore_auto_commit" );
 
     $c->redirect(
         $c->uri_for(
@@ -654,8 +656,7 @@ sub upload_document_POST {
     my $upload = $c->req->upload('file');
     my $loader = $c->acore->document_loader;
 
-    my $auto_commit =  $c->acore->dbh->{AutoCommit};
-    $c->acore->dbh->{AutoCommit} = 0;
+    $c->forward( $self, "_off_auto_commit" );
     eval {
         $loader->load( $upload->fh );
     };
@@ -674,10 +675,24 @@ sub upload_document_POST {
         $c->stash->{notice}
             = sprintf "%d 件の Document が投入されました", $loader->loaded;
     }
-    $c->acore->dbh->{AutoCommit} = $auto_commit;
+    $c->forward( $self, "_restore_auto_commit" );
 
     $c->render('admin_console/upload_document.mt');
 }
+
+sub _off_auto_commit {
+    my ($self, $c) = @_;
+    $c->stash->{__auto_commit}   = $c->acore->dbh->{AutoCommit};
+    $c->acore->dbh->{AutoCommit} = 0;
+    1;
+}
+
+sub _restore_auto_commit {
+    my ($self, $c) = @_;
+    $c->acore->dbh->{AutoCommit} = $c->stash->{__auto_commit};
+    1;
+}
+
 
 1;
 
