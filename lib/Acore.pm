@@ -373,10 +373,23 @@ Store Acore::Document to storage.
 
 =item search_documents
 
-Search Acore::Documents from storage, path (first match) or tag.
+Search Acore::Documents from storage, path (first match) or tag (full match) or view.
 
  @doc = $acore->search_documents({ path => "/foo/bar" });
  @doc = $acore->search_documents({ tag  => "cat" });
+ @doc = $acore->search_documents({ view => "xxx/all" });
+ 
+ # options
+ @doc = $acore->search_documents({
+     view          => "xxx/all",
+     key           => ["foo", "bar"],
+     key_reverse   => 1,
+     value_reverse => 1,
+     limit         => 20,
+     offfset       => 10,
+ });
+
+Arguments are pass to DBIx::CouchLike->view( $view, \%arguments );
 
 =item delete_document
 
@@ -397,6 +410,8 @@ Cache object which has Cache::Cache like interfaces.
 FUJIWARA E<lt>fujiwara@topicmaker.comE<gt>
 
 =head1 SEE ALSO
+
+L<DBIx::CouchLike>
 
 =head1 LICENSE
 
