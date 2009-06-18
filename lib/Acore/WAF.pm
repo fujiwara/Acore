@@ -17,6 +17,7 @@ use URI::Escape;
 use CGI::ExceptionManager;
 use CGI::ExceptionManager::StackTrace;
 use Clone qw/ clone /;
+use Text::SimpleTable;
 use Data::Dumper;
 
 our $VERSION = 0.1;
@@ -90,6 +91,22 @@ has debug => (
     is => "rw",
 );
 
+has debug_report => (
+    is      => 'rw',
+    isa     => 'Text::SimpleTable',
+    lazy    => 1,
+    default => sub {
+        my $self = shift;
+        require Text::SimpleTable;
+        Text::SimpleTable->new([62, 'Action'], [9, 'Time']);
+    },
+);
+
+has depth => (
+    is      => 'rw',
+    default => 0,
+);
+
 sub _build_log {
     my $self = shift;
     Acore::WAF::Log->new;
@@ -133,9 +150,6 @@ sub _build_user {
     $user;
 }
 
-__PACKAGE__->meta->make_immutable;
-no Any::Moose;
-
 my $Triggers = {};
 
 sub setup {
@@ -178,23 +192,38 @@ sub _decode_request {
     }
 }
 
+
 sub handle_request {
     my $self = shift;
     my ($config, $req) = @_;
     my $class = ref $self;
 
     $self->config($config);
-    $config->{include_path} ||= [];
-    $self->encoding( $config->{encoding} )
-        if $config->{encoding};
+    $self->request($req);
+
+    $self->debug( $ENV{DEBUG} || $config->{debug} || 0 );
 
     $self->log->level( $config->{log}->{level} )
         if defined $config->{log}->{level};
 
-    $self->request($req);
+    $config->{include_path} ||= [];
+    $self->encoding( $config->{encoding} )
+        if $config->{encoding};
+
+    if ( $self->debug ) {
+        $self->log->info("*** Request");
+        $self->log->debug(sprintf(
+            q{"%s" request for "%s" from "%s"},
+            $req->method, $req->uri, $req->address
+        ));
+        $self->_debug_request_data if $req->param;
+    }
     $self->_decode_request;
+
+    require Time::HiRes;
+    my $start = [Time::HiRes::gettimeofday()];
+
     $self->_triggers( $Triggers->{$class} );
-    $self->debug( $ENV{DEBUG} || $config->{debug} || 0 );
 
     no warnings "redefine";
     local *CGI::ExceptionManager::StackTrace::output = sub {
@@ -210,9 +239,30 @@ sub handle_request {
         },
         powered_by => __PACKAGE__,
     );
-    $self->finalize();
+
+    if ($self->debug) {
+        my $elapsed = sprintf '%f', Time::HiRes::tv_interval($start);
+        my $av      = $elapsed == 0 ? '??' : sprintf '%.3f', 1 / $elapsed;
+        $self->log->debug(
+            "Request took ${elapsed}s (${av}/s)\n" . $self->debug_report->draw
+        );
+    }
     $self->log->flush;
+    $self->finalize();
+
     return $self->response;
+}
+
+sub _debug_request_data {
+    my $self = shift;
+
+    my $table = Text::SimpleTable->new([20, 'name'], [51, 'value']);
+    my $req   = $self->request;
+    for my $name ( $req->param ) {
+        my @v = $req->param($name);
+        $table->row( $name, $_ ) for @v;
+    }
+    $self->log->debug("Request parameters\n" . $table->draw);
 }
 
 sub _output_stack_trace {
@@ -274,10 +324,13 @@ sub _dispatch {
         if $action =~ /^_/;
 
     if ($self->debug) {
-        local $Data::Dumper::Indent = 1;
-        $self->log->debug(
-            "dispatch rule: " . Data::Dumper->Dump([$rule], ["rule"])
-        );
+        my $table = Text::SimpleTable->new( 20, 51 );
+        $table->row( controller => $rule->{controller} );
+        $table->row( action     => $rule->{action} );
+        for my $key (sort keys %{ $rule->{args} }) {
+            $table->row( "args.$key" => $rule->{args}->{$key} );
+        }
+        $self->log->debug( "Dispatch info\n" . $table->draw );
     }
     my $controller = $rule->{controller};
     $controller->require
@@ -306,7 +359,7 @@ sub _dispatch {
     }
     $self->log->debug("dispatch to ${controller}->$dispatch_to");
 
-    $controller->$dispatch_to( $self, $rule->{args} );
+    $self->forward( $controller, $dispatch_to, $rule->{args} );
 }
 
 sub error {
@@ -460,6 +513,26 @@ sub _call_trigger {
         $sub->($self);
     }
 }
+
+
+around "forward" => sub {
+    my $next = shift;
+    my ($self, $class, $action, $args) = @_;
+    return $next->(@_) unless $self->debug;
+
+    my $start   = [ Time::HiRes::gettimeofday() ];
+    $self->{depth}++;
+    my $res     = $next->(@_);
+    my $elapsed = Time::HiRes::tv_interval($start);
+
+    my $indent = $self->{depth} > 1 ? " " x $self->{depth} . "-> " : "";
+    $self->debug_report->row(
+        "$indent${class}->${action}", sprintf("%fs", $elapsed)
+    );
+
+    $self->{depth}--;
+    $res;
+};
 
 sub forward {
     my $self = shift;
@@ -615,6 +688,9 @@ EOF
     , $c )->as_string;
     $c->response->body($body);
 }
+
+__PACKAGE__->meta->make_immutable;
+no Any::Moose;
 
 1;
 

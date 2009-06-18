@@ -9,7 +9,7 @@ BEGIN {
     use_ok 'Acore';
 };
 
-for my $cache ( undef, t::Cache->new({}) )
+for my $cache ( undef, t::Cache->new() )
 {
     my $dbh = do "t/connect_db.pm";
     my $ac = Acore->new({ dbh => $dbh });

@@ -2,24 +2,23 @@ package t::Cache;
 
 use strict;
 use warnings;
-use base qw/ Cache::Memory /;
-our $debug = 0;
-sub set {
-    my $self = shift;
-    warn "cache set @_\n" if $debug;
-    $self->SUPER::set(@_);
-}
+use Any::Moose;
 
 sub get {
-    my $self = shift;
-    warn sprintf "cache get @_ \n" if $debug;
-    $self->SUPER::get(@_);
+    my ($self, $key) = @_;
+    $self->{$key};
+}
+
+sub set {
+    my ($self, $key, $value) = @_;
+    $self->{$key} = $value;
 }
 
 sub remove {
-    my $self = shift;
-    warn "cache remove @_\n" if $debug;
-    $self->SUPER::remove(@_);
+    my ($self, $key) = @_;
+    delete $self->{$key};
+    undef;
 }
+
 
 1;
