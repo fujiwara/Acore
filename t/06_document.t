@@ -1,6 +1,6 @@
 # -*- mode:perl -*-
 use strict;
-use Test::More tests => 52;
+use Test::More tests => 56;
 use Test::Exception;
 use Data::Dumper;
 use t::Cache;
@@ -34,6 +34,7 @@ for my $cache ( undef, t::Cache->new({}) )
     ok $doc->id, "has id";
     is $doc->path => "/foo/bar/baz", "path ok";
     is $doc->{body} => "This is a document.", "body ok";
+    ok ! ref $doc->id, "id is not ref";
 
     my $doc2 = $ac->get_document({ id => $doc->id });
     is_deeply $doc2 => $doc, "same object";
@@ -61,6 +62,7 @@ for my $cache ( undef, t::Cache->new({}) )
     my $id = $ac->new_document_id;
     ok $id;
     ok $id != $ac->new_document_id, "different id";
+    ok !ref $id;
 
     my @doc = $ac->all_documents;
     is_deeply \@doc => [
