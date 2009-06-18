@@ -9,7 +9,7 @@
               <span id="selector-notice"></span>
               <input type="text" name="limit" size="4" value="<?= $c->stash->{limit} ?>"/>docs/page
               <input type="submit" value="検索" />
-              <input type="checkbox" name="download" value="1" />Download
+              <input type="checkbox" name="download" value="1" id="download" /><label for="download">Download</lable>
               <br/>
               表示する属性
               <span id="add-document-keys">
