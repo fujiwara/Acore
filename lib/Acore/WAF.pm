@@ -210,6 +210,7 @@ sub handle_request {
     $self->encoding( $config->{encoding} )
         if $config->{encoding};
 
+    $self->_decode_request;
     if ( $self->debug ) {
         $self->log->info("*** Request");
         $self->log->debug(sprintf(
@@ -218,7 +219,6 @@ sub handle_request {
         ));
         $self->_debug_request_data if $req->param;
     }
-    $self->_decode_request;
 
     require Time::HiRes;
     my $start = [Time::HiRes::gettimeofday()];
