@@ -906,11 +906,14 @@ Forward to other controller's action.
  package YourApp::Controller::Foo;
  sub action {
      my ($self, $c, @args) = @_;
-     $c->forward($self, "other");
+     my $ret = $c->forward($self, "other");
  }
  sub other {
      my ($self, $c) = @_;
+     return $value;
  }
+
+A forwarded function can return single value. Can't return @array;
 
 =item add_trigger
 

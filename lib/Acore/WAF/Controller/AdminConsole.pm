@@ -389,11 +389,14 @@ sub document_DELETE {
 
     $c->forward( $self => "is_logged_in" );
 
+    $c->forward( $self => "_off_auto_commit" );
     for my $id ( $c->req->param('id') ) {
         my $doc = $c->acore->get_document({ id => $id });
         next unless $doc;
         $c->acore->delete_document($doc);
     }
+    $c->forward( $self => "_restore_auto_commit" );
+
     $c->render('admin_console/document_deleted.mt');
 }
 
@@ -569,13 +572,13 @@ sub view_test_POST {
     require JSON;
 
     my $map  = $c->forward( $self => "_eval_code", $c->req->param('map') );
-    my @pair = $c->forward( $self => "_do_map", $map );
+    my $pair = $c->forward( $self => "_do_map", $map );
     if ( $c->req->param('reduce') ) {
         my $reduce =
             $c->forward( $self => "_eval_code", $c->req->param('reduce') );
-        @pair = $c->forward( $self => "_do_reduce", $reduce, @pair );
+        $pair = $c->forward( $self => "_do_reduce", $reduce, @$pair );
     }
-    $c->stash->{pairs} = \@pair;
+    $c->stash->{pairs} = $pair;
     $c->render("admin_console/view_test.mt");
 }
 
@@ -610,7 +613,7 @@ sub _do_map {
             return $c->res->body("Error at mapping.: $@");
         }
     }
-    sort { $a->[0] cmp $b->[0] } @pair;
+    [ sort { $a->[0] cmp $b->[0] } @pair ];
 }
 
 sub _do_reduce {
@@ -640,7 +643,7 @@ sub _do_reduce {
     }
     push @result, [ $pre_key, $result ];
 
-    @result;
+    \@result;
 }
 
 sub upload_document_GET {
