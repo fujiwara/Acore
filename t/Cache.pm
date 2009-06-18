@@ -2,7 +2,7 @@ package t::Cache;
 
 use strict;
 use warnings;
-use base qw/ Cache::MemoryCache /;
+use base qw/ Cache::Memory /;
 our $debug = 0;
 sub set {
     my $self = shift;

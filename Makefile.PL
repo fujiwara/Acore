@@ -27,7 +27,7 @@ requires 'HTML::FillInForm';
 test_requires 'DBD::SQLite';
 test_requires 'Test::Base';
 test_requires 'Text::Diff';
-test_requires 'Cache::MemoryCache';
+test_requires 'Cache::Memory';
 
 tests 't/*.t';
 author_tests 'xt';
