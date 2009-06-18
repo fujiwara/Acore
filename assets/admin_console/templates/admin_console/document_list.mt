@@ -32,11 +32,11 @@
    my $match  = $c->req->param('match');
 ?>
               <? if ( $page >= 2 ) { ?>
-              <a href="<?= $c->uri_for('/admin_console/document_list', { page => $page - 1, type => $type, q => $query, match => $match }) ?>">&lt;</a> |
+              <a href="<?= $c->uri_for('/admin_console/document_list', { page => $page - 1, type => $type, q => $query, match => $match, limit => $limit }) ?>">&lt;</a> |
               <? } ?>
               <?= $offset + 1 ?> 〜 <?= $offset + $limit ?>
               |
-              <a href="<?= $c->uri_for('/admin_console/document_list', { page => $page + 1, type => $type, q => $query, match => $match }) ?>">&gt;</a>
+              <a href="<?= $c->uri_for('/admin_console/document_list', { page => $page + 1, type => $type, q => $query, match => $match, limit => $limit }) ?>">&gt;</a>
             </p>
             <form action="<?= $c->uri_for('/admin_console/document') ?>" method="post" id="delete-form">
               <input type="hidden" name="sid" value="<?= $c->session->session_id ?>"/>
@@ -72,6 +72,14 @@
             </table>
             <input type="button" value="チェックした Document を削除" id="delete-button" />
             </form>
+            <p>
+              <? if ( $page >= 2 ) { ?>
+              <a href="<?= $c->uri_for('/admin_console/document_list', { page => $page - 1, type => $type, q => $query, match => $match, limit => $limit }) ?>">&lt;</a> |
+              <? } ?>
+              <?= $offset + 1 ?> 〜 <?= $offset + $limit ?>
+              |
+              <a href="<?= $c->uri_for('/admin_console/document_list', { page => $page + 1, type => $type, q => $query, match => $match, limit => $limit }) ?>">&gt;</a>
+            </p>
           </div>
         </div>
         <div id="gamma">

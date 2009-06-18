@@ -274,8 +274,16 @@ sub document_list_GET {
     $c->stash->{offset} = $offset;
     $c->stash->{limit}  = $limit;
     $c->stash->{page}   = $page;
-    $c->render('admin_console/document_list.mt');
-    $c->fillform;
+
+    if ( $c->req->param('download') ) {
+        require YAML;
+        $c->render('admin_console/document_list_download.mt');
+        $c->res->content_type('application/x-yaml; charset=utf-8');
+    }
+    else {
+        $c->render('admin_console/document_list.mt');
+        $c->fillform;
+    }
 }
 
 sub _document_add_keys {
