@@ -1,15 +1,16 @@
 ? my $c = $_[0];
             <form action="<?= $c->uri_for('/admin_console/document_list') ?>" method="get" id="document-search-form">
               <select name="type" id="type-selector">
+                <option value=""></option>
 ? for my $design ( $c->acore->storage->document->all_designs ) {
 ?     (my $name = $design->{id}) =~ s{^_design/}{};
                 <option value="<?= $name ?>"><?= $name ?></option>
 ? }
               </select> で <input type="text" name="q" size="20" /> を
               <span id="selector-notice"></span>
+              <input type="submit" value="表示" />
               <input type="text" name="limit" size="4" value="<?= $c->stash->{limit} ?>"/>docs/page
-              <input type="submit" value="検索" />
-              <input type="checkbox" name="download" value="1" id="download" /><label for="download">Download</lable>
+              <input type="checkbox" name="download" value="1" id="download" /><label for="download">Download</label>
               <br/>
               表示する属性
               <span id="add-document-keys">

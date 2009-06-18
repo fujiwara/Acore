@@ -231,11 +231,6 @@ sub document_list_GET {
     my $page   = int( $c->req->param('page')  || 1  );
     my $offset = ( $page - 1 ) * $limit;
 
-    $c->form->check(
-        type => ['ASCII'],
-    );
-    $c->error( 500 => "invalid type" ) if $c->form->has_error;
-
     $c->forward( $self => "_document_add_keys" );
 
     my $type  = $c->req->param('type');

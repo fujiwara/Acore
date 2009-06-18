@@ -40,6 +40,7 @@
             </p>
             <form action="<?= $c->uri_for('/admin_console/document') ?>" method="post" id="delete-form">
               <input type="hidden" name="sid" value="<?= $c->session->session_id ?>"/>
+            <input type="button" value="チェックした Document を削除" class="delete-button" />
             <table class="data">
               <tbody>
                 <tr>
@@ -70,7 +71,7 @@
 ? }
               </tbody>
             </table>
-            <input type="button" value="チェックした Document を削除" id="delete-button" />
+            <input type="button" value="チェックした Document を削除" class="delete-button" />
             </form>
             <p>
               <? if ( $page >= 2 ) { ?>
@@ -116,17 +117,17 @@
         }
       }).dialog('close');
 
-      $('#delete-button').click( function () {
+      $('input.delete-button').click( function () {
          $('#delete-dialog').dialog('open');
       });
     </script>
     <script type="text/javascript">
       var show_delete_button = function () {
         if ( $('input.document-id-check[checked=true]')[0] ) {
-          $('#delete-button').show();
+          $('input.delete-button').show();
         }
         else {
-          $('#delete-button').hide();
+          $('input.delete-button').hide();
         }
       }
       show_delete_button();

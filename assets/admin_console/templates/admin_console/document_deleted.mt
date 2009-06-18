@@ -14,7 +14,7 @@
         </div>
         <div id="beta">
           <div id="beta-inner">
-            <div class="form-container">
+            <div class="data">
 
               <h2 class="icon"><div class="mimetype_kmultiple"><a href="<?= $c->uri_for('/admin_console/document_list') ?>">Document の管理</a></div></h2>
 
