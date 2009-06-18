@@ -21,6 +21,7 @@ use Text::SimpleTable;
 use Data::Dumper;
 
 our $VERSION = 0.1;
+our $COUNT   = 1;
 
 has stash => (
     is      => "rw",
@@ -212,12 +213,13 @@ sub handle_request {
 
     $self->_decode_request;
     if ( $self->debug ) {
-        $self->log->info("*** Request");
+        $self->log->info("*** Request $COUNT");
         $self->log->debug(sprintf(
             q{"%s" request for "%s" from "%s"},
             $req->method, $req->uri, $req->address
         ));
         $self->_debug_request_data if $req->param;
+        $COUNT++;
     }
 
     require Time::HiRes;
