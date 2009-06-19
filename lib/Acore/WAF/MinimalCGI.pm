@@ -19,6 +19,8 @@ use URI;
         );
         $self->{base};
     }
+    sub address { $ENV{REMOTE_ADDR} }
+
     no warnings 'redefine';
     sub method { $ENV{REQUEST_METHOD} || 'GET' }
 }

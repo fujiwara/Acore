@@ -1,6 +1,6 @@
 # -*- mode:perl -*-
 use strict;
-use Test::More tests => 9;
+use Test::More tests => 10;
 use HTTP::Request;
 
 BEGIN {
@@ -14,6 +14,7 @@ BEGIN {
     $ENV{QUERY_STRING}      = "input=%E3%81%82&input=%E3%81%84&input=%E3%81%86";
     $ENV{PATH_INFO}         = "/act/minimal_cgi";
     $ENV{HTTP_HOST}         = "localhost";
+    $ENV{REMOTE_ADDR}       = "127.0.0.1";
 };
 
 {
@@ -48,5 +49,6 @@ BEGIN {
     like $data => qr{入力はあいうです。};
     like $data => qr{base=http://localhost/index\.cgi/};
     like $data => qr{path=/act/minimal_cgi};
+    like $data => qr{address=127\.0\.0\.1}
 }
 

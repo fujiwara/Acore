@@ -98,6 +98,7 @@ sub minimal_cgi {
     my $body = "入力は" . join("", @input) . "です。\n";
     $body   .= "base=" . $c->req->base . "\n";
     $body   .= "path=" . $c->req->path . "\n";
+    $body   .= "address=" . $c->req->address . "\n";
     $c->res->body( $c->encode($body) );
 }
 
