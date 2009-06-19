@@ -1,6 +1,6 @@
 # -*- mode:perl -*-
 use strict;
-use Test::More tests => 26;
+use Test::More tests => 28;
 
 BEGIN {
     use_ok 'Acore::WAF::Log';
@@ -50,5 +50,10 @@ BEGIN {
     $log->timestamp(0);
     $log->error("error message");
     like $log->buffer =>qr{^\[error\] error message};
+
+    $log->disabled(1);
+    is $log->disabled => 1;
+    $log->error('ERROR');
+    is $log->flush => undef;
 }
 

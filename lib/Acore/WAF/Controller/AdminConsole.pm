@@ -41,6 +41,7 @@ sub index {
 sub static {
     my ($self, $c, $args) = @_;
 
+    $c->log->disabled(1);
     my ($path) = grep qr{/admin_console/}, @{ $c->config->{include_path} };
     my $file = Path::Class::file( $path, "../static/", $args->{filename} );
     $c->serve_static_file($file);

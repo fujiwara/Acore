@@ -36,6 +36,11 @@ has caller => (
     default => 0,
 );
 
+has disabled => (
+    is      => "rw",
+    default => 0,
+);
+
 __PACKAGE__->meta->make_immutable;
 no Any::Moose;
 
@@ -45,6 +50,7 @@ for my $level ( keys %$Levels ) {
     *{$level} = sub {
         my ($self, $msg) = @_;
         return if $level_num > $Levels->{ $self->{level} };
+        return if $self->{disabled};
 
         $self->{buffer} .= sprintf("[%s] ", scalar localtime)
             if $self->{timestamp};
@@ -62,6 +68,7 @@ for my $level ( keys %$Levels ) {
 sub flush {
     my $self = shift;
     return unless $self->{buffer};
+    return if $self->{disabled};
     warn delete $self->{buffer};
 }
 
