@@ -108,6 +108,12 @@ has depth => (
     default => 0,
 );
 
+has stack => (
+    is      => "rw",
+    isa     => "ArrayRef",
+    default => sub { [] },
+);
+
 sub _build_log {
     my $self = shift;
     Acore::WAF::Log->new;
@@ -152,6 +158,40 @@ sub _build_user {
 }
 
 my $Triggers = {};
+
+my $Record_time = sub {
+    my $display_code = shift;
+    sub {
+        my $next   = shift;
+        my ($self) = @_;
+        return $next->(@_) unless $self->debug;
+
+        my $depth  = scalar @{ $self->stack };
+        my $indent = "  " x $depth . ($depth ? "-> " : "");
+        push @{ $self->stack }, [
+            $indent . $display_code->(@_),    # name
+            [ Time::HiRes::gettimeofday() ],  # time
+            [],                               # children
+        ];
+        my $res     = $next->(@_);
+        my $mine    = pop @{ $self->stack };
+        my $elapsed = Time::HiRes::tv_interval( $mine->[1] );
+        $mine->[1]  = sprintf("%fs", $elapsed);
+        if ( my $parent = $self->stack->[-1] ) {
+            push @{ $parent->[2] }, $mine;
+            return $res;
+        }
+
+        require Data::Visitor::Callback;
+        my @pair;
+        my $visitor = Data::Visitor::Callback->new(
+            value => sub { push @pair, $_[1] },
+        );
+        $visitor->visit($mine);
+        $self->debug_report->row($pair[$_ * 2], $pair[$_ * 2 + 1])
+            for ( 0 .. (@pair / 2) );
+    };
+};
 
 sub setup {
     my $class   = shift;
@@ -258,13 +298,13 @@ sub handle_request {
 sub _debug_request_data {
     my $self = shift;
 
-    my $table = Text::SimpleTable->new([20, 'name'], [51, 'value']);
+    my $table = Text::SimpleTable->new([20, 'Parameter'], [51, 'Value']);
     my $req   = $self->request;
-    for my $name ( $req->param ) {
+    for my $name ( sort $req->param ) {
         my @v = $req->param($name);
         $table->row( $name, $_ ) for @v;
     }
-    $self->log->debug("Request parameters\n" . $table->draw);
+    $self->log->debug("Request parameters are:\n" . $table->draw);
 }
 
 sub _output_stack_trace {
@@ -325,15 +365,6 @@ sub _dispatch {
     $self->error( 404 => "dispatch action $action is private." )
         if $action =~ /^_/;
 
-    if ($self->debug) {
-        my $table = Text::SimpleTable->new( 20, 51 );
-        $table->row( controller => $rule->{controller} );
-        $table->row( action     => $rule->{action} );
-        for my $key (sort keys %{ $rule->{args} }) {
-            $table->row( "args.$key" => $rule->{args}->{$key} );
-        }
-        $self->log->debug( "Dispatch info\n" . $table->draw );
-    }
     my $controller = $rule->{controller};
     $controller->require
         or $self->error( 500 => "Can't require $controller: $@" );
@@ -354,13 +385,21 @@ sub _dispatch {
         404 => "dispatch action (${controller}::${action} or ${controller}::${action}_${method}) is not found. for " . $self->req->uri
     ) unless $dispatch_to;
 
+    if ($self->debug) {
+        my $table = Text::SimpleTable->new( 20, 51 );
+        $table->row( controller => $controller  );
+        $table->row( action     => $dispatch_to );
+        for my $key (sort keys %{ $rule->{args} }) {
+            $table->row( "args.$key" => $rule->{args}->{$key} );
+        }
+        $self->log->debug( "Dispatch info is:\n" . $table->draw );
+    }
+
     my $auto = $controller->can("_auto");
     if ($auto) {
         $auto->( $controller, $self, $rule->{args} )
             or return;
     }
-    $self->log->debug("dispatch to ${controller}->$dispatch_to");
-
     $self->forward( $controller, $dispatch_to, $rule->{args} );
 }
 
@@ -483,6 +522,7 @@ sub render {
     $self->res->body( $self->render_part($tmpl) );
 }
 
+around "render_part" => $Record_time->( sub { sprintf "render('%s')", $_[1] } );
 sub render_part {
     my ($self, $tmpl) = @_;
     return $self->renderer->render_file( $tmpl, $self )->as_string;
@@ -516,26 +556,7 @@ sub _call_trigger {
     }
 }
 
-
-around "forward" => sub {
-    my $next = shift;
-    my ($self, $class, $action, $args) = @_;
-    return $next->(@_) unless $self->debug;
-
-    my $start   = [ Time::HiRes::gettimeofday() ];
-    $self->{depth}++;
-    my $res     = $next->(@_);
-    my $elapsed = Time::HiRes::tv_interval($start);
-
-    my $indent = $self->{depth} > 1 ? " " x $self->{depth} . "-> " : "";
-    $self->debug_report->row(
-        "$indent${class}->${action}", sprintf("%fs", $elapsed)
-    );
-
-    $self->{depth}--;
-    $res;
-};
-
+around "forward" => $Record_time->( sub { sprintf "%s->%s", @_[1,2] } );
 sub forward {
     my $self = shift;
     my ($class, $action, @args) = @_;
