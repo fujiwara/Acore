@@ -4,6 +4,7 @@ use Test::Base;
 use HTTP::Engine::Test::Request;
 use utf8;
 use Encode qw/ encode_utf8 /;
+use Math::BigInt;
 
 plan tests => (3 + 1 * blocks);
 
@@ -62,3 +63,9 @@ http://example.com/foo/?cc=dd&aa=bb
 $app->uri_for('/foo/', { aa => "あ", cc => "い" });
 --- uri
 http://example.com/foo/?cc=%E3%81%84&aa=%E3%81%82
+
+===
+--- code
+$app->uri_for('/foo/', Math::BigInt->new('123'));
+--- uri
+http://example.com/foo/123

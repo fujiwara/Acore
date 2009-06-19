@@ -455,7 +455,7 @@ sub _uri_for {
     my $base = shift;
     my $path = shift;
 
-    my @path = map { uri_escape_utf8($_) } grep {! ref $_ } @_;
+    my @path = map { uri_escape_utf8($_) } grep { ref $_ ne 'HASH' } @_;
     $path .= join("/", @path);
     $path =~ s{^/}{};
 
