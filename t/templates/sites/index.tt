@@ -1,0 +1,2 @@
+<h1>Sites index.tt</h1>
+[% c.uri_for('/') | html %]

@@ -12,15 +12,19 @@ sub page {
     if ($page =~ m{[^\w./-]}) {
         $c->error( 404 => "invalid page name: $page" );
     }
-    my $template = $page ? "$page.mt" : "index.mt";
+    my $ext      = $c->config->{sites}->{use_tt} ? "tt" : "mt";
+    my $template = $page ? "$page.$ext" : "index.$ext";
     eval {
-        $c->render("sites/$template");
+        $ext eq 'mt' ? $c->render("sites/$template")
+                     : $c->render_tt("sites/$template");
     };
     my $error = $@;
-    if ($error=~ /could not find template file/) {
+    if ( $error =~ /could not find template file/    # for MT
+      or $error =~ /file error - .* not found/    )  # for TT
+    {
         $c->error( 404 => $@ );
     }
-    elsif (blessed $error && $error->isa('CGI::ExceptionManager::Exception') ) {
+    elsif ( blessed $error && $error->isa('CGI::ExceptionManager::Exception') ) {
         $c->detach;
     }
     elsif ($error) {
@@ -52,3 +56,5 @@ __END__
         { controller => "Acore::WAF::Controller::Sites", action => "path" };
 
 
+    # for use Plugin::TT (file ext is .tt)
+    $config->{sites}->{use_tt} = 1;

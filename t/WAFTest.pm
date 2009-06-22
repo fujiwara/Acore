@@ -8,7 +8,7 @@ extends 'Acore::WAF';
 __PACKAGE__->meta->make_immutable;
 no Any::Moose;
 
-__PACKAGE__->setup(qw/ Sample FormValidator Session FillInForm /);
+__PACKAGE__->setup(qw/ Sample FormValidator Session FillInForm TT /);
 
 {
     package t::WAFTest::Dispatcher;

@@ -792,6 +792,16 @@ Status: 400
 
 Bad Request
 
+=== sites not found
+--- uri
+http://localhost/sites/xxx
+--- response
+Content-Length: 9
+Content-Type: text/html; charset=utf-8
+Status: 404
+
+Not Found
+
 === sites index
 --- uri
 http://localhost/sites/
@@ -833,6 +843,31 @@ Content-Type: text/html; charset=utf-8
 Status: 200
 
 <h1>Sites foo.mt</h1>
+
+=== sites tt not found
+--- preprocess
+$config->{sites}->{use_tt} = 1;
+--- uri
+http://localhost/sites/xxx
+--- response
+Content-Length: 9
+Content-Type: text/html; charset=utf-8
+Status: 404
+
+Not Found
+
+=== sites index tt
+--- preprocess
+$config->{sites}->{use_tt} = 1;
+--- uri
+http://localhost/sites/
+--- response
+Content-Length: 42
+Content-Type: text/html; charset=utf-8
+Status: 200
+
+<h1>Sites index.tt</h1>
+http://localhost/
 
 === ovreride finalize
 --- preprocess

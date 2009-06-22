@@ -15,10 +15,10 @@ use Template 2.20;
 
     sub _build_renderer_tt {
         my $c = shift;
-        my $config = $c->config->{tt};
+        my $config = $c->config->{tt} || {};
         $config->{ENCODING}     ||= 'utf-8';
         $config->{INCLUDE_PATH} ||= $c->path_to('templates')->stringify;
-        Template->new($c->config->{tt});
+        Template->new($config);
     }
 
     sub render_tt {
