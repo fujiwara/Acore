@@ -24,6 +24,7 @@ requires 'Sub::Pipe';
 requires 'Data::Path';
 requires 'HTML::FillInForm';
 requires 'Text::SimpleTable';
+requires 'Data::Visitor';
 
 test_requires 'DBD::SQLite';
 test_requires 'Test::Base';
