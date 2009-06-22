@@ -3,10 +3,17 @@ package Acore::DocumentLoader;
 use strict;
 use warnings;
 use Any::Moose;
-use YAML;
 use UNIVERSAL::require;
 
 my $Separator = "---";
+my $Use_xs;
+eval {
+    require YAML::XS;
+    $Use_xs = 1;
+};
+if ($@) {
+    require YAML;
+}
 
 has acore => (
     is  => "rw",
@@ -61,7 +68,7 @@ sub _load_from_stream {
     my $count  = 0;
  LINE:
     while ( my $line = <$handle> ) {
-        utf8::decode($line) unless utf8::is_utf8($line);
+        utf8::decode($line) if !$Use_xs && utf8::is_utf8($line);
         $count++;
         if ( $line =~ /^$Separator$/ && $buffer ) {
             $self->_load_object($buffer, $count);
@@ -87,9 +94,13 @@ use Data::Dumper;
 sub _load_object {
     my $self   = shift;
     my ($yaml, $count) = @_;
-    my $object = eval { YAML::Load($yaml) };
-    if ($@ || ! ref $object eq 'HASH') {
+    my $object = eval { $Use_xs ? YAML::XS::Load($yaml) : YAML::Load($yaml) };
+    if ($@) {
         $self->add_error("Can't load from YAML at line $count. $@");
+        return;
+    }
+    if (! ref $object eq 'HASH') {
+        $self->add_error("no HASH ref. $object");
         return;
     }
 
