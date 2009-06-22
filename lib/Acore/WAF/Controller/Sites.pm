@@ -57,4 +57,6 @@ __END__
 
 
     # for use Plugin::TT (file ext is .tt)
+    
+    App->setup(qw/ TT /);
     $config->{sites}->{use_tt} = 1;
