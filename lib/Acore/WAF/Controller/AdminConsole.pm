@@ -607,7 +607,7 @@ sub _do_map {
     my $emit = sub {
         push @pair, [ $_[0], $_[1] ];
     };
-    my @docs = $c->acore->all_documents({ limit => 20 });
+    my @docs = $c->acore->all_documents({ limit => 40 });
     for my $doc (@docs) {
         eval {
             $map->( $doc->to_object, $emit );
