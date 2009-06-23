@@ -357,9 +357,6 @@ sub document_create_form_POST {
     my ($self, $c) = @_;
 
     $c->forward( $self => "is_logged_in" );
-    $c->form->check(
-        path => [qw/ NOT_NULL ASCII /],
-    );
 
     my $class = $c->req->param('_class');
     if ( !$class->require || !$class->isa('Acore::Document') ) {
@@ -368,17 +365,20 @@ sub document_create_form_POST {
     }
     $c->stash->{_class} = $class;
 
+    my $doc = $class->validate_to_create($c);
     $c->form->check(
         path => [qw/ NOT_NULL ASCII /],
-    );
-    my $doc = $class->validate_to_create($c);
+    ) unless defined $doc->{path};
 
     if ( $c->form->has_error || !$doc ) {
         $c->render('admin_console/document_create_form.mt');
         $c->fillform;
         return;
     }
-    $doc->$_( $c->req->param($_) ) for qw/ path content_type /;
+    for my $key ( qw/ path content_type / ) {
+        $doc->$key( $c->req->param($_) )
+            if !defined $doc->{$key};
+    }
 
     $doc = $c->acore->put_document($doc);
 
