@@ -90,11 +90,13 @@ sub _load_from_string {
         $self->_load_object($yaml . "\n", $count);
     }
 }
-use Data::Dumper;
+
 sub _load_object {
     my $self   = shift;
     my ($yaml, $count) = @_;
-    my $object = eval { $Use_xs ? YAML::XS::Load($yaml) : YAML::Load($yaml) };
+    my $object = eval {
+        $Use_xs ? YAML::XS::Load($yaml) : YAML::Load($yaml)
+    };
     if ($@) {
         $self->add_error("Can't load from YAML at line $count. $@");
         return;
@@ -108,9 +110,10 @@ sub _load_object {
     $class->require
         or return $self->add_error("Cant't require $class at line $count. $@");
 
-    my $document = $class->from_object($object);
     eval {
-        $self->acore->put_document($document);
+        $self->acore->put_documents_multi(
+            $class->from_object($object)
+        );
     };
     if ($@) {
         $self->add_error("Can't load into Acore. $@");

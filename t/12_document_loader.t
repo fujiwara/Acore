@@ -42,7 +42,8 @@ BEGIN {
     is_deeply $doc2->list => ['X', 'Y', 'Z'];
 
     $ac->delete_document($_) for ($doc1, $doc2);
-    undef $doc1, $doc2;
+    undef $doc1;
+    undef $doc2;
 
     my $handle = IO::Scalar->new(\$source);
     $loader->load($handle);
