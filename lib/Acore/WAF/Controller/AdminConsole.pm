@@ -248,9 +248,9 @@ sub document_list_GET {
         ];
     }
     elsif ( $type && $query ne '' ) {
-        my @args = ($c->req->param('match') eq 'like')
-                 ? ( key_like => $query . "%" )
-                 : ( key      => $query       );
+        my @args = ($c->req->param('match') eq 'start_with')
+                 ? ( key_start_with => $query )
+                 : ( key            => $query );
         $c->stash->{all_documents} = [
             $c->acore->search_documents({
                 view   => "${type}/all",

@@ -273,7 +273,7 @@ sub _search_documents_args {
 
     my $view;
     if (defined $args->{path}) {
-        $args->{key_like} = delete($args->{path}) . "%";
+        $args->{key_start_with} = delete($args->{path});
         $view = "path/all";
     }
     elsif (defined $args->{tag} || defined $args->{tags}) {

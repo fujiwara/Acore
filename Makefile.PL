@@ -8,7 +8,7 @@ requires 'CGI::ExceptionManager' => 0.05;
 requires 'Clone';
 requires 'Crypt::SaltedHash';
 requires 'DBI';
-requires 'DBIx::CouchLike' => 0.06;
+requires 'DBIx::CouchLike' => 0.08;
 requires 'FormValidator::Lite';
 requires 'Getopt::Long';
 requires 'HTTP::Date';

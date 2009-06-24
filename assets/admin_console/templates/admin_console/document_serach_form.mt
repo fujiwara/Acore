@@ -32,7 +32,7 @@
                   $('#selector-notice').html('完全一致');
                 }
                 else {
-                  $('#selector-notice').html('<select name="match"><option value="like">前方一致</option><option value="full">完全一致</option></select>');
+                  $('#selector-notice').html('<select name="match"><option value="start_with">前方一致</option><option value="full">完全一致</option></select>');
                 }
               }
               type_changed();

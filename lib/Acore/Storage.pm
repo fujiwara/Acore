@@ -4,7 +4,7 @@ use strict;
 use warnings;
 our $VERSION = '0.01';
 use Any::Moose;
-use DBIx::CouchLike "0.03";
+use DBIx::CouchLike "0.08";
 
 has dbh  => ( is => "rw" );
 
