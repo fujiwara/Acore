@@ -14,4 +14,7 @@ extends 'Acore::Document::Templatize';
 use constant create_template => "<?=r $c->stash->{class_filename} ?>_create_form.mt";
 use constant edit_template   => "<?=r $c->stash->{class_filename} ?>_create_form.mt";
 
+__PACKAGE__->meta->make_immutable;
+no Any::Moose;
+
 1;
