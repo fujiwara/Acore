@@ -267,11 +267,10 @@ sub put_documents_multi {
     @id;
 }
 
-sub search_documents {
+sub _search_documents_args {
     my $self = shift;
     my $args = shift;
 
-    $args->{include_docs} = 1;
     my $view;
     if (defined $args->{path}) {
         $args->{key_like} = delete($args->{path}) . "%";
@@ -287,12 +286,34 @@ sub search_documents {
     else {
         croak("no arguments path or tags or view");
     }
+    return ($view, $args);
+}
+
+sub search_documents {
+    my $self = shift;
+    my $args = shift;
+    my $view;
+    ($view, $args) = $self->_search_documents_args($args);
+    $args->{include_docs} = 1;
 
     my $itr = $self->storage->document->view( $view => $args );
     my @docs = $itr
         ? map { Acore::Document->from_object( $_->{document} ) } $itr->all
         : ();
     return wantarray ? @docs : \@docs;
+}
+
+sub search_documents_count {
+    my $self = shift;
+    my $args = shift;
+    my $view;
+    ($view, $args) = $self->_search_documents_args($args);
+    $args->{include_docs} = 0;
+
+    my $itr   = $self->storage->document->view( $view => $args );
+    my $count = 0;
+    $count++ while $itr->next;
+    $count;
 }
 
 sub delete_document {
@@ -328,6 +349,7 @@ Acore - AnyCMS core
   );
   $doc = $acore->get_document({ id => $id });
   @doc = $acore->search_documents({ path => "/path/to" });
+  $num = $acore->search_documents_count({ path => "/path/to" });
 
   @doc = $acore->all_documents({ offset => 0, limit => 10 });
   @doc = $acore->get_documents_by_id( 1, 2, 3 );

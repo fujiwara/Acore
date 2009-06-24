@@ -1,6 +1,6 @@
 # -*- mode:perl -*-
 use strict;
-use Test::More tests => 62;
+use Test::More tests => 64;
 use Test::Exception;
 use Data::Dumper;
 use t::Cache;
@@ -53,6 +53,7 @@ for my $cache ( undef, t::Cache->new({}) )
     isa_ok $_ => "Acore::Document" for @docs;
     is_deeply $docs[0] => $doc;
     is_deeply $docs[1] => $doc4;
+    is $ac->search_documents_count({ path => "/foo/" }) => 2;
 
     my $updated_on  = $docs[0]->updated_on;
     sleep 1;
