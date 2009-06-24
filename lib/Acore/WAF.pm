@@ -191,6 +191,8 @@ my $Record_time = sub {
         $visitor->visit($mine);
         $self->debug_report->row($pair[$_ * 2], $pair[$_ * 2 + 1])
             for ( 0 .. (@pair / 2) );
+
+        return $res;
     };
 };
 
@@ -396,9 +398,8 @@ sub _dispatch {
         $self->log->debug( "Dispatch info is:\n" . $table->draw );
     }
 
-    my $auto = $controller->can("_auto");
-    if ($auto) {
-        $auto->( $controller, $self, $rule->{args} )
+    if ( $controller->can("_auto") ) {
+        $self->forward( $controller, "_auto", $rule->{args} )
             or return;
     }
     $self->forward( $controller, $dispatch_to, $rule->{args} );
