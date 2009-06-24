@@ -869,6 +869,16 @@ Status: 200
 <h1>Sites index.tt</h1>
 http://localhost/
 
+=== /handle_args
+--- uri
+http://localhost/handle_args
+--- response
+Content-Length: 12
+Content-Type: text/html; charset=utf-8
+Status: 200
+
+args.foo=bar
+
 === ovreride finalize
 --- preprocess
 {

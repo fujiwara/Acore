@@ -5,7 +5,7 @@ use warnings;
 use utf8;
 
 sub index {
-    my ($self, $c) = @_;
+    my ($self, $c, $args) = @_;
     $c->res->body("index");
 }
 
@@ -201,6 +201,10 @@ sub anti_csrf_POST {
     $c->res->body("ok");
 }
 
+sub handle_args {
+    my ($self, $c, $args) = @_;
+    $c->res->body("args.foo=" . $args->{foo});
+}
 
 
 package t::WAFTest::Controller::X;

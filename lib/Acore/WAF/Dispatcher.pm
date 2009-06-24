@@ -17,8 +17,8 @@ use HTTPx::Dispatcher::Rule;
         }
         $output->{args} = $input;
         if ( ref $self->{args} eq 'HASH' ) {
-            for my $key ( keys %${ $self->{args} } ) {
-                $output->{args}->{$key} ||= $self->{args}->{key};
+            for my $key ( keys %{ $self->{args} } ) {
+                $output->{args}->{$key} ||= $self->{args}->{$key};
             }
         }
         return $output;

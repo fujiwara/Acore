@@ -14,7 +14,7 @@ __PACKAGE__->setup(qw/ Sample FormValidator Session FillInForm TT /);
     package t::WAFTest::Dispatcher;
     use HTTPx::Dispatcher;
     connect "",
-        { controller => "t::WAFTest::Controller", action => "index"};
+        { controller => "t::WAFTest::Controller", action => "index" };
     connect "favicon.ico",
         { controller => "t::WAFTest", action => "dispatch_favicon"};
     connect "static/:filename",
@@ -25,6 +25,12 @@ __PACKAGE__->setup(qw/ Sample FormValidator Session FillInForm TT /);
         { controller => "t::WAFTest::Controller", action => "adoc" };
     connect "auto/:action",
         { controller => "t::WAFTest::Controller::Auto" };
+    connect "handle_args",
+        {
+            controller => "t::WAFTest::Controller",
+            action     => "handle_args",
+            args       => { foo => "bar" },
+        };
 
     connect "rest/document/id/:id",
         { controller => "Acore::WAF::Controller::REST", action => "document" };
