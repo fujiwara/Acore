@@ -19,6 +19,7 @@ use CGI::ExceptionManager::StackTrace;
 use Clone qw/ clone /;
 use Text::SimpleTable;
 use Data::Dumper;
+use Acore::WAF::Dispatcher;
 
 our $VERSION = 0.1;
 our $COUNT   = 1;
