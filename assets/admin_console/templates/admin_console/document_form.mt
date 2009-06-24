@@ -15,11 +15,14 @@
         </div>
         <div id="beta">
           <div id="beta-inner">
-            <div class="form-container">
+            <div class="data">
 
               <h2 class="icon"><div class="mimetype_kmultiple"><a href="<?= $c->uri_for('/admin_console/document_list') ?>">Document の管理</a></div></h2>
 
 ?=r $c->render_part('admin_console/document_serach_form.mt');
+
+            </div>
+            <div class="form-container">
 
 ? if (!$doc) {
               <p class="error">id = <?= $c->req->param('id') ?> の Document は存在しません</p>
