@@ -328,7 +328,7 @@ sub document_form_POST {
     }
     $doc->$_( $c->req->param($_) ) for qw/ path content_type /;
 
-    $c->acore->put_document($doc);
+    $c->acore->put_document($doc, { update_timestamp => 0 });
 
     $c->redirect(
         $c->uri_for('/admin_console/document_form', { id => $id, _t => time } )

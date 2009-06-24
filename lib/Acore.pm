@@ -218,11 +218,14 @@ sub get_document {
 
 sub put_document {
     my $self = shift;
-    my $doc  = shift;
+    my ($doc, $options) = @_;
+    $options ||= { update_timestamp => 1 };
 
     if ( $doc->id ) {
-        require Acore::DateTime;
-        $doc->updated_on( Acore::DateTime->now() );
+        if ( $options->{update_timestamp} ) {
+            require Acore::DateTime;
+            $doc->updated_on( Acore::DateTime->now() );
+        }
         my $obj = $doc->to_object;
         $self->storage->document->put($obj);
         if ($self->cache) {
