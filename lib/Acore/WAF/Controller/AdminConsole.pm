@@ -329,6 +329,9 @@ sub document_form_POST {
     $doc->$_( $c->req->param($_) ) for qw/ path content_type /;
 
     $c->acore->put_document($doc, { update_timestamp => 0 });
+    if ( $doc->can('execute_on_update') ) {
+        $doc->execute_on_update($c);
+    }
 
     $c->redirect(
         $c->uri_for('/admin_console/document_form', { id => $id, _t => time } )
@@ -381,6 +384,9 @@ sub document_create_form_POST {
     }
 
     $doc = $c->acore->put_document($doc);
+    if ( $doc->can('execute_on_create') ) {
+        $doc->execute_on_create($c);
+    }
 
     $c->redirect(
         $c->uri_for('/admin_console/document_form', { id => $doc->id, _t => time } )
