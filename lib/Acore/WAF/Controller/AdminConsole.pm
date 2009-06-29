@@ -5,6 +5,7 @@ use warnings;
 use Data::Dumper;
 use List::MoreUtils;
 use List::Util;
+use Scalar::Util qw/ blessed /;
 use utf8;
 
 my $PermitRole = "AdminConsoleLogin";
@@ -776,7 +777,9 @@ sub convert_test_POST {
         }
         push @pair, [
             $old->to_object,
-            defined $new ? $new->to_object : undef,
+            (blessed $new && $new->can('to_object')) ? $new->to_object
+          : (ref $new)                               ? $new
+          :                                            "-"
         ];
     }
     $c->stash->{pair} = \@pair;
