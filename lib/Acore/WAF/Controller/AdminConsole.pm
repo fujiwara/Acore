@@ -31,6 +31,7 @@ sub is_logged_in {
 sub _allow_eval {
     my ($self, $c) = @_;
     if ( $c->config->{admin_console}->{disable_eval_functions} ) {
+        $c->res->status(403);
         $c->detach("eval functions is not allowed by config.");
     }
     1;
