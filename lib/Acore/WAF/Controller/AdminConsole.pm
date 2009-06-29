@@ -705,6 +705,80 @@ sub _restore_auto_commit {
     1;
 }
 
+sub convert_all_GET {
+    my ($self, $c) = @_;
+    $c->forward( $self => "is_logged_in" );
+    $c->render('admin_console/convert_all.mt');
+}
+
+sub convert_all_POST {
+    my ($self, $c) = @_;
+
+    $c->forward( $self => "is_logged_in" );
+
+    my $code = $c->forward( $self => "_eval_code", $c->req->param('code') );
+
+    $c->forward( $self, "_off_auto_commit" );
+
+    my $converted = 0;
+    my $offset    = 0;
+ CONVERT:
+    while (1) {
+        my @docs = $c->acore->search_documents({
+            path   => $c->req->param('path'),
+            offset => $offset,
+            limit  => 100,
+        });
+        last CONVERT unless @docs;
+        $offset += 100;
+
+    DOCS:
+        for my $doc (@docs) {
+            eval {
+                my $res = $code->($doc);
+                if ( ref $res ) {
+                    $c->acore->put_document($res);
+                    $converted++;
+                }
+            };
+            if ($@) {
+                $c->forward( $self, "_restore_auto_commit" );
+                $c->res->body("Error in processing: $@");
+                return;
+            }
+        }
+    }
+    $c->stash->{converted} = $converted;
+    $c->forward( $self, "_restore_auto_commit" );
+
+    $c->render("admin_console/convert_done.mt");
+}
+
+sub convert_test_POST {
+    my ($self, $c) = @_;
+
+    $c->forward( $self => "is_logged_in" );
+    require JSON;
+
+    my $code = $c->forward( $self => "_eval_code", $c->req->param('code') );
+
+    my @docs = $c->acore->search_documents({
+        path  => $c->req->param('path'),
+        limit => 20,
+    });
+
+    for my $doc (@docs) {
+        my $id = $doc->id;
+        $doc = eval { $code->($doc) };
+        if ($@) {
+            return $c->res->body("Error in processing: $@");
+        }
+        $doc = (!defined $doc) ? $id : $doc->to_object;
+    }
+    $c->stash->{docs} = \@docs;
+
+    $c->render("admin_console/convert_test.mt");
+}
 
 1;
 

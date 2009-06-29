@@ -94,9 +94,11 @@ sub nsort_by($) { ## no critic
 
 my $Json;
 sub json {
+    my ($pretty) = shift;
     joint {
         $Json ||= do { require JSON; JSON->new };
-        ref $_[0] ? $Json->encode($_[0]) : $_[0];
+        my $json = $pretty ? $Json->pretty: $Json;
+        ref $_[0] ? $json->encode($_[0]) : $_[0];
     };
 }
 
