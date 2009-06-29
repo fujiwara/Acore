@@ -758,7 +758,6 @@ sub convert_test_POST {
     my ($self, $c) = @_;
 
     $c->forward( $self => "is_logged_in" );
-    require JSON;
 
     my $code = $c->forward( $self => "_eval_code", $c->req->param('code') );
 
@@ -766,16 +765,20 @@ sub convert_test_POST {
         path  => $c->req->param('path'),
         limit => 20,
     });
+    my @pair;
 
     for my $doc (@docs) {
-        my $id = $doc->id;
-        $doc = eval { $code->($doc) };
+        my $old = Clone::clone($doc);
+        my $new = eval { $code->($doc) };
         if ($@) {
             return $c->res->body("Error in processing: $@");
         }
-        $doc = (!defined $doc) ? $id : $doc->to_object;
+        push @pair, [
+            $old->to_object,
+            defined $new ? $new->to_object : undef,
+        ];
     }
-    $c->stash->{docs} = \@docs;
+    $c->stash->{pair} = \@pair;
 
     $c->render("admin_console/convert_test.mt");
 }

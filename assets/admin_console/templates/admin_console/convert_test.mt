@@ -4,18 +4,19 @@
   <table class="data" style="width: 90%;">
     <tbody>
       <tr>
-        <th class="first" style="width: 30%;">id</th>
-        <th class="last">doc</th>
+        <th class="first">置換前</th>
+        <th class="last">置換後</th>
       </tr>
-? for my $doc (@{ $c->stash->{docs} }) {
+? for my $pair (@{ $c->stash->{pair} }) {
       <tr>
-        <td><?= ref $doc ? $doc->{_id} : $doc ?></td>
         <td>
-          <? if (ref $doc) { ?>
-          <pre><?= $doc | json("pretty") ?></pre>
-          <? } else { ?>
-          -
-          <? } ?>
+          <pre><?= $pair->[0] | json("pretty") ?></pre>
+        </td>
+        <td>
+          <? if (defined $pair->[1]) { ?>
+          <pre><?= $pair->[1] | json("pretty") ?></pre>
+          <? } else { ?>-<? } ?>
+        </td>
       </tr>
 ? }
     </tbody>
