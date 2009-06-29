@@ -722,6 +722,7 @@ sub convert_all_POST {
 
     my $converted = 0;
     my $offset    = 0;
+    my $acore     = $c->acore;
  CONVERT:
     while (1) {
         my @docs = $c->acore->search_documents({
@@ -737,7 +738,7 @@ sub convert_all_POST {
             eval {
                 my $res = $code->($doc);
                 if ( ref $res ) {
-                    $c->acore->put_document($res);
+                    $acore->put_document($res, { update_timestamp => 0 });
                     $converted++;
                 }
             };
