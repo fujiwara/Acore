@@ -417,6 +417,10 @@ sub error {
 }
 
 sub detach {
+    my ($self, $msg) = @_;
+    if ($msg) {
+        $self->log->error($msg);
+    }
     CGI::ExceptionManager::detach()
 }
 

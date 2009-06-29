@@ -28,6 +28,14 @@ sub is_logged_in {
     $c->detach();
 }
 
+sub _allow_eval {
+    my ($self, $c) = @_;
+    if ( $c->config->{admin_console}->{disable_eval_functions} ) {
+        $c->detach("eval functions is not allowed by config.");
+    }
+    1;
+}
+
 sub index {
     my ($self, $c) = @_;
     my @all_users = $c->acore->all_users;
@@ -467,6 +475,7 @@ sub view_GET {
     my ($self, $c) = @_;
 
     $c->forward( $self => "is_logged_in" );
+    $c->forward( $self => "_allow_eval" );
 
     my @design = $c->acore->storage->document->all_designs;
     $c->stash->{all_views} = [
@@ -479,6 +488,7 @@ sub view_form_GET {
     my ($self, $c) = @_;
 
     $c->forward( $self => "is_logged_in" );
+    $c->forward( $self => "_allow_eval" );
 
     my $id = $c->req->param('id');
     my $design = $c->acore->storage->document->get($id)
@@ -491,6 +501,7 @@ sub view_form_POST {
     my ($self, $c) = @_;
 
     $c->forward( $self => "is_logged_in" );
+    $c->forward( $self => "_allow_eval" );
 
     $c->form->check(
         id => [['REGEX', qr{\A_design/\w+\z}]],
@@ -547,6 +558,7 @@ sub view_form_DELETE {
     my ($self, $c) = @_;
 
     $c->forward( $self => "is_logged_in" );
+    $c->forward( $self => "_allow_eval" );
 
     my $id = $c->req->param('id');
     my $design = $c->acore->storage->document->get($id)
@@ -560,6 +572,7 @@ sub view_create_form_GET {
     my ($self, $c) = @_;
 
     $c->forward( $self => "is_logged_in" );
+    $c->forward( $self => "_allow_eval" );
 
     my $map = q{
 sub {
@@ -578,7 +591,9 @@ sub {
 
 sub view_test_POST {
     my ($self, $c) = @_;
+
     $c->forward( $self => "is_logged_in" );
+    $c->forward( $self => "_allow_eval" );
     require JSON;
 
     my $map  = $c->forward( $self => "_eval_code", $c->req->param('map') );
@@ -658,12 +673,14 @@ sub _do_reduce {
 
 sub upload_document_GET {
     my ($self, $c) = @_;
+
     $c->forward( $self => "is_logged_in" );
     $c->render('admin_console/upload_document.mt');
 }
 
 sub upload_document_POST {
     my ($self, $c) = @_;
+
     $c->forward( $self => "is_logged_in" );
 
     my $upload = $c->req->upload('file');
@@ -708,7 +725,10 @@ sub _restore_auto_commit {
 
 sub convert_all_GET {
     my ($self, $c) = @_;
+
     $c->forward( $self => "is_logged_in" );
+    $c->forward( $self => "_allow_eval" );
+
     $c->render('admin_console/convert_all.mt');
 }
 
@@ -716,6 +736,7 @@ sub convert_all_POST {
     my ($self, $c) = @_;
 
     $c->forward( $self => "is_logged_in" );
+    $c->forward( $self => "_allow_eval" );
 
     my $code = $c->forward( $self => "_eval_code", $c->req->param('code') );
 
@@ -760,6 +781,7 @@ sub convert_test_POST {
     my ($self, $c) = @_;
 
     $c->forward( $self => "is_logged_in" );
+    $c->forward( $self => "_allow_eval" );
 
     my $code = $c->forward( $self => "_eval_code", $c->req->param('code') );
 

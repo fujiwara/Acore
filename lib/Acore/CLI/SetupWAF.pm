@@ -230,6 +230,9 @@ session:
     args:
       name: <?=r lc app_name() ?>_session_id
 
+admin_console:
+  disable_eval_functions:
+
     _END_OF_FILE_
     );
 }
