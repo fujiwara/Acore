@@ -1,7 +1,7 @@
 ? my $c = $_[0];
-<div style="margin-left: 150px;">
+<div>
   <h3>test result</h3>
-  <table class="data" style="width: 90%;">
+  <table class="data">
     <tbody>
       <tr>
         <th class="first">置換前</th>
