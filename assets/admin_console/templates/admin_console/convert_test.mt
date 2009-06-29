@@ -4,7 +4,7 @@
   <table class="data" style="width: 90%;">
     <tbody>
       <tr>
-        <th class="first" style="width: 30%;">key</th>
+        <th class="first" style="width: 30%;">id</th>
         <th class="last">doc</th>
       </tr>
 ? for my $doc (@{ $c->stash->{docs} }) {
