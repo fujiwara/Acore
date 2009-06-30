@@ -56,6 +56,15 @@ BEGIN {
     @docs = $ac->fulltext_search_documents({ query => "部分一致" });
     ok @docs == 1;
 
+    $doc->xpath->set('/for_search' => 'Senna検索にヒットしてください');
+    ok $ac->put_document($doc);
+
+    @docs = $ac->fulltext_search_documents({ query => "Senna検索" });
+    ok @docs == 1;
+
+    @docs = $ac->fulltext_search_documents({ query => "部分一致" });
+    ok @docs == 0;
+
     ok $ac->delete_document($doc);
     @docs = $ac->fulltext_search_documents({ query => "部分一致" });
     ok @docs == 0;

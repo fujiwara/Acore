@@ -259,14 +259,22 @@ sub put_document {
             require Acore::DateTime;
             $doc->updated_on( Acore::DateTime->now() );
         }
+        my $old_for_search;
+        if ( $doc->can('update_fts_index') && $self->senna_index_path ) {
+            my $old_doc = $self->get_document({ id => $doc->id });
+            if ($old_doc) {
+                $old_for_search = $old_doc->{for_search};
+            }
+        }
+
         my $obj = $doc->to_object;
         $self->storage->document->put($obj);
         if ($self->cache) {
             $self->cache->set("Acore::Document/id=". $doc->id, $obj);
             $self->cache->remove("Acore::Document/path=". $doc->path);
         }
-        $doc->update_fts_index( $self->senna_index )
-            if $doc->can('update_fts_index') && $self->senna_index_path;
+        $doc->update_fts_index( $self->senna_index, $old_for_search )
+            if defined $old_for_search;
 
         return $doc;
     }
@@ -338,9 +346,17 @@ sub delete_document {
         $cache->remove("Acore::Document/id=". $doc->id);
         $cache->remove("Acore::Document/path=". $doc->path);
     }
+    my $old_for_search;
+    if ( $doc->can('delete_fts_index') && $self->senna_index_path ) {
+        my $old_doc = $self->get_document({ id => $doc->id });
+        if ($old_doc) {
+            $old_for_search = $old_doc->{for_search};
+        }
+    }
+
     my $result = $self->storage->document->delete($doc->id);
-    $doc->delete_fts_index( $self->senna_index )
-        if $doc->can('delete_fts_index') && $self->senna_index_path;
+    $doc->delete_fts_index( $self->senna_index, $old_for_search )
+        if $old_for_search;
 
     return $result;
 }

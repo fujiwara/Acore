@@ -9,16 +9,14 @@ use Encode qw/ encode_utf8 /;
 sub for_search {
     my $self = shift;
     if (@_) {
-        $self->{for_search_old} ||= $self->{for_search};
         $self->{for_search} = shift;
     }
     $self->{for_search};
 }
 
 sub delete_fts_index {
-    my ($self, $index) = @_;
+    my ($self, $index, $old) = @_;
 
-    my $old = $self->{for_serach_old} || $self->{for_search};
     my $res = $index->update(
         $self->id,
         encode_utf8($old),
@@ -28,14 +26,12 @@ sub delete_fts_index {
 }
 
 sub update_fts_index {
-    my ($self, $index) = @_;
-
+    my ($self, $index, $old) = @_;
     my $res = $index->update(
         $self->id,
-        encode_utf8( $self->{for_serach_old} ),
+        encode_utf8( $old ),
         encode_utf8( $self->{for_search} ),
     );
-    $self->{for_serach_old} = $self->{for_serach};
     $res == SEN_RC_SUCCESS ? 1 : 0;
 }
 
