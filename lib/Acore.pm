@@ -273,8 +273,12 @@ sub put_document {
             $self->cache->set("Acore::Document/id=". $doc->id, $obj);
             $self->cache->remove("Acore::Document/path=". $doc->path);
         }
-        $doc->update_fts_index( $self->senna_index, $old_for_search )
-            if defined $old_for_search;
+        if ( defined $old_for_search ) {
+            $doc->update_fts_index( $self->senna_index, $old_for_search );
+        }
+        elsif ( $doc->can('create_fts_index') && $self->senna_index_path ) {
+            $doc->create_fts_index( $self->senna_index );
+        }
 
         return $doc;
     }

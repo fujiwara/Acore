@@ -1,6 +1,6 @@
 # -*- mode:perl -*-
 use strict;
-use Test::More tests => 13;
+use Test::More tests => 18;
 use Test::Exception;
 use Data::Dumper;
 use utf8;
@@ -18,6 +18,7 @@ BEGIN {
 };
 
 {
+    my @docs;
     my $dbh = do "t/connect_db.pm";
     my $ac  = Acore->new({ dbh => $dbh });
     $ac->senna_index_path("t/tmp/senna");
@@ -27,10 +28,14 @@ BEGIN {
     isa_ok $ac => "Acore";
 
     ok $ac->put_document( SennaDocument->new({
+        id         => 9999,
         path       => "/foo/bar/baz",
         body       => "This is a document.",
         for_search => "test document",
     }));
+    @docs = $ac->fulltext_search_documents({ query => "test" });
+    ok @docs == 1;
+    is $docs[0]->id => 9999;
 
     my $doc = SennaDocument->new({
         path       => "/foo/bar/baz",
@@ -42,10 +47,9 @@ BEGIN {
                        for_search /;
 
     ok $doc = $ac->put_document($doc);
-    my @docs;
     @docs = $ac->fulltext_search_documents({ query => "全文検索" });
-    ok @docs;
-    ok $_->for_search =~ /全文検索/ for @docs;
+    ok @docs == 1;
+    ok $docs[0]->for_search =~ /全文検索/;
 
     $doc->for_search('部分一致検索にヒットしてください');
     ok $ac->put_document($doc);
