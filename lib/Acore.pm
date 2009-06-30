@@ -282,32 +282,6 @@ sub put_document {
     }
 }
 
-sub put_documents_multi {
-    my $self = shift;
-    my @doc  = @_;
-
-    require Acore::DateTime;
-
-    my $storage = $self->storage->document;
-    my $cache   = $self->cache;
-    my @id;
-    for my $doc (@doc) {
-        if ( $doc->id ) {
-            my $obj = $doc->to_object;
-            $storage->put($obj);
-            if ($cache) {
-                $cache->set("Acore::Document/id=". $doc->id, $obj);
-                $cache->remove("Acore::Document/path=". $doc->path);
-            }
-            push @id, $doc->id;
-        }
-        else {
-            push @id, $storage->post( $doc->to_object );
-        }
-    }
-    @id;
-}
-
 sub _search_documents_args {
     my $self = shift;
     my $args = shift;
@@ -487,12 +461,6 @@ Get Acore::Document from storage.
 Store Acore::Document to storage.
 
  $doc = $acore->put_document($doc);
-
-=item put_documents_multi
-
-Store Acore::Document to storage.
-
- @id = $acore->put_documents_multi($doc1, $doc2);
 
 =item search_documents
 

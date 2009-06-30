@@ -1,6 +1,6 @@
 # -*- mode:perl -*-
 use strict;
-use Test::More tests => 64;
+use Test::More tests => 58;
 use Test::Exception;
 use Data::Dumper;
 use t::Cache;
@@ -92,18 +92,6 @@ for my $cache ( undef, t::Cache->new({}) )
         my $id = $doc->id;
         ok $ac->delete_document($doc);
         ok !$ac->get_document({ id => $doc->id }),
-    }
-
-    {
-        my @id = $ac->put_documents_multi(
-            Acore::Document->new({ foo => 1 }),
-            Acore::Document->new({ foo => 2 }),
-        );
-        is scalar @id => 2;
-        my $d1 = $ac->get_document({ id => $id[0] });
-        is $d1->{foo} => 1;
-        my $d2 = $ac->get_document({ id => $id[1] });
-        is $d2->{foo} => 2;
     }
 
     $dbh->commit;

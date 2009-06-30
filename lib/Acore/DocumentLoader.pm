@@ -111,7 +111,7 @@ sub _load_object {
         or return $self->add_error("Cant't require $class at line $count. $@");
 
     eval {
-        $self->acore->put_documents_multi(
+        $self->acore->put_document(
             $class->from_object($object)
         );
     };
