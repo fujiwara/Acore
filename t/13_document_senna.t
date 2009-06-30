@@ -1,6 +1,6 @@
 # -*- mode:perl -*-
 use strict;
-use Test::More tests => 64;
+use Test::More tests => 13;
 use Test::Exception;
 use Data::Dumper;
 use utf8;
