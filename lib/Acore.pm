@@ -40,6 +40,15 @@ has document_loader => (
     lazy_build => 1,
 );
 
+has senna_index => (
+    is         => "rw",
+    lazy_build => 1,
+);
+
+has senna_index_path => (
+    is => "rw",
+);
+
 sub _build_storage {
     my $self = shift;
     Acore::Storage->new({ dbh => $self->{dbh} })
@@ -49,6 +58,30 @@ sub _build_document_loader {
     my $self = shift;
     require Acore::DocumentLoader;
     Acore::DocumentLoader->new({ acore => $self });
+}
+
+sub _build_senna_index {
+    my $self = shift;
+    require Senna;
+    croak("Senna version >= 0.60000 required.")
+        if Senna->VERSION < 0.60000;
+
+    Senna::Index->open( $self->senna_index_path );
+}
+
+sub init_senna_index {
+    my $self = shift;
+    require Senna;
+    croak("Senna version >= 0.60000 required.")
+        if Senna->VERSION < 0.60000;
+
+    my $index = Senna::Index->create({
+        path               => $self->senna_index_path,
+        key_size           => 0,
+        initial_n_segments => 256,
+        flags              => Senna::Constants::SEN_INDEX_NORMALIZE(),
+        encoding           => Senna::Constants::SEN_ENC_UTF8(),
+    });
 }
 
 __PACKAGE__->meta->make_immutable;
@@ -232,12 +265,20 @@ sub put_document {
             $self->cache->set("Acore::Document/id=". $doc->id, $obj);
             $self->cache->remove("Acore::Document/path=". $doc->path);
         }
+        $doc->update_fts_index( $self->senna_index )
+            if $doc->can('update_fts_index') && $self->senna_index_path;
+
         return $doc;
     }
     else {
         my $obj = $doc->to_object;
         my $id  = $self->storage->document->post($obj);
-        return $self->get_document({ id => $id });
+        $doc = $self->get_document({ id => $id });
+
+        $doc->create_fts_index( $self->senna_index )
+            if $doc->can('create_fts_index') && $self->senna_index_path;
+
+        return $doc;
     }
 }
 
@@ -323,7 +364,32 @@ sub delete_document {
         $cache->remove("Acore::Document/id=". $doc->id);
         $cache->remove("Acore::Document/path=". $doc->path);
     }
-    $self->storage->document->delete($doc->id);
+    my $result = $self->storage->document->delete($doc->id);
+    $doc->delete_fts_index( $self->senna_index )
+        if $doc->can('delete_fts_index') && $self->senna_index_path;
+
+    return $result;
+}
+
+sub fulltext_search_documents {
+    my $self = shift;
+    my $args = shift;
+
+    my $rs = $self->senna_index->select( $args->{query} );
+    if ( $rs->nhits == 0 ) {
+        return wantarray ? () : [];
+    }
+    $rs->sort( $args->{limit} ) if $args->{limit};
+    my (@id, %order);
+    my $n = 0;
+    while ( my $r = $rs->next ) {
+        push @id, $r->key;
+        $order{ $r->key } = $n++;
+    }
+    my @docs = sort { $order{$a->id} <=> $order{$b->id} }
+        $self->get_documents_by_id(@id);
+
+    return wantarray ? @docs : \@docs;
 }
 
 

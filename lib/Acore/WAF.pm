@@ -174,13 +174,15 @@ my $Record_time = sub {
             [ Time::HiRes::gettimeofday() ],  # time
             [],                               # children
         ];
-        my $res     = eval { $next->(@_) };
+        my $res       = eval { $next->(@_) };
+        my $exception = $@;
+
         my $mine    = pop @{ $self->stack };
         my $elapsed = Time::HiRes::tv_interval( $mine->[1] );
         $mine->[1]  = sprintf("%fs", $elapsed);
         if ( my $parent = $self->stack->[-1] ) {
             push @{ $parent->[2] }, $mine;
-            die $@ if $@;
+            die $exception if $exception;
             return $res;
         }
 
@@ -193,7 +195,8 @@ my $Record_time = sub {
         $self->debug_report->row($pair[$_ * 2], $pair[$_ * 2 + 1])
             for ( 0 .. (@pair / 2) );
 
-        die $@ if $@;
+        die $exception if $exception;
+
         return $res;
     };
 };
