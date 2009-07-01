@@ -384,12 +384,15 @@ sub fulltext_search_documents {
     if ( $rs->nhits == 0 ) {
         return wantarray ? () : [];
     }
-    $rs->sort( $args->{limit} ) if $args->{limit};
+    my $offset = $args->{offset} || 0;
+    my $limit  = $args->{limit}  || 100;
+    $rs->sort($limit + $offset);
     my (@id, %order);
     my $n = 0;
     while ( my $r = $rs->next ) {
+        next if ++$n <= $offset;
         push @id, $r->key;
-        $order{ $r->key } = $n++;
+        $order{ $r->key } = $n;
     }
     my @docs = sort { $order{$a->id} <=> $order{$b->id} }
         $self->get_documents_by_id(@id);
