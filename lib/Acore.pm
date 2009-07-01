@@ -416,11 +416,11 @@ sub txn_do {
             my $index = $self->senna_index;
             my $data  = $self->transaction_data->{senna};
             for my $id ( keys %$data ) {
-                # remove from senna index
+                # restore senna index
                 $index->update(
                     $id,
-                    Encode::encode_utf8($data->{$id}),
-                    undef,
+                    Encode::encode_utf8($data->{$id}->[0]),
+                    Encode::encode_utf8($data->{$id}->[1]),
                 );
             }
         }

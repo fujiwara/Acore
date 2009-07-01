@@ -1,6 +1,6 @@
 # -*- mode:perl -*-
 use strict;
-use Test::More tests => 8;
+use Test::More tests => 10;
 use Test::Exception;
 use Data::Dumper;
 use utf8;
@@ -45,6 +45,9 @@ package main;
                 $ac->put_document(
                     SennaDocument->new({ id => 4, for_search => "bar" })
                 );
+                $ac->put_document(
+                    SennaDocument->new({ id => 1, for_search => "xxx" })
+                );
                 die "died";
             });
     }, qr{died} );
@@ -55,5 +58,9 @@ package main;
     @docs = $ac->fulltext_search_documents({ query => "bar" });
     ok @docs == 1;
     is $docs[0]->id => 2;
+
+    @docs = $ac->fulltext_search_documents({ query => "foo" });
+    ok @docs == 1;
+    is $docs[0]->id => 1;
 }
 
