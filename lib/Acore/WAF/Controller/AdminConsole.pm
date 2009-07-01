@@ -687,7 +687,16 @@ sub upload_document_POST {
 
     my $upload = $c->req->upload('file');
     my $loader = $c->acore->document_loader;
+    eval {
+        $loader->check_format( $upload->fh );
+    };
+    if ($@) {
+        $c->form->set_error( exception => $@ );
+        $c->render('admin_console/upload_document.mt');
+        return;
+    }
 
+    $upload->fh->seek(0, 0);
     eval {
         $c->acore->txn_do(
             sub {
@@ -695,7 +704,6 @@ sub upload_document_POST {
             }
         );
     };
-
     if ($@) {
         $c->form->set_error( exception => $@ );
     }
