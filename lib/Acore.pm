@@ -524,6 +524,16 @@ Search Acore::Documents from storage, path (first match) or tag (full match) or 
 
 Arguments are pass to DBIx::CouchLike->view( $view, \%arguments );
 
+=item fulltext_search_documents
+
+Full text search Acore::Documents. Senna (>=0.6000) is required.
+
+ $acore->senna_index_path("/path/to/index_file");
+ $acore->init_senna_index; # at first only
+
+ @docs = $acore->fulltext_search_documents({ query => $query, limit => $limit });
+ # query: Senna query string. see http://qwik.jp/senna/query.html
+
 =item delete_document
 
 Delete the document from storage.
