@@ -49,6 +49,17 @@ has senna_index_path => (
     is => "rw",
 );
 
+has in_transaction => (
+    is      => "rw",
+    default => 0,
+);
+
+has transaction_data => (
+    is      => "rw",
+    default => sub { +{} },
+    lazy    => 1,
+);
+
 __PACKAGE__->meta->make_immutable;
 no Any::Moose;
 
@@ -274,10 +285,10 @@ sub put_document {
             $self->cache->remove("Acore::Document/path=". $doc->path);
         }
         if ( defined $old_for_search ) {
-            $doc->update_fts_index( $self->senna_index, $old_for_search );
+            $doc->update_fts_index( $self, $old_for_search );
         }
         elsif ( $doc->can('create_fts_index') && $self->senna_index_path ) {
-            $doc->create_fts_index( $self->senna_index );
+            $doc->create_fts_index( $self );
         }
 
         return $doc;
@@ -287,7 +298,7 @@ sub put_document {
         my $id  = $self->storage->document->post($obj);
         $doc = $self->get_document({ id => $id });
 
-        $doc->create_fts_index( $self->senna_index )
+        $doc->create_fts_index( $self )
             if $doc->can('create_fts_index') && $self->senna_index_path;
 
         return $doc;
@@ -359,7 +370,7 @@ sub delete_document {
     }
 
     my $result = $self->storage->document->delete($doc->id);
-    $doc->delete_fts_index( $self->senna_index, $old_for_search )
+    $doc->delete_fts_index( $self, $old_for_search )
         if $old_for_search;
 
     return $result;
@@ -391,10 +402,28 @@ sub txn_do {
     my $sub  = shift;
 
     $self->dbh->begin_work;
+    $self->in_transaction(1);
+    $self->transaction_data({ senna => {}, });
+
     eval { $sub->() };
     my $exception = $@;
+    $self->in_transaction(0);
+
     if ($exception) {
         $self->dbh->rollback;
+
+        if ( $self->senna_index_path ) {
+            my $index = $self->senna_index;
+            my $data  = $self->transaction_data->{senna};
+            for my $id ( keys %$data ) {
+                # remove from senna index
+                $index->update(
+                    $id,
+                    Encode::encode_utf8($data->{$id}),
+                    undef,
+                );
+            }
+        }
         die $exception;
     }
     else {

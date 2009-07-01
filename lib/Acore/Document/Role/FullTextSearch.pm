@@ -15,9 +15,9 @@ sub for_search {
 }
 
 sub delete_fts_index {
-    my ($self, $index, $old) = @_;
+    my ($self, $acore, $old) = @_;
 
-    my $res = $index->update(
+    my $res = $acore->senna_index->update(
         $self->id,
         encode_utf8($old),
         undef,
@@ -26,22 +26,30 @@ sub delete_fts_index {
 }
 
 sub update_fts_index {
-    my ($self, $index, $old) = @_;
-    my $res = $index->update(
+    my ($self, $acore, $old) = @_;
+    my $res = $acore->senna_index->update(
         $self->id,
         encode_utf8( $old ),
         encode_utf8( $self->{for_search} ),
     );
+    if ( $acore->in_transaction ) {
+        $acore->transaction_data->{senna}->{$self->id}
+            = $self->{for_search};
+    }
     $res == SEN_RC_SUCCESS ? 1 : 0;
 }
 
 sub create_fts_index {
-    my ($self, $index) = @_;
+    my ($self, $acore) = @_;
 
-    my $res = $index->insert({
+    my $res = $acore->senna_index->insert({
         key   => $self->id,
         value => encode_utf8( $self->{for_search} ),
     });
+    if ( $acore->in_transaction ) {
+        $acore->transaction_data->{senna}->{$self->id}
+            = $self->{for_search};
+    }
     $res == SEN_RC_SUCCESS ? 1 : 0;
 }
 
