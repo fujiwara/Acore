@@ -1,6 +1,6 @@
 # -*- mode:perl -*-
 use strict;
-use Test::More tests => 27;
+use Test::More tests => 32;
 use Test::Exception;
 use Data::Dumper;
 use t::Cache;
@@ -63,6 +63,17 @@ BEGIN {
     is_deeply $doc2->list => ['X', 'Y', 'Z'];
 
     isa_ok $ac->document_loader => "Acore::DocumentLoader";
+
+    $handle = IO::Scalar->new(\$source);
+    $loader->check_format($handle);
+    ok !$loader->has_error, "no error";
+    is $loader->loaded => 2;
+
+    my $bad_source = bad_source();
+    $handle = IO::Scalar->new(\$bad_source);
+    throws_ok sub { $loader->check_format($handle) }, qr/YAML/;
+    ok $loader->has_error, "has error";
+    is $loader->loaded => 1;
 }
 
 sub source {
@@ -83,6 +94,30 @@ foo: BAR
 path: /FOO/BAR
 list:
   - X
+  - Y
+  - Z
+
+END
+}
+
+sub bad_source {
+<<'END'
+---
+id: 1234
+_class: Acore::Document
+foo: bar
+path: /foo/bar
+list:
+  - A
+  - B
+  - C
+
+---
+_class: t::MyDocument
+foo: BAR
+path: /FOO/BAR
+list:
+   - X
   - Y
   - Z
 

@@ -37,11 +37,31 @@ has loaded => (
     default => 0,
 );
 
+has checking => (
+    is      => "rw",
+    default => 0,
+);
+
 sub load {
     my $self = shift;
     my $arg  = shift;
 
     $self->loaded(0);
+    $self->checking(0);
+    if (ref $arg) {
+        $self->_load_from_stream($arg);
+    }
+    else {
+        $self->_load_from_string($arg);
+    }
+}
+
+sub check_format {
+    my $self = shift;
+    my $arg  = shift;
+
+    $self->loaded(0);
+    $self->checking(1);
     if (ref $arg) {
         $self->_load_from_stream($arg);
     }
@@ -112,6 +132,11 @@ sub _load_object {
     $class->require
         or return $self->add_error("Cant't require $class at line $count. $@");
 
+    if ( $self->checking ) {
+        $self->{loaded}++;
+        return;
+    }
+
     eval {
         $self->acore->put_document(
             $class->from_object($object)
@@ -141,6 +166,9 @@ Acore::DocumentLoader - document loader class
   if ($loader->has_error) {
       @errors = @{ $loader->errors };
   }
+
+  $loader->check_format($fh);
+  $loader->check_format($str);
 
 =head1 DESCRIPTION
 
