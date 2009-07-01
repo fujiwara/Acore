@@ -70,7 +70,7 @@ BEGIN {
     ok @docs == 0;
 
     ok $ac->delete_document($doc);
-    @docs = $ac->fulltext_search_documents({ query => "部分一致" });
+    @docs = $ac->fulltext_search_documents({ query => "Senna検索" });
     ok @docs == 0;
 }
 
