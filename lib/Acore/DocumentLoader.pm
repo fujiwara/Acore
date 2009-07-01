@@ -4,6 +4,7 @@ use strict;
 use warnings;
 use Any::Moose;
 use UNIVERSAL::require;
+use Carp;
 
 my $Separator = "---";
 my $Use_xs;
@@ -53,6 +54,7 @@ sub add_error {
     my $self  = shift;
     my $error = shift;
     push @{ $self->{errors} }, $error;
+    croak($error);
 }
 
 sub has_error {

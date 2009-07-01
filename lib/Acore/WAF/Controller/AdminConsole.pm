@@ -407,13 +407,14 @@ sub document_DELETE {
 
     $c->forward( $self => "is_logged_in" );
 
-    $c->forward( $self => "_off_auto_commit" );
-    for my $id ( $c->req->param('id') ) {
-        my $doc = $c->acore->get_document({ id => $id });
-        next unless $doc;
-        $c->acore->delete_document($doc);
-    }
-    $c->forward( $self => "_restore_auto_commit" );
+    $c->acore->txn_do(
+        sub {
+            for my $id ( $c->req->param('id') ) {
+                my $doc = $c->acore->get_document({ id => $id });
+                next unless $doc;
+                $c->acore->delete_document($doc);
+            }
+        });
 
     $c->render('admin_console/document_deleted.mt');
 }
@@ -540,11 +541,12 @@ sub view_form_POST {
         return $c->fillform;
     }
 
-    $c->forward( $self, "_off_auto_commit" );
-    my $backend = $c->acore->storage->document;
-    $backend->put($design);
-    $backend->create_view( $design->{_id}, $design );
-    $c->forward( $self, "_restore_auto_commit" );
+    $c->acore->txn_do(
+        sub {
+            my $backend = $c->acore->storage->document;
+            $backend->put($design);
+            $backend->create_view( $design->{_id}, $design );
+        });
 
     $c->redirect(
         $c->uri_for(
@@ -686,41 +688,28 @@ sub upload_document_POST {
     my $upload = $c->req->upload('file');
     my $loader = $c->acore->document_loader;
 
-    $c->forward( $self, "_off_auto_commit" );
     eval {
-        $loader->load( $upload->fh );
+        $c->acore->txn_do(
+            sub {
+                $loader->load( $upload->fh );
+            }
+        );
     };
 
     if ($@) {
         $c->form->set_error( exception => $@ );
-        $c->acore->dbh->rollback;
     }
     if ( $loader->has_error ) {
         for my $error ( @{ $loader->errors } ) {
             $c->form->set_error( loader => $error );
         }
-        $c->acore->dbh->rollback;
     }
     else {
         $c->stash->{notice}
             = sprintf "%d 件の Document が投入されました", $loader->loaded;
     }
-    $c->forward( $self, "_restore_auto_commit" );
 
     $c->render('admin_console/upload_document.mt');
-}
-
-sub _off_auto_commit {
-    my ($self, $c) = @_;
-    $c->stash->{__auto_commit}   = $c->acore->dbh->{AutoCommit};
-    $c->acore->dbh->{AutoCommit} = 0;
-    1;
-}
-
-sub _restore_auto_commit {
-    my ($self, $c) = @_;
-    $c->acore->dbh->{AutoCommit} = $c->stash->{__auto_commit};
-    1;
 }
 
 sub convert_all_GET {
@@ -740,40 +729,34 @@ sub convert_all_POST {
 
     my $code = $c->forward( $self => "_eval_code", $c->req->param('code') );
 
-    $c->forward( $self, "_off_auto_commit" );
-
     my $converted = 0;
     my $offset    = 0;
     my $acore     = $c->acore;
- CONVERT:
-    while (1) {
-        my @docs = $c->acore->search_documents({
-            path   => $c->req->param('path'),
-            offset => $offset,
-            limit  => 100,
-        });
-        last CONVERT unless @docs;
-        $offset += 100;
 
-    DOCS:
-        for my $doc (@docs) {
-            eval {
-                my $res = $code->($doc);
-                if ( ref $res ) {
-                    $acore->put_document($res, { update_timestamp => 0 });
-                    $converted++;
+    $acore->txn_do(
+        sub {
+        CONVERT:
+            while (1) {
+                my @docs = $c->acore->search_documents({
+                    path   => $c->req->param('path'),
+                    offset => $offset,
+                    limit  => 100,
+                });
+                last CONVERT unless @docs;
+                $offset += 100;
+
+            DOCS:
+                for my $doc (@docs) {
+                    my $res = $code->($doc);
+                    if ( ref $res ) {
+                        $acore->put_document($res, { update_timestamp => 0 });
+                        $converted++;
+                    }
                 }
-            };
-            if ($@) {
-                $c->forward( $self, "_restore_auto_commit" );
-                $c->res->body("Error in processing: $@");
-                return;
             }
-        }
-    }
-    $c->stash->{converted} = $converted;
-    $c->forward( $self, "_restore_auto_commit" );
+        });
 
+    $c->stash->{converted} = $converted;
     $c->render("admin_console/convert_done.mt");
 }
 

@@ -49,6 +49,9 @@ has senna_index_path => (
     is => "rw",
 );
 
+__PACKAGE__->meta->make_immutable;
+no Any::Moose;
+
 sub _build_storage {
     my $self = shift;
     Acore::Storage->new({ dbh => $self->{dbh} })
@@ -83,9 +86,6 @@ sub init_senna_index {
         encoding           => Senna::Constants::SEN_ENC_UTF8(),
     });
 }
-
-__PACKAGE__->meta->make_immutable;
-no Any::Moose;
 
 sub all_users {
     my $self = shift;
@@ -386,6 +386,22 @@ sub fulltext_search_documents {
     return wantarray ? @docs : \@docs;
 }
 
+sub txn_do {
+    my $self = shift;
+    my $sub  = shift;
+
+    $self->dbh->begin_work;
+    eval { $sub->() };
+    my $exception = $@;
+    if ($exception) {
+        $self->dbh->rollback;
+        die $exception;
+    }
+    else {
+        $self->dbh->commit;
+    }
+}
+
 
 1;
 __END__
@@ -415,6 +431,12 @@ Acore - AnyCMS core
   @doc = $acore->get_documents_by_id( 1, 2, 3 );
 
   $acore->delete_document($doc);
+
+  $acore->txn_do( sub {
+      # in transaction
+      $acore->put_document($doc1);
+      $acore->put_document($doc2);
+  });
 
 =head1 DESCRIPTION
 
