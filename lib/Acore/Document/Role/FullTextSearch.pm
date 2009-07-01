@@ -23,8 +23,8 @@ sub delete_fts_index {
         undef,
     );
     if ( $acore->in_transaction ) {
-        $acore->transaction_data->{senna}->{$self->id}
-            = [ undef, $old ];
+        push @{ $acore->transaction_data->{senna} },
+             [ $self->id, undef, $old ];
     }
     $res == SEN_RC_SUCCESS ? 1 : 0;
 }
@@ -37,8 +37,8 @@ sub update_fts_index {
         encode_utf8( $self->{for_search} ),
     );
     if ( $acore->in_transaction ) {
-        $acore->transaction_data->{senna}->{$self->id}
-            = [ $self->{for_search}, $old ];
+        push @{ $acore->transaction_data->{senna} },
+             [ $self->id, $self->{for_search}, $old ];
     }
     $res == SEN_RC_SUCCESS ? 1 : 0;
 }
@@ -51,8 +51,8 @@ sub create_fts_index {
         value => encode_utf8( $self->{for_search} ),
     });
     if ( $acore->in_transaction ) {
-        $acore->transaction_data->{senna}->{$self->id}
-            = [ $self->{for_search}, undef ];
+        push @{ $acore->transaction_data->{senna} },
+             [ $self->id, $self->{for_search}, undef ];
     }
     $res == SEN_RC_SUCCESS ? 1 : 0;
 }

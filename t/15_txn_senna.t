@@ -48,6 +48,9 @@ package main;
                 $ac->put_document(
                     SennaDocument->new({ id => 1, for_search => "xxx" })
                 );
+                $ac->put_document(
+                    SennaDocument->new({ id => 1, for_search => "yyy" })
+                );
                 die "died";
             });
     }, qr{died} );

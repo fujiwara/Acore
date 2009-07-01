@@ -403,7 +403,7 @@ sub txn_do {
 
     $self->dbh->begin_work;
     $self->in_transaction(1);
-    $self->transaction_data({ senna => {}, });
+    $self->transaction_data({ senna => [], });
 
     eval { $sub->() };
     my $exception = $@;
@@ -415,12 +415,12 @@ sub txn_do {
         if ( $self->senna_index_path ) {
             my $index = $self->senna_index;
             my $data  = $self->transaction_data->{senna};
-            for my $id ( keys %$data ) {
+            for my $act ( reverse @$data ) {
                 # restore senna index
                 $index->update(
-                    $id,
-                    Encode::encode_utf8($data->{$id}->[0]),
-                    Encode::encode_utf8($data->{$id}->[1]),
+                    $act->[0],
+                    Encode::encode_utf8($act->[1]),
+                    Encode::encode_utf8($act->[2]),
                 );
             }
         }
