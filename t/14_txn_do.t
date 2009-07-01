@@ -1,6 +1,6 @@
 # -*- mode:perl -*-
 use strict;
-use Test::More tests => 18;
+use Test::More tests => 9;
 use Test::Exception;
 use Data::Dumper;
 use utf8;
@@ -19,7 +19,7 @@ BEGIN {
         $ac->put_document( Acore::Document->new({ id => 1 }) );
         $ac->put_document( Acore::Document->new({ id => 2 }) );
     });
-    my @docs = (
+    @docs = (
         $ac->get_document({ id => 1 }),
         $ac->get_document({ id => 2 }),
     );
