@@ -11,6 +11,7 @@ use Data::Structure::Util qw/ unbless /;
 use Clone qw/ clone /;
 use utf8;
 use Any::Moose;
+use Encode qw/ encode_utf8 /;
 
 has storage => (
     is         => "rw",
@@ -380,7 +381,7 @@ sub fulltext_search_documents {
     my $self = shift;
     my $args = shift;
 
-    my $rs = $self->senna_index->select( $args->{query} );
+    my $rs = $self->senna_index->select( encode_utf8 $args->{query} );
     if ( $rs->nhits == 0 ) {
         return wantarray ? () : [];
     }
@@ -422,8 +423,8 @@ sub txn_do {
                 # restore senna index
                 $index->update(
                     $act->[0],
-                    Encode::encode_utf8($act->[1]),
-                    Encode::encode_utf8($act->[2]),
+                    encode_utf8($act->[1]),
+                    encode_utf8($act->[2]),
                 );
             }
         }

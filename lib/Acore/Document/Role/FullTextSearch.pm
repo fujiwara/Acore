@@ -25,14 +25,16 @@ sub delete_fts_index {
 
 sub update_fts_index {
     my ($self, $acore, $old) = @_;
+
+    my $for_search = $self->for_search;
     my $res = $acore->senna_index->update(
         $self->id,
-        encode_utf8( $old ),
-        encode_utf8( $self->for_search ),
+        encode_utf8($old),
+        encode_utf8($for_search),
     );
     if ( $acore->in_transaction ) {
         push @{ $acore->transaction_data->{senna} },
-             [ $self->id, $self->for_search, $old ];
+             [ $self->id, $for_search, $old ];
     }
     $res == SEN_RC_SUCCESS ? 1 : 0;
 }
@@ -40,13 +42,14 @@ sub update_fts_index {
 sub create_fts_index {
     my ($self, $acore) = @_;
 
+    my $for_search = $self->for_search;
     my $res = $acore->senna_index->insert({
         key   => $self->id,
-        value => encode_utf8( $self->for_search ),
+        value => encode_utf8($for_search),
     });
     if ( $acore->in_transaction ) {
         push @{ $acore->transaction_data->{senna} },
-             [ $self->id, $self->for_search, undef ];
+             [ $self->id, $for_search, undef ];
     }
     $res == SEN_RC_SUCCESS ? 1 : 0;
 }
