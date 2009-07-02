@@ -274,7 +274,7 @@ sub put_document {
         if ( $doc->can('update_fts_index') && $self->senna_index_path ) {
             my $old_doc = $self->get_document({ id => $doc->id });
             if ($old_doc) {
-                $old_for_search = $old_doc->{for_search};
+                $old_for_search = $old_doc->for_search;
             }
         }
 
@@ -365,7 +365,7 @@ sub delete_document {
     if ( $doc->can('delete_fts_index') && $self->senna_index_path ) {
         my $old_doc = $self->get_document({ id => $doc->id });
         if ($old_doc) {
-            $old_for_search = $old_doc->{for_search};
+            $old_for_search = $old_doc->for_search;
         }
     }
 

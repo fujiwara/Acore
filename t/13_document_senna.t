@@ -8,6 +8,7 @@ use utf8;
 package SennaDocument;
 use Any::Moose;
 extends 'Acore::Document';
+has for_search => ( is => "rw" );
 with 'Acore::Document::Role::FullTextSearch';
 
 package main;
