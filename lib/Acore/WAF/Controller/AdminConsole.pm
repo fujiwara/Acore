@@ -410,12 +410,13 @@ sub document_DELETE {
 
     $c->forward( $self => "is_logged_in" );
 
-    $c->acore->txn_do(
+    my $acore = $c->acore;
+    $acore->txn_do(
         sub {
             for my $id ( $c->req->param('id') ) {
-                my $doc = $c->acore->get_document({ id => $id });
+                my $doc = $acore->get_document({ id => $id });
                 next unless $doc;
-                $c->acore->delete_document($doc);
+                $acore->delete_document($doc);
                 if ( $doc->can('execute_on_delete') ) {
                     $doc->execute_on_delete($c);
                 }
