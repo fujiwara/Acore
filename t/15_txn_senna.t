@@ -13,6 +13,7 @@ BEGIN {
 package SennaDocument;
 use Any::Moose;
 extends 'Acore::Document';
+has  'for_search' => ( is => "rw" );
 with 'Acore::Document::Role::FullTextSearch';
 
 package main;
@@ -25,6 +26,7 @@ package main;
     $ac->setup_db;
 
     $ac->txn_do(sub {
+        diag "begin transaction";
         $ac->put_document(
             SennaDocument->new({ id => 1, for_search => "foo" })
         );

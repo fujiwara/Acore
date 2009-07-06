@@ -12,6 +12,7 @@ use Clone qw/ clone /;
 use utf8;
 use Any::Moose;
 use Encode qw/ encode_utf8 /;
+use Fcntl ':flock';
 
 has storage => (
     is         => "rw",
@@ -97,6 +98,18 @@ sub init_senna_index {
         flags              => Senna::Constants::SEN_INDEX_NORMALIZE(),
         encoding           => Senna::Constants::SEN_ENC_UTF8(),
     });
+}
+
+sub lock_senna_index {
+    my $self = shift;
+
+    return if $self->in_transaction;
+
+    my $lock_file = $self->senna_index_path . ".lock";
+    open my $fh, "+>", $lock_file
+        or croak("Can't open $lock_file $!");
+    flock $fh, LOCK_EX;
+    return $fh;
 }
 
 sub all_users {
@@ -405,6 +418,7 @@ sub txn_do {
     my $self = shift;
     my $sub  = shift;
 
+    my $lock = $self->lock_senna_index if $self->senna_index_path;
     $self->dbh->begin_work;
     $self->in_transaction(1);
     $self->transaction_data({ senna => [], });

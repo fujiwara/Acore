@@ -16,7 +16,7 @@ sub is_logged_in {
     if ( $c->user && $c->user->has_role($PermitRole) ) {
         $c->log->debug("user logged in.");
         if ( $c->req->method eq "POST"
-                 && $c->req->param('sid') ne $c->session->session_id )
+          && $c->req->param('sid') ne $c->session->session_id )
         {
             $c->error( 500 => 'CSRF detacted.' );
         }

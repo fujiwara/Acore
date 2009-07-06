@@ -11,6 +11,7 @@ requires 'for_search';
 sub delete_fts_index {
     my ($self, $acore, $old) = @_;
 
+    my $lock = $acore->lock_senna_index;
     my $res = $acore->senna_index->update(
         $self->id,
         encode_utf8($old),
@@ -26,6 +27,7 @@ sub delete_fts_index {
 sub update_fts_index {
     my ($self, $acore, $old) = @_;
 
+    my $lock = $acore->lock_senna_index;
     my $for_search = $self->for_search;
     my $res = $acore->senna_index->update(
         $self->id,
@@ -42,6 +44,7 @@ sub update_fts_index {
 sub create_fts_index {
     my ($self, $acore) = @_;
 
+    my $lock = $acore->lock_senna_index;
     my $for_search = $self->for_search;
     my $res = $acore->senna_index->insert({
         key   => $self->id,
