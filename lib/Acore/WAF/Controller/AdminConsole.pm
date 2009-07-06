@@ -378,9 +378,12 @@ sub document_create_form_POST {
     $c->stash->{_class} = $class;
 
     my $doc = $class->validate_to_create($c);
-    $c->form->check(
-        path => [qw/ NOT_NULL ASCII /],
-    ) unless defined $doc->{path};
+    if ( !defined $doc->{path} ) {
+        $c->form->check(
+            path => [qw/ NOT_NULL ASCII /],
+        );
+        $doc->path( $c->req->param('path') );
+    }
 
     if ( $c->form->has_error || !$doc ) {
         $c->render('admin_console/document_create_form.mt');
@@ -413,6 +416,9 @@ sub document_DELETE {
                 my $doc = $c->acore->get_document({ id => $id });
                 next unless $doc;
                 $c->acore->delete_document($doc);
+                if ( $doc->can('execute_on_delete') ) {
+                    $doc->execute_on_delete($c);
+                }
             }
         });
 

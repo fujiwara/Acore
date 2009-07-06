@@ -24,6 +24,10 @@ sub execute_on_update {
     my ($self, $c) = @_;
 }
 
+sub execute_on_delete {
+    my ($self, $c) = @_;
+}
+
 =cut
 
 __PACKAGE__->meta->make_immutable;
