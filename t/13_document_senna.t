@@ -1,6 +1,6 @@
 # -*- mode:perl -*-
 use strict;
-use Test::More tests => 18;
+use Test::More tests => 19;
 use Test::Exception;
 use Data::Dumper;
 use utf8;
@@ -34,6 +34,8 @@ BEGIN {
         body       => "This is a document.",
         for_search => "test document",
     }));
+    ok !$ac->{lock_senna_index};
+
     @docs = $ac->fulltext_search_documents({ query => "test" });
     ok @docs == 1;
     is $docs[0]->id => 9999;

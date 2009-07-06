@@ -1,6 +1,6 @@
 # -*- mode:perl -*-
 use strict;
-use Test::More tests => 10;
+use Test::More tests => 19;
 use Test::Exception;
 use Data::Dumper;
 use utf8;
@@ -27,13 +27,17 @@ package main;
 
     $ac->txn_do(sub {
         diag "begin transaction";
+        ok !$ac->{lock_senna_index};
         $ac->put_document(
             SennaDocument->new({ id => 1, for_search => "foo" })
         );
+        ok $ac->{lock_senna_index};
         $ac->put_document(
             SennaDocument->new({ id => 2, for_search => "bar" })
         );
     });
+    ok !$ac->{lock_senna_index};
+
     @docs = $ac->fulltext_search_documents({ query => "foo" });
     ok @docs == 1;
     is $docs[0]->id => 1;
@@ -41,21 +45,28 @@ package main;
     throws_ok( sub {
         $ac->txn_do(
             sub {
+                ok !$ac->{lock_senna_index};
                 $ac->put_document(
                     SennaDocument->new({ id => 3, for_search => "baz" })
                 );
+                my $fh = $ac->{lock_senna_index};
+                ok $fh;
                 $ac->put_document(
                     SennaDocument->new({ id => 4, for_search => "bar" })
                 );
+                is $ac->{lock_senna_index} => $fh;
                 $ac->put_document(
                     SennaDocument->new({ id => 1, for_search => "xxx" })
                 );
+                is $ac->{lock_senna_index} => $fh;
                 $ac->put_document(
                     SennaDocument->new({ id => 1, for_search => "yyy" })
                 );
+                is $ac->{lock_senna_index} => $fh;
                 die "died";
             });
     }, qr{died} );
+    ok !$ac->{lock_senna_index};
 
     @docs = $ac->fulltext_search_documents({ query => "baz" });
     ok @docs == 0;

@@ -103,10 +103,17 @@ sub init_senna_index {
 sub lock_senna_index {
     my $self = shift;
 
+    return $self->{lock_senna_index}
+        if $self->{lock_senna_index};
+
     my $lock_file = $self->senna_index_path . ".lock";
     open my $fh, "+>", $lock_file
         or croak("Can't open $lock_file $!");
     flock $fh, LOCK_EX;
+
+    $self->{lock_senna_index} = $fh
+        if $self->in_transaction;
+
     return $fh;
 }
 
@@ -419,6 +426,7 @@ sub txn_do {
     $self->dbh->begin_work;
     $self->in_transaction(1);
     $self->transaction_data({ senna => [], });
+    delete $self->{lock_senna_index};
 
     eval { $sub->() };
     my $exception = $@;
@@ -439,9 +447,11 @@ sub txn_do {
                 );
             }
         }
+        delete $self->{lock_senna_index};
         die $exception;
     }
     else {
+        delete $self->{lock_senna_index};
         $self->dbh->commit;
     }
 }
