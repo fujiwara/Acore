@@ -115,6 +115,13 @@ has stack => (
     default => sub { [] },
 );
 
+sub DESTROY {
+    my $self = shift;
+    if ( $self->{acore} ) {
+        $self->{acore}->dbh->disconnect;
+    }
+}
+
 sub _build_log {
     my $self = shift;
     Acore::WAF::Log->new;
@@ -323,7 +330,7 @@ sub _output_stack_trace {
     my $res = $self->res;
     $res->status(500);
     $res->headers->content_type('text/html; charset=utf-8');
-
+    require HTTP::Status;
     $res->body(
         $self->debug ? do {
             my $body = $error->as_html(%args);
@@ -350,21 +357,37 @@ sub finalize {
     1;
 }
 
+sub _prepare_request_for_dispatcher {
+    my $self = shift;
+    my $req  = $self->req;
+
+    if ( $req->can('_connection') &&
+         $req->_connection->{apache_request} )
+    {
+        my $location = $req->_connection->{apache_request}->location || '/';
+        $location   .= '/' if $location !~ m{/$};
+        my $uri      = $req->uri;
+        my $path     = $uri->path;
+        $path =~ s/^$location//;
+        $uri->path($path);
+        $uri->base->path_query($location);
+        $req->uri($uri);
+        return $req;
+    }
+    elsif ($ENV{GATEWAY_INTERFACE} and $ENV{GATEWAY_INTERFACE} =~ /^CGI/) {
+        my $r = clone $req;
+        $r->path($ENV{PATH_INFO});
+        return $r;
+    }
+    return $req;
+}
+
 sub _dispatch {
     my ( $self ) = @_;
 
     my $dispatcher = (ref $self) . "::Dispatcher";
 
-    my $rule = $dispatcher->match(
-        ($ENV{GATEWAY_INTERFACE} and $ENV{GATEWAY_INTERFACE} =~ /^CGI/)
-            ? do {
-                my $r = clone $self->req;
-                $r->path($ENV{PATH_INFO});
-                $r
-            }
-            : $self->req
-        );
-
+    my $rule = $dispatcher->match( $self->_prepare_request_for_dispatcher );
     $self->error(
         404 => "dispatch rule is not found for " . $self->req->uri
     ) unless $rule;

@@ -35,6 +35,7 @@ sub run {
     }
     for my $file (qw/ script_server_pl script_index_cgi makefile_pl
                       lib_app_pm config_yaml
+                      lib_app_modperl_pm
                       lib_app_controller_pm favicon_ico
                       anycms_logo
                       t_00_compile_t
@@ -140,6 +141,59 @@ HTTP::Engine->new(
 )->run;
     _END_OF_FILE_
     , undef, oct(755));
+}
+
+sub lib_app_modperl_pm {
+    return ("lib/${AppName}/ModPerl.pm" => <<'    _END_OF_FILE_'
+package <?=r app_name() ?>::ModPerl;
+use Any::Moose;
+extends 'HTTP::Engine::Interface::ModPerl';
+use HTTP::Engine;
+use <?=r app_name() ?>;
+use Acore::WAF::ConfigLoader;
+
+my $loader = Acore::WAF::ConfigLoader->new();
+my $config = $loader->load(
+    $ENV{'<?=r uc app_name() ?>_CONFIG_FILE'},
+    $ENV{'<?=r uc app_name() ?>_CONFIG_LOCAL'},
+);
+
+sub create_engine {
+    my($class, $r, $context_key) = @_;
+    HTTP::Engine->new(
+        interface => {
+            module          => 'ModPerl',
+            request_handler => sub {
+                <?=r app_name() ?>->new->handle_request($config, @_);
+            },
+        },
+    );
+}
+__PACKAGE__->meta->make_immutable;
+1;
+__END__
+
+=head1 httpd.conf
+
+  LoadModule env_module  modules/mod_env.so
+  LoadModule perl_module modules/mod_perl.so
+  
+  PerlSwitches -Mlib=/path/to/<?=r app_name() ?>/lib
+  PerlOptions +SetupEnv
+  PerlModule Acore::LoadModules   # preload modules
+  PerlModule <?=r app_name() ?>
+  
+  <VirtualHost 127.0.0.1:8080>
+      <Location /app>
+          PerlSetENV <?=r uc app_name() ?>_CONFIG_FILE  "/path/to/<?=r app_name() ?>/config/<?=r app_name() ?>.yaml"
+          PerlSetENV <?=r uc app_name() ?>_CONFIG_LOCAL "/path/to/<?=r app_name() ?>/config/local.yaml"
+          SetHandler modperl
+          PerlResponseHandler <?=r app_name() ?>::ModPerl
+      </Location>
+  </VirtualHost>
+
+    _END_OF_FILE_
+    );
 }
 
 sub lib_app_controller_pm {
