@@ -180,11 +180,11 @@ __END__
   
   PerlSwitches -Mlib=/path/to/<?=r app_name() ?>/lib
   PerlOptions +SetupEnv
-  PerlModule Acore::LoadModules   # preload modules
+  PerlModule Acore::LoadModules
   PerlModule <?=r app_name() ?>
   
   <VirtualHost 127.0.0.1:8080>
-      <Location /app>
+      <Location /<?=r lc app_name() ?>>
           PerlSetENV <?=r uc app_name() ?>_CONFIG_FILE  "/path/to/<?=r app_name() ?>/config/<?=r app_name() ?>.yaml"
           PerlSetENV <?=r uc app_name() ?>_CONFIG_LOCAL "/path/to/<?=r app_name() ?>/config/local.yaml"
           SetHandler modperl
