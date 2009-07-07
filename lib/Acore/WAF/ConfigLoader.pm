@@ -12,10 +12,23 @@ has cache_dir => (
 );
 
 has from => (
-    is => "rw",
+    is      => "rw",
+    default => sub { +{} },
 );
 
 sub load {
+    my $self = shift;
+    my @file = @_;
+
+    my $config = {};
+    for my $file (@file) {
+        next unless $file;
+        $config = { %$config, %{ $self->_load_file($file) } };
+    }
+    return $config;
+}
+
+sub _load_file {
     my $self      = shift;
     my $yaml_file = shift;
     $yaml_file = file($yaml_file) unless ref $yaml_file;
@@ -32,7 +45,7 @@ sub load {
                 carp("Can't load config cache file $cache_file : $@");
             }
             else {
-                $self->from("cache.");
+                $self->from->{$yaml_file} = "cache.";
                 return $config;
             }
         }
@@ -44,15 +57,15 @@ sub load {
         };
         if ($@) {
             carp("Can't open config cache file $cache_file to write: $!");
-            $self->from("file. no cache");
+            $self->from->{$yaml_file} = "file. no cache";
             return $config;
         }
-        $self->from("file. cache created");
+        $self->from->{$yaml_file} = "file. cache created";
     }
     else {
         require YAML;
         $config = YAML::LoadFile($yaml_file);
-        $self->from("file. no cache");
+        $self->from->{$yaml_file} = "file. no cache";
     }
     return $config;
 }
@@ -71,7 +84,7 @@ Acore::WAF::ConfigLoader - AnyCMS config file loader
 
  $loader = Acore::WAF::ConfigLoader->new;
  $loader->cache_dir("/path/to/cach");
- $config = $loader->load("config.yaml");
+ $config = $loader->load("config.yaml", "local_config.yaml");
 
 =head1 DESCRIPTION
 

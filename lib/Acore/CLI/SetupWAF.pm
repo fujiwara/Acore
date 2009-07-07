@@ -87,7 +87,9 @@ my $opts = {};
 getopts("p:c:", $opts);
 $opts->{c} ||= "config/<?=r app_name() ?>.yaml";
 
-my $config = Acore::WAF::ConfigLoader->new->load($opts->{c});
+my $config = Acore::WAF::ConfigLoader->new->load(
+    $opts->{c}, $ENV{'<?=r uc app_name() ?>_CONFIG_LOCAL'},
+);
 my $engine = HTTP::Engine->new(
     interface => {
         module => 'ServerSimple',
@@ -120,7 +122,10 @@ use <?=r app_name() ?>;
 use utf8;
 
 my $loader = Acore::WAF::ConfigLoader->new({ cache_dir => "../db" });
-my $config = $loader->load("../config/<?=r app_name() ?>.yaml");
+my $config = $loader->load(
+    $ENV{'<?=r uc app_name() ?>_CONFIG_FILE'} || "../config/<?=r app_name() ?>.yaml",
+    $ENV{'<?=r uc app_name() ?>_CONFIG_LOCAL'},
+);
 $config->{root} = ".." if $config->{root} eq '.';
 
 HTTP::Engine->new(
