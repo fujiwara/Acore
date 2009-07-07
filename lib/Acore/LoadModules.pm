@@ -7,6 +7,8 @@ use Path::Class qw/ dir file /;
 use DBIx::CouchLike;
 use Data::Dumper;
 use Acore::DocumentLoader;
+use Acore::WAF::ConfigLoader;
+use Acore::WAF::Log;
 use HTTP::Engine;
 eval { require Senna };
 

@@ -6,6 +6,16 @@ use Any::Moose;
 use Carp;
 use Path::Class qw/ file dir /;
 use Storable;
+my $Use_xs;
+eval {
+    require YAML::XS;
+    $Use_xs = 1;
+    *load_file = \&YAML::XS::LoadFile;
+};
+if ($@) {
+    require YAML;
+    *load_file = \&YAML::LoadFile;
+}
 
 has cache_dir => (
     is => "rw",
@@ -49,8 +59,7 @@ sub _load_file {
                 return $config;
             }
         }
-        require YAML;
-        $config = YAML::LoadFile($yaml_file);
+        $config = load_file($yaml_file);
 
         eval {
             Storable::nstore($config, "$cache_file");
@@ -63,8 +72,7 @@ sub _load_file {
         $self->from->{$yaml_file} = "file. cache created";
     }
     else {
-        require YAML;
-        $config = YAML::LoadFile($yaml_file);
+        $config = load_file($yaml_file);
         $self->from->{$yaml_file} = "file. no cache";
     }
     return $config;
