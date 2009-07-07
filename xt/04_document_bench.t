@@ -2,7 +2,12 @@
 use strict;
 use Benchmark qw/:all/;
 use Acore::Document;
-use Test::More qw/ no_plan /;
+use Test::More;
+
+plan skip_all => "Set TEST_BENCH environment variable to run this test"
+    unless $ENV{TEST_BENCH};
+
+plan tests => 1;
 
 my $doc = Acore::Document->new({
     foo => 1,
@@ -12,17 +17,17 @@ my $doc = Acore::Document->new({
     list => [ 3, 4, 5 ],
 });
 ok $doc;
-
+my $v;
 cmpthese timethese( 0, {
     normal_get => sub {
-        $doc->{foo};
-        $doc->{bar}->{baz};
-        $doc->{list}->[1];
+        $v = $doc->{foo};
+        $v = $doc->{bar}->{baz};
+        $v = $doc->{list}->[1];
     },
     xpath_get => sub {
-        $doc->xpath->get('/foo');
-        $doc->xpath->get('/bar/baz');
-        $doc->xpath->get('/list[1]');
+        $v = $doc->xpath->get('/foo');
+        $v = $doc->xpath->get('/bar/baz');
+        $v = $doc->xpath->get('/list[1]');
     },
     normal_set => sub {
         $doc->{foo}        = 1;

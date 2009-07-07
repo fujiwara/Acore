@@ -6,10 +6,8 @@ use Any::Moose;
 use Carp;
 use Path::Class qw/ file dir /;
 use Storable;
-my $Use_xs;
 eval {
     require YAML::XS;
-    $Use_xs = 1;
     *load_file = \&YAML::XS::LoadFile;
 };
 if ($@) {
@@ -108,8 +106,12 @@ Directory for store cache file. (default: no cache)
 
 =item from
 
-Loading status.
+Loading statuses hash ref.
 
+ $loader->load('foo.yaml', 'bar.yaml');
+ $loader->from;   #= { "foo.yaml" => STATUS, "bar.yaml" => STATUS };
+
+ # STATUS
  "file. cache created"
  "file. no cache"
  "cache."
