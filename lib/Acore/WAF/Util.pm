@@ -8,24 +8,34 @@ sub adjust_request_mod_perl {
 
     my $location = $req->_connection->{apache_request}->location || '/';
     $location   .= '/' if $location !~ m{/$};
-    my $uri      = $req->uri;
-    my $path     = $uri->path;
-    $path =~ s/^$location//;
-    $uri->path($path);
-    $uri->base->path_query($location);
-    $req->uri($uri);
+
+    $req->uri->base->path_query($location);
+    $req->location($location);
+
     return $req;
 }
 
 sub adjust_request_fcgi {
     my ($class, $req) = @_;
-    my $uri      = $req->uri;
-    my $location = $uri->base->path;
-    my $path     = $uri->path;
-    $path =~ s/^$location//;
-    $uri->path($path);
-    $req->uri($uri);
+    $req->location( $req->uri->base->path );
     return $req;
+}
+
+{
+    package ## hide for pause
+        HTTP::Engine::Request;
+    use Any::Moose;
+    has location => ( is => "rw" );
+}
+
+{
+    package Acore::WAF::Util::RequestForDispatcher;
+    use Any::Moose;
+
+    has uri    => ( is => "rw" );
+    has method => ( is => "rw" );
+
+    __PACKAGE__->meta->make_immutable;
 }
 
 1;

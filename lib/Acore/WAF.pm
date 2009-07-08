@@ -362,12 +362,25 @@ sub finalize {
     1;
 }
 
+sub _request_for_dispatcher {
+    my $self = shift;
+    my $req  = $self->request;
+    my $path = ref($req->uri) ? $req->uri->path : $ENV{PATH_INFO};
+    my $location = $req->location || '/';
+    $path =~ s{^$location}{};
+
+    Acore::WAF::Util::RequestForDispatcher->new({
+        method => $req->method,
+        uri    => $path,
+    });
+}
+
 sub _dispatch {
     my ( $self ) = @_;
 
     my $dispatcher = (ref $self) . "::Dispatcher";
 
-    my $rule = $dispatcher->match( $self->request );
+    my $rule = $dispatcher->match( $self->_request_for_dispatcher );
     $self->error(
         404 => "dispatch rule is not found for " . $self->req->uri
     ) unless $rule;
