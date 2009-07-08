@@ -33,7 +33,9 @@ sub run {
             or die "Can't create dir $name/$dir: $!";
         print "mkdir $name/$dir\n";
     }
-    for my $file (qw/ script_server_pl script_index_cgi makefile_pl
+    for my $file (qw/ script_server_pl script_index_cgi
+                      script_fastcgi_pl
+                      makefile_pl
                       lib_app_pm config_yaml
                       lib_app_modperl_pm
                       lib_app_controller_pm favicon_ico
@@ -109,6 +111,66 @@ $engine->run;
     , undef, oct(755));
 }
 
+sub script_fastcgi_pl {
+    return ("script/fastcgi.pl" => <<'    _END_OF_FILE_'
+#!/usr/bin/perl
+use strict;
+use warnings;
+use FindBin;
+use lib "$FindBin::Bin/../lib";
+use HTTP::Engine;
+use Acore::WAF::ConfigLoader;
+use Acore::LoadModules;
+use <?= app_name() ?>;
+use utf8;
+
+my $loader = Acore::WAF::ConfigLoader->new();
+my $config = $loader->load(
+    $ENV{'<?= uc app_name() ?>_CONFIG_FILE'},
+    $ENV{'<?= uc app_name() ?>_CONFIG_LOCAL'},
+);
+
+HTTP::Engine->new(
+    interface => {
+        module => 'FCGI',
+        args   => {
+            keep_stderr => 1,
+        },
+        request_handler => sub {
+            my $req = shift;
+            $req = Acore::WAF::Util->adjust_request_fcgi($req);
+            <?= app_name() ?>->new->handle_request($config, $req);
+        },
+    },
+)->run;
+
+__END__
+
+=head1 lighttpd.conf
+
+ fastcgi.server    = (
+    "/<?= lc app_name() ?>.fcgi" => (
+        "<?= lc app_name() ?>" => (
+                "bin-path"     => "/path/to/<?= app_name() ?>/script/fastcgi.pl",
+                "socket"       => "/tmp/<?= app_name ?>.socket",
+                "check-local"  => "disable",
+                "max-procs"    => 5,
+                "idle-timeout" => 20,
+                "bin-environment" => (
+                    "<?= uc app_name() ?>_CONFIG_FILE" => "/path/to/App/config/<?= app_name() ?>.yaml",
+                    "<?= uc app_name() ?>_CONFIG_LOCAL" => "/path/to/App/config/local.yaml"
+                ),
+                "bin-copy-environment" => (
+                    "PATH", "SHELL", "USER"
+                ),
+                "broken-scriptfilename" => "enable"
+        )
+    )
+)
+    _END_OF_FILE_
+    );
+}
+
 sub script_index_cgi {
     return ("script/index.cgi" => <<'    _END_OF_FILE_'
 #!/usr/bin/perl
@@ -164,7 +226,9 @@ sub create_engine {
         interface => {
             module          => 'ModPerl',
             request_handler => sub {
-                <?=r app_name() ?>->new->handle_request($config, @_);
+                my $req = shift;
+                $req = Acore::WAF::Util->adjust_request_mod_perl($req);
+                <?=r app_name() ?>->new->handle_request($config, $req);
             },
         },
     );

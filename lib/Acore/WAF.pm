@@ -12,6 +12,7 @@ use Encode ();
 use UNIVERSAL::require;
 use Acore::WAF::Log;
 use Acore::WAF::Render;
+use Acore::WAF::Util;
 use Acore::MIME::Types;
 use URI::Escape;
 use CGI::ExceptionManager;
@@ -113,6 +114,10 @@ has stack => (
     is      => "rw",
     isa     => "ArrayRef",
     default => sub { [] },
+);
+
+has interface => (
+    is => "rw",
 );
 
 sub DESTROY {
@@ -357,37 +362,12 @@ sub finalize {
     1;
 }
 
-sub _prepare_request_for_dispatcher {
-    my $self = shift;
-    my $req  = $self->req;
-
-    if ( $req->can('_connection') &&
-         $req->_connection->{apache_request} )
-    {
-        my $location = $req->_connection->{apache_request}->location || '/';
-        $location   .= '/' if $location !~ m{/$};
-        my $uri      = $req->uri;
-        my $path     = $uri->path;
-        $path =~ s/^$location//;
-        $uri->path($path);
-        $uri->base->path_query($location);
-        $req->uri($uri);
-        return $req;
-    }
-    elsif ($ENV{GATEWAY_INTERFACE} and $ENV{GATEWAY_INTERFACE} =~ /^CGI/) {
-        my $r = clone $req;
-        $r->path($ENV{PATH_INFO});
-        return $r;
-    }
-    return $req;
-}
-
 sub _dispatch {
     my ( $self ) = @_;
 
     my $dispatcher = (ref $self) . "::Dispatcher";
 
-    my $rule = $dispatcher->match( $self->_prepare_request_for_dispatcher );
+    my $rule = $dispatcher->match( $self->request );
     $self->error(
         404 => "dispatch rule is not found for " . $self->req->uri
     ) unless $rule;
