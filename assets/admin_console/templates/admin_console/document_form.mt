@@ -27,7 +27,7 @@
 ? if (!$doc) {
               <p class="error">id = <?= $c->req->param('id') ?> の Document は存在しません</p>
 ? } else {
-              <form action="<?= $c->uri_for('/admin_console/document_form') ?>" method="post" id="document-form">
+              <form action="<?= $c->uri_for('/admin_console/document_form') ?>" method="post" id="document-form" enctype="multipart/form-data">
 ?      if ($c->form->has_error) {
                <div class="errors">
                 <p><em>下記の項目の入力にエラーがあります。</em></p>
