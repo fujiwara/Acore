@@ -21,7 +21,7 @@ sub execute_on_create {
 }
 
 sub execute_on_update {
-    my ($self, $c) = @_;
+    my ($self, $c, $old_doc) = @_;
 }
 
 sub execute_on_delete {

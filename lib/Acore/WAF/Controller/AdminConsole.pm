@@ -322,6 +322,8 @@ sub document_form_POST {
     $c->error( 404 => "document not found." )
         unless $doc;
 
+    my $old_doc = Clone::clone($doc);
+
     $c->stash->{document} = $doc;
 
     $c->form->check(
@@ -339,7 +341,7 @@ sub document_form_POST {
 
     $c->acore->put_document($doc, { update_timestamp => 0 });
     if ( $doc->can('execute_on_update') ) {
-        $doc->execute_on_update($c);
+        $doc->execute_on_update($c, $old_doc);
     }
 
     $c->redirect(
