@@ -28,7 +28,6 @@ for my $cache ( undef, t::Cache->new({}) )
     });
     is $o->xpath->get('/body') => "This is a document.";
     my $doc = $ac->put_document($o);
-
     ok $doc, "result doc";
     isa_ok $doc => "Acore::Document";
     ok $doc->id, "has id";

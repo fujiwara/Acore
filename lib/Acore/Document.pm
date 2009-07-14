@@ -39,17 +39,27 @@ has tags => (
 );
 
 has created_on => (
-    is         => "rw",
-    isa        => "DateTime",
-    lazy_build => 1,
-    coerce     => 1,
+    is      => "rw",
+    isa     => "DateTime",
+    lazy    => 1,
+    coerce  => 1,
+    default => sub {
+        $_[0]->{_created_on}
+            ? Acore::DateTime->parse_datetime( $_[0]->{_created_on} )
+            : Acore::DateTime->now;
+    },
 );
 
 has updated_on => (
-    is         => "rw",
-    isa        => "DateTime",
-    lazy_build => 1,
-    coerce     => 1,
+    is      => "rw",
+    isa     => "DateTime",
+    lazy    => 1,
+    coerce  => 1,
+    default => sub {
+        $_[0]->{_updated_on}
+            ? Acore::DateTime->parse_datetime( $_[0]->{_updated_on} )
+            : Acore::DateTime->now;
+    },
 );
 
 has xpath => (
@@ -57,14 +67,6 @@ has xpath => (
     isa        => "Data::Path",
     lazy_build => 1,
 );
-
-sub _build_created_on {
-    Acore::DateTime->now();
-}
-
-sub _build_updated_on {
-    Acore::DateTime->now();
-}
 
 my $xpath_callback = {
     key_does_not_exist            => sub {},
@@ -95,8 +97,8 @@ sub to_object {
     $obj->{created_on} = Acore::DateTime->format_datetime( $obj->created_on );
     $obj->{updated_on} = Acore::DateTime->format_datetime( $obj->updated_on );
     $obj->{_class}     = ref $self;
-    $obj->{_id} = delete $obj->{id} if $obj->{id};
-    delete $obj->{xpath};
+    $obj->{_id}        = delete $obj->{id} if $obj->{id};
+    delete $obj->{$_} for qw/ xpath _created_on _updated_on /;
     unbless $obj;
 
     return $obj;
@@ -107,7 +109,10 @@ sub from_object {
     my $obj   = shift;
     return unless $obj->{_class};
     $obj->{_class}->require;
-    $obj->{id} = delete $obj->{_id} if $obj->{_id};
+    $obj->{id}    = delete $obj->{_id} if $obj->{_id};
+    for ( qw/ created_on updated_on / ) {
+        $obj->{"_$_"} ||= delete $obj->{$_};
+    }
     $obj->{_class}->new($obj);
 }
 
