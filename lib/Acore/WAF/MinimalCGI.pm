@@ -42,15 +42,9 @@ use URI;
         if (@_ == 1) {
             my $upload = shift;
             return wantarray ? () : undef unless exists $self->uploads->{$upload};
-            if (ref $self->uploads->{$upload} eq 'ARRAY') {
-                return (wantarray)
-                    ? @{ $self->uploads->{$upload} }
-                    : $self->uploads->{$upload}->[0];
-            } else {
-                return (wantarray)
-                    ? ( $self->uploads->{$upload} )
-                    : $self->uploads->{$upload};
-            }
+            return (wantarray)
+                ? ( $self->uploads->{$upload} )
+                : $self->uploads->{$upload};
         }
     }
 
@@ -63,18 +57,14 @@ use URI;
         my %uploads;
         for my $name ( keys %{ $q->{".upload_fields"} } ) {
             my $filename = $q->{".upload_fields"}->{$name};
-            my @uploads;
             my $headers = HTTP::Headers::Fast->new();
-            push(
-                @uploads,
-                HTTP::Engine::Request::Upload->new(
+            $uploads{$name}
+                = HTTP::Engine::Request::Upload->new(
                     headers  => $headers,
                     fh       => $q->upload($filename),
                     size     => $q->upload_info($filename, 'size'),
                     filename => $filename,
-                )
-            );
-            $uploads{$name} = @uploads > 1 ? \@uploads : $uploads[0];
+                );
         }
         return \%uploads;
     }
@@ -87,7 +77,7 @@ use URI;
     sub copy_to {
         my $self = shift;
         require File::Copy;
-        File::Copy::copy( $self->fh, @_ );
+        File::Copy::copy( ($self->tempname || $self->fh), @_ );
     }
 }
 
