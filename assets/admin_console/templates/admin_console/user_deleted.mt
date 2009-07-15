@@ -17,6 +17,9 @@
           </div>
           <div class="form-container">
             <h3>削除されました</h3>
+            <p>
+              <a href="<?= $c->uri_for('/admin_console/user_list') ?>">ユーザ一覧へ</a>
+            </p>
           </div>
           <div id="gamma">
             <div id="gamma-inner">

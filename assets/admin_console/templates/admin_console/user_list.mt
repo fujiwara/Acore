@@ -1,6 +1,7 @@
 <?
   my $c = $_[0];
   $c->stash->{title} = "ユーザの管理";
+  $c->stash->{load_jquery_ui} = 1;
 ?>
 ?=r $c->render_part("admin_console/header.mt");
 ?=r $c->render_part("admin_console/container.mt");
@@ -22,6 +23,7 @@
               <input type="hidden" name="sid" value="<?= $c->session->session_id ?>"/>
               CSV <input type="file" name="upload_file" size="20"/>
               <input type="submit" value="アップロード"/>
+              <a href="#" id="help-for-csv">ファイル形式のヘルプ</a>
             </form>
           </div>
           <div class="data">
@@ -48,11 +50,29 @@
         </div>
       </div>
     </div>
+    <div id="help-for-csv-dialog">
+      <p>
+        CSV ファイルは以下の形式に従って作成してください
+        <ul>
+          <li>文字コード UTF-8</li>
+          <li>改行コード CR または CR + LF</li>
+          <li>1行目はヘッダ行</li>
+          <li>ヘッダ行には name カラムが必須</li>
+          <li>password カラムが存在すれば、そのパスワードに更新</li>
+          <li>それ以外のヘッダ行は追加属性として登録</li>
+        </ul>
+      </p>
+    </div>
     <script type="text/javascript">
       $('#upload-form').hide();
       $('#toggle-upload-form').click( function() {
          $('#upload-form').toggle();
          return false;
+      });
+      $('#help-for-csv-dialog').hide()
+      $('#help-for-csv').click( function() {
+        $('#help-for-csv-dialog').show().dialog({ width: 400 });
+        return false;
       });
     </script>
 </body>
