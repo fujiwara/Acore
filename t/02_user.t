@@ -1,6 +1,6 @@
 # -*- mode:perl -*-
 use strict;
-use Test::More tests => 35;
+use Test::More tests => 37;
 use Data::Dumper;
 
 BEGIN {
@@ -53,4 +53,7 @@ BEGIN {
 
     is $u->attr($_) => $u->attribute($_)
         for $u->attributes;
+
+    ok !$u->attr("name", "XXX");
+    is $u->name => "foo";
 }

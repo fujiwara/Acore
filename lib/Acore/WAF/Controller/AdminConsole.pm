@@ -272,7 +272,7 @@ sub user_upload_POST {
         $user->set_password( $new_password )
             if defined $new_password;
         for my $key ( keys %$value ) {
-            $user->{$key} = $value->{$key};
+            $user->attr( $key => $value->{$key} );
         }
         $acore->save_user($user);
         $imported ++;

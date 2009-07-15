@@ -108,17 +108,20 @@ sub authenticate {
 sub _auth_class { "Acore::Authentication::$_[0]" }
 sub _role_class { "Acore::Role::$_[0]" }
 
+my $Ignore_attrs
+    = +{ map {( $_ => 1 )}
+         qw/ _id id roles authentications password name /
+    };
 sub attributes {
     my $self = shift;
-    sort
-        grep { !/\A(?:_?id|roles|authentications|password|name)\z/ }
-            keys %$self;
+    sort grep { !$Ignore_attrs->{$_} } keys %$self;
 }
 
 sub attr {
     my $self = shift;
     my $key  = shift;
     if (@_) {
+        return if $Ignore_attrs->{$key};
         $self->{$key} = shift;
     }
     $self->{$key};
