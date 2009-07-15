@@ -57,6 +57,7 @@ use URI;
         my %uploads;
         for my $name ( keys %{ $q->{".upload_fields"} } ) {
             my $filename = $q->{".upload_fields"}->{$name};
+            next unless $q->upload($filename);
             my $headers = HTTP::Headers::Fast->new();
             $uploads{$name}
                 = HTTP::Engine::Request::Upload->new(
