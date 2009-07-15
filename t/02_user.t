@@ -1,6 +1,6 @@
 # -*- mode:perl -*-
 use strict;
-use Test::More tests => 28;
+use Test::More tests => 35;
 use Data::Dumper;
 
 BEGIN {
@@ -36,4 +36,21 @@ BEGIN {
         ok $u->delete_authentication($r), "delete authentication $r";
         ok !$u->has_authentication($r), "hasn't authentication $r";
     }
+}
+
+{
+    my $u = Acore::User->new({ name => "foo" });
+    $u->init;
+    $u->set_password('foo');
+    is_deeply [ $u->attributes ], [], "attributes";
+
+    $u->{email} = 'foo@example.com';
+    is_deeply [ $u->attributes ], [qw/ email /], "attributes added";
+    is $u->attr("email") => 'foo@example.com';
+    is $u->attr("name")  => "foo";
+    ok $u->attr("email", 'foo@example.jp');
+    is $u->attr("email") => 'foo@example.jp';
+
+    is $u->attr($_) => $u->attribute($_)
+        for $u->attributes;
 }

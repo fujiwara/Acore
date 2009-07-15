@@ -57,8 +57,31 @@
                     </div>
                   </div>
 
+                  <? for my $attr ( $user->attributes ) { ?>
+                  <div id="attr-<?= $attr ?>-container">
+                    <label for="_attr_<?= $attr ?>"><?= $attr ?></label>
+                    <div id="<?= $attr ?>-inputs">
+                      <input type="text" name="_attr_<?= $attr ?>" value="<?= $user->attr($attr) ?>" size="30"/>
+                      <a href="#" id="delete-attr-<?= $attr ?>" rel="<?= $attr ?>" class="delete-attr">削除</a>
+                    </div>
+                  </div>
+                  <? } ?>
+
+                  <div id="add-new-attr-container"></div>
+
+                  <div>
+                    <label>
+                      <input type="text" id="new-attr-name" size="10"/>
+                    </label>
+                    <div>
+                      <input type="button" value="属性追加" id="new-attr-button" />
+                      <span id="new-attr-error">属性は半角英数 (先頭はアルファベットのみ) で入力してください)</span>
+                    </div>
+                  </div>
+
                 </fieldset>
                 <div class="buttonrow">
+                  <input type="hidden" id="remove-attrs" name="remove_attrs"/>
                   <input type="submit" value="更新する" class="button"/>
                   <input type="hidden" name="sid" value="<?= $c->session->session_id ?>"/>
                 </div>
@@ -90,6 +113,37 @@
         $('#roles-inputs').append('<input type="text" name="roles" size="10"/>');
       });
 
+      $('#new-attr-button').click( function() {
+        var name = $('#new-attr-name').val();
+        if ( !name
+          || !name.match(/^[a-zA-Z][a-zA-Z0-9_]*$/)
+          || $('#attr-'+name+'-container')[0])
+        {
+          $('#new-attr-error').show();
+          return false;
+        }
+        var html = '<div id="attr-ATTR-container"><label for="_attr_ATTR">ATTR</label>'
+                 + '<div id="ATTR-inputs">'
+                 + '<input type="text" name="_attr_ATTR" value="" size="30"/>'
+                 + ' <a href="#" id="delete-attr-ATTR">削除</a>'
+                 + '</div></div>';
+        html = html.replace(/ATTR/g, name);
+        $('#add-new-attr-container').append(html);
+        $('#delete-attr-'+name).click( function() {
+          $('#attr-'+name+'-container').remove();
+        });
+        $('#new-attr-name').val("");
+        $('#new-attr-error').hide();
+      });
+
+      $('a.delete-attr').each( function() {
+        $(this).click( function () {
+          var name = $(this).attr("rel");
+          $('#remove-attrs').val( $('#remove-attrs').val() + "," + name );
+          $('#attr-'+name+'-container').remove();
+          return false;
+        });
+      });
     </script>
 </body>
 </html>

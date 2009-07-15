@@ -3,7 +3,7 @@ package Acore::WAF::Controller::AdminConsole;
 use strict;
 use warnings;
 use Data::Dumper;
-use List::MoreUtils;
+use List::MoreUtils qw/ uniq zip /;
 use List::Util;
 use Scalar::Util qw/ blessed /;
 use utf8;
@@ -169,6 +169,19 @@ sub user_form_POST {
 
     my @roles = grep { /\A[\w:]+\z/ } $c->req->param('roles');
     $user->roles(\@roles);
+
+    # 追加 attributes
+    my @attr = grep { /\A_attr_(.\w+)/ } $c->req->param;
+    for my $attr ( map { /\A_attr_(\w+)/; $1 } @attr ) {
+        $user->attr( $attr => $c->req->param("_attr_${attr}") );
+    }
+
+    # 削除 attributes
+    @attr = grep { /./ } split /,/, $c->req->param('remove_attrs');
+    for my $attr ( @attr ) {
+        delete $user->{$attr};
+    }
+
     $c->acore->save_user($user);
 
     $c->redirect(
@@ -232,6 +245,40 @@ sub user_DELETE {
     $c->acore->delete_user($user);
 
     $c->render('admin_console/user_deleted.mt');
+}
+
+
+sub user_upload_POST {
+    my ($self, $c) = @_;
+    require Text::CSV_XS;
+
+    $c->forward( $self => "is_logged_in" );
+    my $upload = $c->req->upload('upload_file')
+        or $c->error(400);
+    my $fh  = $upload->fh;
+    my $csv = Text::CSV_XS->new;
+    my $header_ref = $csv->getline($fh);
+
+    my $acore = $c->acore;
+    my $imported = 0;
+    while ( my $col_ref = $csv->getline($fh) ) {
+        my $value = +{ zip @$header_ref, @$col_ref };
+        my $name = delete $value->{name};
+        next unless defined $name;
+        my $user = $acore->get_user({ name => $name })
+                || $acore->create_user({ name => $name });
+
+        my $new_password = delete $value->{password};
+        $user->set_password( $new_password )
+            if defined $new_password;
+        for my $key ( keys %$value ) {
+            $user->{$key} = $value->{$key};
+        }
+        $acore->save_user($user);
+        $imported ++;
+    }
+    $c->stash->{imported} = $imported;
+    $c->render('admin_console/user_upload.mt');
 }
 
 sub document_list_GET {
@@ -460,7 +507,7 @@ sub doc_class_POST {
     if ($c->req->param('download-pm')) {
         my $html = $c->req->param('form-html');
         my @names = ($html =~ m/name=['"]\/(\w+)['"]/g );
-        $c->stash->{names} = [ List::MoreUtils::uniq(@names) ];
+        $c->stash->{names} = [ uniq(@names) ];
 
         $c->render('admin_console/doc_class_pm.mt');
         $c->res->header(
