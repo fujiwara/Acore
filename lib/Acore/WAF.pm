@@ -536,8 +536,8 @@ sub _uri_for {
 
 sub uri_for {
     my $self = shift;
-    my $base = ( $_[0] =~ m{^/static/} && defined $self->config->{static_path} )
-             ? $self->config->{static_path}
+    my $base = ( $_[0] =~ m{^/static/} && defined $self->config->{static_base} )
+             ? $self->config->{static_base}
              : $self->req->base;
     $self->_uri_for( $base, @_ );
 }

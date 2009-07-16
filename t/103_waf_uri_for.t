@@ -70,23 +70,23 @@ $app->uri_for('/foo/', Math::BigInt->new('123'));
 --- uri
 http://example.com/foo/123
 
-=== static_path
+=== static_base
 --- code
-$app->config->{static_path} = "http://static.example.com/";
+$app->config->{static_base} = "http://static.example.com/";
 $app->uri_for('/foo/');
 --- uri
 http://example.com/foo/
 
-=== static_path
+=== static_base
 --- code
-$app->config->{static_path} = "http://static.example.com/";
+$app->config->{static_base} = "http://static.example.com/";
 $app->uri_for('/static/foo.jpg');
 --- uri
 http://static.example.com/static/foo.jpg
 
-=== static_path
+=== static_base
 --- code
-$app->config->{static_path} = "/path/to/";
+$app->config->{static_base} = "/path/to/";
 $app->uri_for('/static/foo.jpg');
 --- uri
 /path/to/static/foo.jpg
