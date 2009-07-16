@@ -907,6 +907,15 @@ Response body is Acore::Document->as_string.
 
 Like Catalyst->uri_for.
 
+If config->static_base is defined and first argument for uri_for() matches /static/, base uri is config->static_base.
+
+ $c->config->{static_base} = 'http://static.example.com/';
+ $c->uri_for("/static/foo.jpg"); #= http://static.example.com/static/foo.jpg
+
+ $c->config->{static_base} = '/path/to/';
+ $c->uri_for("/static/foo.jpg");     #= /path/to/static/foo.jpg
+ $c->uri_for("/bar/static/foo.jpg"); #= /path/to/bar/static/foo.jpg
+
 =item redirect
 
 Redirect to URL.
