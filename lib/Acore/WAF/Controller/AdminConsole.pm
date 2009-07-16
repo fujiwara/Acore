@@ -255,8 +255,11 @@ sub user_upload_POST {
     $c->forward( $self => "is_logged_in" );
     my $upload = $c->req->upload('upload_file')
         or $c->error(400);
-    my $fh  = $upload->fh;
-    my $csv = Text::CSV_XS->new;
+
+    my $fh = $upload->fh;
+    binmode $fh, ":utf8";
+
+    my $csv = Text::CSV_XS->new({ binary => 1 });
     my $header_ref = $csv->getline($fh);
 
     my $acore = $c->acore;
