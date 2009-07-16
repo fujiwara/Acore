@@ -264,22 +264,25 @@ sub user_upload_POST {
 
     my $acore = $c->acore;
     my $imported = 0;
-    while ( my $col_ref = $csv->getline($fh) ) {
-        my $value = +{ zip @$header_ref, @$col_ref };
-        my $name = delete $value->{name};
-        next unless defined $name;
-        my $user = $acore->get_user({ name => $name })
-                || $acore->create_user({ name => $name });
 
-        my $new_password = delete $value->{password};
-        $user->set_password( $new_password )
-            if defined $new_password;
-        for my $key ( keys %$value ) {
-            $user->attr( $key => $value->{$key} );
+    $acore->txn_do( sub {
+        while ( my $col_ref = $csv->getline($fh) ) {
+            my $value = +{ zip @$header_ref, @$col_ref };
+            my $name = delete $value->{name};
+            next unless defined $name;
+            my $user = $acore->get_user({ name => $name })
+                    || $acore->create_user({ name => $name });
+
+            my $new_password = delete $value->{password};
+            $user->set_password( $new_password )
+                if defined $new_password;
+            for my $key ( keys %$value ) {
+                $user->attr( $key => $value->{$key} );
+            }
+            $acore->save_user($user);
+            $imported ++;
         }
-        $acore->save_user($user);
-        $imported ++;
-    }
+    });
     $c->stash->{imported} = $imported;
     $c->render('admin_console/user_upload.mt');
 }
