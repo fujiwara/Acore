@@ -14,7 +14,7 @@
           <li><a href="<?= $c->uri_for('/admin_console/logout') ?>">ログアウト</a></li>
         </ul>
         <ul id="bread-crumb-navi">
-          <li><a href="<?= $c->uri_for('/admin_console/menu') ?>">menu</a>/</li>
+          <li><a href="<?= $c->uri_for('/admin_console/menu') ?>">メニュー</a>/</li>
         </ul>
         <? } ?>
       </div>
