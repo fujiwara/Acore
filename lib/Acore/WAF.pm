@@ -536,7 +536,10 @@ sub _uri_for {
 
 sub uri_for {
     my $self = shift;
-    $self->_uri_for( $self->req->base, @_ );
+    my $base = ( $_[0] =~ m{^/static/} && defined $self->config->{static_path} )
+             ? $self->config->{static_path}
+             : $self->req->base;
+    $self->_uri_for( $base, @_ );
 }
 
 sub rel_uri_for {

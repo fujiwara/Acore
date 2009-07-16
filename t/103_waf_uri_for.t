@@ -22,13 +22,13 @@ my $req = HTTP::Engine::Test::Request->new(
     method => "GET",
 );
 $app->request($req);
-$app->config({ include_path => [] });
+my $base_config = { include_path => [], };
 
 run {
     my $block = shift;
     my $result = eval $block->code;
     die $@ if $@;
-
+    $app->config( Clone::clone($base_config) );
     is $result => $block->uri, encode_utf8( $block->code );
 }
 
@@ -69,3 +69,26 @@ http://example.com/foo/?cc=%E3%81%84&aa=%E3%81%82
 $app->uri_for('/foo/', Math::BigInt->new('123'));
 --- uri
 http://example.com/foo/123
+
+=== static_path
+--- code
+$app->config->{static_path} = "http://static.example.com/";
+$app->uri_for('/foo/');
+--- uri
+http://example.com/foo/
+
+=== static_path
+--- code
+$app->config->{static_path} = "http://static.example.com/";
+$app->uri_for('/static/foo.jpg');
+--- uri
+http://static.example.com/static/foo.jpg
+
+=== static_path
+--- code
+$app->config->{static_path} = "/path/to/";
+$app->uri_for('/static/foo.jpg');
+--- uri
+/path/to/static/foo.jpg
+
+
