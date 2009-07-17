@@ -145,9 +145,7 @@ sub user_download_GET {
         "Content-Type"        => "text/csv; charset=utf-8",
         "Content-Disposition" => "attachment; filename=users.csv",
     );
-    my $csv = $c->render_part('admin_console/user_download.mt');
-    $csv =~ s/\n/\r\n/g;
-    $c->res->body($csv);
+    $c->render('admin_console/user_download.mt');
 }
 
 sub user_form_GET {
