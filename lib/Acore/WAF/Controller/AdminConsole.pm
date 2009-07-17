@@ -134,6 +134,22 @@ sub user_list_GET {
     $c->render('admin_console/user_list.mt');
 }
 
+sub user_download_GET {
+    my ($self, $c) = @_;
+
+    $c->forward( $self => "is_logged_in" );
+
+    $c->stash->{all_users} = [ $c->acore->all_users ];
+
+    $c->res->header(
+        "Content-Type"        => "text/csv; charset=utf-8",
+        "Content-Disposition" => "attachment; filename=users.csv",
+    );
+    my $csv = $c->render_part('admin_console/user_download.mt');
+    $csv =~ s/\n/\r\n/g;
+    $c->res->body($csv);
+}
+
 sub user_form_GET {
     my ($self, $c) = @_;
 
