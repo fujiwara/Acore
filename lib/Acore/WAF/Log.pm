@@ -56,7 +56,7 @@ for my $level ( keys %$Levels ) {
         return if $level_num > $Levels->{ $self->{level} };
         return if $self->{disabled};
 
-        $self->{buffer} .= sprintf("[%s] ", scalar localtime)
+        $self->{buffer} .= sprintf("[%s] ", scalar localtime(time) )
             if $self->{timestamp};
 
         if ($self->{caller}) {

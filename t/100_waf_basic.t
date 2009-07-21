@@ -1,4 +1,7 @@
 # -*- mode:perl -*-
+BEGIN {
+    *CORE::GLOBAL::time = sub { 1234567890 };
+};
 use strict;
 use warnings;
 use Test::Base;
@@ -9,8 +12,6 @@ use Acore;
 use DBI;
 use Clone qw/ clone /;
 use Path::Class qw/ file dir /;
-
-*CORE::GLOBAL::time = sub { 1234567890 };
 
 plan tests => ( 3 + 4 + 1 * blocks );
 
