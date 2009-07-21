@@ -5,6 +5,12 @@ use warnings;
 use Any::Moose;
 extends 'Acore::WAF';
 
+override _build_log => sub {
+    my $self = shift;
+    Acore::WAF::Log->new({ file => "t/tmp/error_log" });
+};
+
+
 __PACKAGE__->meta->make_immutable;
 no Any::Moose;
 

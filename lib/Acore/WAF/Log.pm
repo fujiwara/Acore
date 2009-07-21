@@ -41,6 +41,10 @@ has disabled => (
     default => 0,
 );
 
+has file => (
+    is => "rw",
+);
+
 __PACKAGE__->meta->make_immutable;
 no Any::Moose;
 
@@ -69,7 +73,15 @@ sub flush {
     my $self = shift;
     return unless $self->{buffer};
     return if $self->{disabled};
-    warn delete $self->{buffer};
+    if ( defined $self->{file} ) {
+        local *STDERR;
+        open *STDERR, ">>", $self->{file}
+            or croak("Can't open log output $self->{file} $!");
+        warn delete $self->{buffer};
+    }
+    else {
+        warn delete $self->{buffer};
+    }
 }
 
 1;
@@ -86,6 +98,8 @@ Acore::WAF::Log - log module
   $log = Acore::WAF::Log->new;
   $log->level('error');
   $log->error('Error message.'); # send message to STDERR
+
+  $log->file('/path/to/log_file'); # output log to file.
 
 =head1 DESCRIPTION
 
@@ -138,7 +152,13 @@ Default: 0
 
 =item flush
 
-Flush buffer to STDERR.
+Flush buffer to STDERR or file.
+
+=item file
+
+Filename to output log on flush.
+
+Default: STDERR
 
 =back
 

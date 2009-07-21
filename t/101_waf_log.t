@@ -1,6 +1,7 @@
 # -*- mode:perl -*-
 use strict;
-use Test::More tests => 28;
+use Test::More tests => 31;
+use Path::Class qw/ file /;
 
 BEGIN {
     use_ok 'Acore::WAF::Log';
@@ -55,5 +56,23 @@ BEGIN {
     is $log->disabled => 1;
     $log->error('ERROR');
     is $log->flush => undef;
+}
+
+{
+    my $log = Acore::WAF::Log->new({ file => "t/tmp/error_log" });
+    is $log->file => "t/tmp/error_log";
+    $log->error('put to file');
+    $log->flush;
+
+    like file("t/tmp/error_log")->slurp => qr/put to file/;
+
+    $log->file(undef);
+    $log->error('put to stderr');
+    $log->flush;
+
+    $log->file("t/tmp/error_log");
+    $log->error('put to file more');
+    $log->flush;
+    like file("t/tmp/error_log")->slurp => qr/put to file more/;
 }
 
