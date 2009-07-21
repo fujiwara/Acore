@@ -20,7 +20,7 @@ use_ok("t::WAFTest");
 my $base_config = {
     root => "t",
     cache => {
-        class => "Cache::FileCache",
+        class => "t::Cache",
         args  => {
             cache_root => "t/tmp/",
         },

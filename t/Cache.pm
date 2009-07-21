@@ -3,20 +3,21 @@ package t::Cache;
 use strict;
 use warnings;
 use Any::Moose;
+our $Cache = {};
 
 sub get {
     my ($self, $key) = @_;
-    $self->{$key};
+    $Cache->{$key};
 }
 
 sub set {
     my ($self, $key, $value) = @_;
-    $self->{$key} = $value;
+    $Cache->{$key} = $value;
 }
 
 sub remove {
     my ($self, $key) = @_;
-    delete $self->{$key};
+    delete $Cache->{$key};
     undef;
 }
 
