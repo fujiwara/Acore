@@ -10,6 +10,8 @@ use DBI;
 use Clone qw/ clone /;
 use Path::Class qw/ file dir /;
 
+*CORE::GLOBAL::time = sub { 1234567890 };
+
 plan tests => ( 3 + 4 + 1 * blocks );
 
 filters {
@@ -714,7 +716,7 @@ Content-Length: 205
 Content-Type: application/json; charset=utf-8
 Status: 200
 
-{"baz":"日本語","updated_on":"%s+09:00","tags":[],"_class":"Acore::Document","content_type":"text/plain","bar":[1,2,3],"created_on":"%s+09:00","id":"12345","foo":"FOO"}
+{"baz":"日本語","_class":"Acore::Document","tags":[],"updated_on":"%s+09:00","content_type":"text/plain","bar":[1,2,3],"created_on":"%s+09:00","id":"12345","foo":"FOO"}
 
 === rest get not found
 --- uri
@@ -754,7 +756,7 @@ Content-Length: 190
 Content-Type: application/json; charset=utf-8
 Status: 200
 
-{"baz":"英語","updated_on":"%s+09:00","tags":[],"_class":"Acore::Document","content_type":"text/plain","bar":[2,3,4],"created_on":"%s+09:00","id":"12345"}
+{"baz":"英語","_class":"Acore::Document","tags":[],"updated_on":"%s+09:00","content_type":"text/plain","bar":[2,3,4],"created_on":"%s+09:00","id":"12345"}
 
 === rest delete
 --- method

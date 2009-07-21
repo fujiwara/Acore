@@ -5,6 +5,7 @@ use HTTP::Engine::Test::Request;
 use utf8;
 use Encode qw/ encode_utf8 /;
 use Math::BigInt;
+use Clone;
 
 plan tests => (3 + 1 * blocks);
 

@@ -7,8 +7,6 @@ use Acore::Storage;
 use Acore::User;
 use Acore::Document;
 use Carp;
-use Data::Structure::Util qw/ unbless /;
-use Clone qw/ clone /;
 use utf8;
 use Any::Moose;
 use Encode qw/ encode_utf8 /;
@@ -162,7 +160,7 @@ sub authenticate_user {
 sub save_user {
     my $self = shift;
     my $user = shift;
-    my $unbless_user = unbless $user;
+    my $unbless_user = Acore::Document::unbless($user);
     $self->storage->user->put( $unbless_user );
     $self->cache->set( "Acore::User/name=" . $user->{name} => $unbless_user )
         if $self->cache;

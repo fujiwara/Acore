@@ -17,7 +17,6 @@ use Acore::MIME::Types;
 use URI::Escape;
 use CGI::ExceptionManager;
 use CGI::ExceptionManager::StackTrace;
-use Clone qw/ clone /;
 use Text::SimpleTable;
 use Data::Dumper;
 use Acore::WAF::Dispatcher;

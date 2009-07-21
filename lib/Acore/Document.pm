@@ -4,13 +4,13 @@ use strict;
 use warnings;
 use Clone qw/ clone /;
 use Scalar::Util qw/ blessed /;
-use Data::Structure::Util qw/ unbless /;
 use UNIVERSAL::require;
 use Acore::DateTime;
 use Any::Moose;
 use Any::Moose 'Util::TypeConstraints';
 use Carp;
 use List::MoreUtils qw/ uniq /;
+use B;
 
 subtype 'DateTime'
     => as 'Object',
@@ -89,6 +89,14 @@ sub BUILD {
     $self;
 }
 
+sub unbless {
+    my $b_obj = B::svref_2object( $_[0] );
+    return    $b_obj->isa('B::HV') ? { %{ $_[0] } }
+            : $b_obj->isa('B::AV') ? [ @{ $_[0] } ]
+            : undef
+            ;
+}
+
 sub to_object {
     my $self = shift;
     my $obj  = clone $self;
@@ -99,9 +107,7 @@ sub to_object {
     $obj->{_class}     = ref $self;
     $obj->{_id}        = delete $obj->{id} if $obj->{id};
     delete $obj->{$_} for qw/ xpath _created_on _updated_on /;
-    unbless $obj;
-
-    return $obj;
+    return $obj->unbless;
 }
 
 sub from_object {
