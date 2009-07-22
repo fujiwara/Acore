@@ -270,9 +270,7 @@ use utf8;
 
 sub hello_world {
     my ($self, $c) = @_;
-    my $body = $c->welcome_message;
-    utf8::encode($body);
-    $c->response->body($body);
+    $c->response->body( $c->welcome_message );
 }
 
 1;
