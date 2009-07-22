@@ -3,41 +3,48 @@ use strict;
 use Test::Base;
 use utf8;
 use Acore::Document;
+use Acore::WAF::Render;
 
-plan tests => ( 1 + (1 * blocks) );
-
-use_ok("Acore::WAF::Render");
-
+plan tests => (1 * blocks) ;
 {
     no warnings;
     sub html {
-        $_[0] | Acore::WAF::Render::html()
+        package Acore::WAF::Render;
+        $_[0] | html
     }
     sub uri  {
-        $_[0] | Acore::WAF::Render::uri()
+        package Acore::WAF::Render;
+        $_[0] | uri
     }
     sub html_line_break {
-        $_[0] | Acore::WAF::Render::html_line_break()
+        package Acore::WAF::Render;
+        $_[0] | html_line_break
     }
     sub replace {
+        package Acore::WAF::Render;
         my ($val, $reg, $rep) = split / +/, $_[0];
-        $val | Acore::WAF::Render::replace($reg, $rep);
+        $val | replace($reg, $rep);
     }
     sub _join {
+        package Acore::WAF::Render;
         my ($sep, @list) = split / +/, $_[0];
-        [ @list ] | Acore::WAF::Render::join($sep);
+        [ @list ] | join($sep);
     }
     sub _fjoin {
+        package Acore::WAF::Render;
         my ($sep, @list) = split / +/, $_[0];
-        Acore::WAF::Render::join($sep, @list);
+        join($sep, @list);
     }
     sub js {
-        $_[0] | Acore::WAF::Render::js();
+        package Acore::WAF::Render;
+        $_[0] | js
     }
     sub fillform {
-        $_[0] | Acore::WAF::Render::fillform({ foo => 1, bar => 2 });
+        package Acore::WAF::Render;
+        $_[0] | fillform({ foo => 1, bar => 2 });
     }
     sub sort_by {
+        package Acore::WAF::Render;
         my ($key) = split / +/, $_[0];
 
         my $arr_ref = [
@@ -45,7 +52,7 @@ use_ok("Acore::WAF::Render");
             { num => 200,  name => 'alpha' }
         ];
         my $expct = '';
-        for my $d ( @{ $arr_ref | Acore::WAF::Render::sort_by($key) } ) {
+        for my $d ( @{ $arr_ref | sort_by($key) } ) {
             $expct .= $d->{name};
         }
 
@@ -53,6 +60,7 @@ use_ok("Acore::WAF::Render");
     }
 
     sub nsort_by {
+        package Acore::WAF::Render;
         my ($key) = split / +/, $_[0];
 
         my $arr_ref = [
@@ -60,14 +68,17 @@ use_ok("Acore::WAF::Render");
             { num => 200,  name => 'alpha' }
         ];
         my $expct = '';
-        for my $d ( @{ $arr_ref | Acore::WAF::Render::nsort_by($key) } ) {
+        for my $d ( @{ $arr_ref | nsort_by($key) } ) {
             $expct .= $d->{name};
         }
 
         $expct;
     }
 
-    sub json { eval($_[0]) | Acore::WAF::Render::json() };
+    sub json {
+        package Acore::WAF::Render;
+        eval($_[0]) | json;
+    };
 }
 
 run_is input => 'expected';

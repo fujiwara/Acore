@@ -40,18 +40,12 @@ sub html_line_break() { ## no critic
     };
 }
 
-sub join {
-    my ($sep) = shift;
-    if (@_) {
-        CORE::join($sep, @_);
-    }
-    else {
-        joint {
-            my @list = ref $_[0] eq 'ARRAY' ? @{$_[0]} : @_;
-            CORE::join($sep, @list);
-        };
-    }
-}
+*CORE::GLOBAL::join = sub {
+    my $sep = shift;
+    ( @_ == 0 && (caller)[0] eq __PACKAGE__ )
+        ? joint { CORE::join( $sep, @{ $_[0] } ) }
+        : CORE::join( $sep, @_ );
+};
 
 sub js {
     joint {
