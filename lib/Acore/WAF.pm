@@ -13,11 +13,9 @@ use UNIVERSAL::require;
 use Acore::WAF::Log;
 use Acore::WAF::Render;
 use Acore::WAF::Util;
-use Acore::MIME::Types;
 use URI::Escape;
 use CGI::ExceptionManager;
 use CGI::ExceptionManager::StackTrace;
-use Text::SimpleTable;
 use Data::Dumper;
 use Acore::WAF::Dispatcher;
 
@@ -317,6 +315,7 @@ sub handle_request {
 sub _debug_request_data {
     my $self = shift;
 
+    require Text::SimpleTable;
     my $table = Text::SimpleTable->new([20, 'Parameter'], [51, 'Value']);
     my $req   = $self->request;
     for my $name ( sort $req->param ) {
@@ -409,6 +408,7 @@ sub _dispatch {
     ) unless $dispatch_to;
 
     if ($self->debug) {
+        require Text::SimpleTable;
         my $table = Text::SimpleTable->new( 20, 51 );
         $table->row( controller => $controller  );
         $table->row( action     => $dispatch_to );
@@ -474,6 +474,7 @@ sub serve_static_file {
         }
         $res->body( scalar $file->slurp );
 
+        require Acore::MIME::Types;
         my $ext = ( $file =~ /\.(\w+)$/ ) ? lc($1) : "";
         $res->header(
             'Content-Type'  => Acore::MIME::Types->mimeTypeOf($ext) || "text/plain",
