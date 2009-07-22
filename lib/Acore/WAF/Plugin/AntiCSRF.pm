@@ -21,12 +21,14 @@ sub setup {
 
 sub onetime_token {
     my $c = shift;
-    unless($c->session->{onetime_token}){
-        my $token = Digest::SHA::sha256_hex($c->session->session_id . rand() . time);
+    unless ( $c->session->get("onetime_token") ) {
+        my $token = Digest::SHA::sha256_hex(
+            $c->session->session_id . rand() . time
+        );
         $c->session->set("onetime_token" => $token);
     }
 
-    return $c->session->{"onetime_token"};
+    return $c->session->get("onetime_token");
 }
 
 sub csrf_proof {
@@ -40,7 +42,7 @@ sub csrf_proof {
 
     my $name  = $config->{anti_csrf}->{param};
     my $value = $c->req->param($name) || '';
-    my $match = $c->session->{onetime_token};
+    my $match = $c->session->get("onetime_token");
 
     if ( $value eq '' || $value ne $match ) {
         $c->log->error(__PACKAGE__. qq{: CSRF detected. "$value" is not match "$match".});
