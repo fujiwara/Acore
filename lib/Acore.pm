@@ -274,7 +274,10 @@ sub get_document {
     }
     return unless $doc;
 
-    return Acore::Document->from_object($doc);
+    $doc = Acore::Document->from_object($doc);
+    return if $args->{isa} && !$doc->isa( $args->{isa} );
+
+    $doc;
 }
 
 sub put_document {
@@ -549,6 +552,9 @@ Get Acore::Document from storage.
 
  $doc = $acore->get_document({ id => $id });
  $doc = $acore->get_document({ path => $path });
+
+Argument 'isa' has set, returns only $doc->isa($args->{isa})
+ $doc = $acore->get_document({ id => $id, isa => "MyDocument" });
 
 =item put_document
 

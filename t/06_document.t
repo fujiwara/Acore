@@ -1,6 +1,6 @@
 # -*- mode:perl -*-
 use strict;
-use Test::More tests => 58;
+use Test::More tests => 74;
 use Test::Exception;
 use Data::Dumper;
 use t::Cache;
@@ -9,6 +9,11 @@ BEGIN {
     use_ok 'Acore';
     use_ok 'Acore::Document';
 };
+{
+    package MyDocument;
+    use Any::Moose;
+    extends 'Acore::Document';
+}
 
 for my $cache ( undef, t::Cache->new({}) )
 {
@@ -92,6 +97,25 @@ for my $cache ( undef, t::Cache->new({}) )
         ok $ac->delete_document($doc);
         ok !$ac->get_document({ id => $doc->id }),
     }
+
+    my $mydoc = MyDocument->new({ foo => "bar" });
+    isa_ok $mydoc => "MyDocument";
+    $mydoc = $ac->put_document($mydoc);
+
+    my $gotdoc = $ac->get_document({ id => $mydoc->id });
+    ok $gotdoc;
+    isa_ok $gotdoc => "MyDocument";
+
+    $gotdoc = $ac->get_document({ id => $mydoc->id, isa => "Acore::Document" });
+    ok $gotdoc;
+    isa_ok $gotdoc => "Acore::Document";
+
+    $gotdoc = $ac->get_document({ id => $mydoc->id, isa => "MyDocument" });
+    ok $gotdoc;
+    isa_ok $gotdoc => "MyDocument";
+
+    $gotdoc = $ac->get_document({ id => $mydoc->id, isa => "SomeDocument" });
+    ok !$gotdoc, "returns only is SomeDocument";
 
     $dbh->commit;
 }
