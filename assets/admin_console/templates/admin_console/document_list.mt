@@ -95,6 +95,7 @@
       選択されたドキュメントを削除しますか?
     </div>
     <script type="text/javascript">
+    $(document).ready( function(){
       $('#delete-dialog').dialog({
         bgiframe: true,
         resizable: false,
@@ -120,8 +121,7 @@
       $('input.delete-button').click( function () {
          $('#delete-dialog').dialog('open');
       });
-    </script>
-    <script type="text/javascript">
+
       var show_delete_button = function () {
         if ( $('input.document-id-check[checked=true]')[0] ) {
           $('input.delete-button').show();
@@ -148,6 +148,7 @@
            $('input.document-id-check').attr("checked", flag);
            show_delete_button();
         })
+    });
     </script>
 </body>
 </html>
