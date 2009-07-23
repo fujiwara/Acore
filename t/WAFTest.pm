@@ -49,6 +49,8 @@ __PACKAGE__->setup(qw/ Sample FormValidator Session FillInForm TT /);
         { controller => "Acore::WAF::Controller::Sites", action => "page" };
     connect "sites/path/:page",
         { controller => "Acore::WAF::Controller::Sites", action => "path" };
+    connect "sites/:page/id=:id",
+        { controller => "Acore::WAF::Controller::Sites", action => "page" };
     connect "sites/:page",
         { controller => "Acore::WAF::Controller::Sites", action => "page" };
 }

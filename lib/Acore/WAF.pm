@@ -548,14 +548,14 @@ sub rel_uri_for {
 }
 
 sub render {
-    my ($self, $tmpl) = @_;
-    $self->res->body( $self->render_part($tmpl) );
+    my $self = shift;
+    $self->res->body( $self->render_part(@_) );
 }
 
 around "render_part" => $Record_time->( sub { sprintf "render('%s')", $_[1] } );
 sub render_part {
-    my ($self, $tmpl) = @_;
-    return $self->renderer->render_file( $tmpl, $self )->as_string;
+    my ($self, $tmpl, @args) = @_;
+    return $self->renderer->render_file( $tmpl, $self, @args )->as_string;
 }
 
 sub render_string {

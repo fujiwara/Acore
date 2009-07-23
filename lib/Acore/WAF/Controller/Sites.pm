@@ -15,8 +15,8 @@ sub page {
     my $ext      = $c->config->{sites}->{use_tt} ? "tt" : "mt";
     my $template = $page ? "$page.$ext" : "index.$ext";
     eval {
-        $ext eq 'mt' ? $c->render("sites/$template")
-                     : $c->render_tt("sites/$template");
+        $ext eq 'mt' ? $c->render("sites/$template", $args)
+                     : $c->render_tt("sites/$template", $args);
     };
     my $error = $@;
     if ( $error =~ /could not find template file/    # for MT
@@ -55,6 +55,9 @@ __END__
     connect ":page",
         { controller => "Acore::WAF::Controller::Sites", action => "path" };
 
+    # /foo/id=12345 => templates/sites/foo.mt  args.id=12345
+    connect ":page/id=:id",
+        { controller => "Acore::WAF::Controller::Sites", action => "path" };
 
     # for use Plugin::TT (file ext is .tt)
     

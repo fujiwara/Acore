@@ -4,6 +4,7 @@ use strict;
 use warnings;
 use URI::Escape;
 use Sub::Pipe;
+use Data::Dumper;
 
 sub html() { ## no critic
     joint {

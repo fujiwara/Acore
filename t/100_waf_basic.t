@@ -872,6 +872,17 @@ Status: 200
 <h1>Sites index.tt</h1>
 http://localhost/
 
+=== sites args
+--- uri
+http://localhost/sites/get_args/id=12345
+--- response
+Content-Length: 41
+Content-Type: text/html; charset=utf-8
+Status: 200
+
+<h1>Sites get_args.mt</h1>
+args.id=12345
+
 === /handle_args
 --- uri
 http://localhost/handle_args
