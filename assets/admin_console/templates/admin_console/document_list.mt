@@ -123,7 +123,7 @@
       });
 
       var show_delete_button = function () {
-        if ( $('input.document-id-check[checked=true]')[0] ) {
+        if ( $('input.document-id-check:checked')[0] ) {
           $('input.delete-button').show();
         }
         else {
@@ -147,7 +147,7 @@
            }
            $('input.document-id-check').attr("checked", flag);
            show_delete_button();
-        })
+        });
     });
     </script>
 </body>
