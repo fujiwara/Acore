@@ -13,7 +13,7 @@
         <div id="beta">
           <div id="beta-inner">
             <div class="form-container">
-              <form class="login" action="<? $c->uri_for('/admin_console/login_form') ?>" method="post">
+              <form class="login" action="<?= $c->uri_for('/admin_console/login_form') ?>" method="post">
                 <fieldset>
                   <legend>ログインしてください</legend>
 <?
