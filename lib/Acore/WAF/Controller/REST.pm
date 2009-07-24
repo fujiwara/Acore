@@ -83,11 +83,6 @@ __END__
 
 =head1 DISPATCH TABLE
 
-    connect "rest/document/id/:id",
-        { controller => "Acore::WAF::Controller::REST", action => "document" };
-    connect "rest/document/path/:path",
-        { controller => "Acore::WAF::Controller::REST", action => "document" };
-    connect "rest/document",
-        { controller => "Acore::WAF::Controller::REST", action => "new_document" };
-
-
+    connect "rest/document/id/:id",     to bundled "REST" => "document";
+    connect "rest/document/path/:path", to bundled "REST" => "document";
+    connect "rest/document",            to bundled "REST" => "new_document";

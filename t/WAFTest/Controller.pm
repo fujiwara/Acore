@@ -206,6 +206,10 @@ sub handle_args {
     $c->res->body("args.foo=" . $args->{foo});
 }
 
+sub _sites_auto {
+    my ($self, $c, $args) = @_;
+    return $c->req->param('auto_ng') ? undef : 1;
+}
 
 package t::WAFTest::Controller::X;
 

@@ -12,11 +12,10 @@ __PACKAGE__->setup(qw/ TT /);
 
 {
     package t::WAFTestTT::Dispatcher;
+    use Acore::WAF::Util qw/:dispatcher/;
     use HTTPx::Dispatcher;
-    connect "",
-        { controller => "t::WAFTestTT::Controller", action => "index"};
-    connect "act/:action",
-        { controller => "t::WAFTestTT::Controller" };
+    connect "",            to class "t::WAFTestTT::Controller" => "index";
+    connect "act/:action", to class "t::WAFTestTT::Controller";
 }
 
 1;

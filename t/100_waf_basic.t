@@ -883,6 +883,42 @@ Status: 200
 <h1>Sites get_args.mt</h1>
 args.id=12345
 
+=== sites auto1
+--- uri
+http://localhost/sites/auto1
+--- response
+Content-Length: 23
+Content-Type: text/html; charset=utf-8
+Status: 200
+
+<h1>Sites auto.mt</h1>
+
+=== sites auto1 ng
+--- uri
+http://localhost/sites/auto1?auto_ng=1
+--- response
+Content-Length: 0
+Content-Type: text/html; charset=utf-8
+Status: 200
+
+=== sites auto2
+--- uri
+http://localhost/sites/auto2
+--- response
+Content-Length: 23
+Content-Type: text/html; charset=utf-8
+Status: 200
+
+<h1>Sites auto.mt</h1>
+
+=== sites auto2 ng
+--- uri
+http://localhost/sites/auto1?auto_ng=1
+--- response
+Content-Length: 0
+Content-Type: text/html; charset=utf-8
+Status: 200
+
 === /handle_args
 --- uri
 http://localhost/handle_args

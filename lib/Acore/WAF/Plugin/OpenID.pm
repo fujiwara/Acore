@@ -93,10 +93,9 @@ Acore::WAF::Plugin::OpenID
 =head1 SYNOPSIS
 
  package YourApp::Dispatcher;
- connect "openid",
-     { controller => "YourApp::Controller", action => "openid" };
+ connect "openid", to controller "Root" => "openid";
 
- package YourApp::Controller;
+ package YourApp::Controller::Root;
  sub openid {
      my ($self, $c) = @_;
      if ( $c->authenticate_openid ) {

@@ -47,8 +47,18 @@ __PACKAGE__->setup(qw/ Sample FormValidator Session FillInForm TT /);
     connect "rest/document",
         { controller => "Acore::WAF::Controller::REST", action => "new_document" };
 
+    my $auto = sub {
+        my ($self, $c) = @_;
+        $c->log->info('Sites auto OK');
+        $c->req->param('auto_ng') ? undef : 1;
+    };
     for (bundled "Sites") {
-        connect "sites/",             to $_ => "page";
+        connect "sites/",     to $_ => "page";
+        connect "sites/auto1", to $_ => "page",
+            args => { auto => $auto, page => "auto", };
+        connect "sites/auto2", to $_ => "page",
+            args => { auto => \&t::WAFTest::Controller::_sites_auto,
+                      page => "auto" };
         connect "sites/path/:page",   to $_ => "path";
         connect "sites/:page/id=:id", to $_ => "page";
         connect "sites/:page",        to $_ => "page";

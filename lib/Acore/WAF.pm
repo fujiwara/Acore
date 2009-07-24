@@ -761,17 +761,14 @@ Acore::WAF - AnyCMS web application framework
  __PACKAGE__->setup(@plugins);
 
  package YourApp::Dispatcher;
+ use Acore::WAF::Util qw/:dispatcher/;
  use HTTPx::Dispatcher;
- connect "",
-     { controller => "YourApp::Controller", action => "dispatch_index" };
- connect "static/:filename",
-     { controller => "YourApp", action => "dispatch_static" };
- connect "favicon.ico",
-     { controller => "YourApp", action => "dispatch_favicon" };
- connect ":action",
-     { controller => "YourApp::Controller" };
+ connect "",                 to controller "Root" => "dispatch_index";
+ connect "static/:filename", to class "YourApp" => "dispatch_static";
+ connect "favicon.ico",      to class "YourApp" => "dispatch_favicon";
+ connect ":action",          to controller "Root";
 
- package YourApp::Controller;
+ package YourApp::Controller::Root;
  use utf8;
  sub dispatch_index {
      my ($self, $c) = @_;
@@ -1048,11 +1045,10 @@ Log out user from session.
 =head1 INSTALLED ACTIONS
 
  package YourApp::Dispatcher;
+ use Acore::WAF::Util qw/:dispatcher/;
  use HTTPx::Dispatcher;
- connect "static/:filename",
-     { controller => "YourApp", action => "dispatch_static" };
- connect "favicon.ico",
-     { controller => "YourApp", action => "dispatch_favicon" };
+ connect "static/:filename", to class "YourApp" => "dispatch_static";
+ connect "favicon.ico",      to class "YourApp" => "dispatch_favicon";
 
 =over 4
 

@@ -3,6 +3,11 @@ use strict;
 use warnings;
 use Scalar::Util qw/ blessed /;
 
+sub _do_auto {
+    my ($self, $c, $args) = @_;
+    $args->{auto}->( $self, $c, $args );
+}
+
 sub page {
     my ($self, $c, $args) = @_;
 
@@ -14,6 +19,12 @@ sub page {
     }
     my $ext      = $c->config->{sites}->{use_tt} ? "tt" : "mt";
     my $template = $page ? "$page.$ext" : "index.$ext";
+
+    if ( ref $args->{auto} eq 'CODE' ) {
+        $c->forward( $self, "_do_auto", $args )
+            or return;
+    }
+
     eval {
         $ext eq 'mt' ? $c->render("sites/$template", $args)
                      : $c->render_tt("sites/$template", $args);
@@ -44,20 +55,27 @@ __END__
 
 =head1 DISPATCH TABLE
 
-    connect "",
-        { controller => "Acore::WAF::Controller::Sites", action => "page" };
+    connect "", to bundled "Sites" =>"page";
     
     # /foo/bar/baz => templates/sites/foo/bar/baz.mt
-    connect ":page",
-        { controller => "Acore::WAF::Controller::Sites", action => "page" };
+    connect ":page", to bundled "Sites" => "page";
     
     # /foo/bar/baz => templates/sites/foo.mt
-    connect ":page",
-        { controller => "Acore::WAF::Controller::Sites", action => "path" };
+    connect ":page", to bundled "Sites" => "path";
 
     # /foo/id=12345 => templates/sites/foo.mt  args.id=12345
-    connect ":page/id=:id",
-        { controller => "Acore::WAF::Controller::Sites", action => "path" };
+    connect ":page/id=:id", to bundled "Sites" => "path";
+
+    # run auto action
+    $auto_action = sub {
+        my ($self, $c, $args) = @_;
+        # do something
+        return 1;  # if ok
+    };
+    connect ":page", to bundled "Sites" => "page",
+        args => { auto => $auto_action };
+    connect ":page", to bundled "Sites" => "page",
+        args => { auto => \&App::Controller::Root::_sites_auto };
 
     # for use Plugin::TT (file ext is .tt)
     
