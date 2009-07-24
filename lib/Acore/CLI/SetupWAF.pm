@@ -298,29 +298,24 @@ __PACKAGE__->meta->make_immutable;
 no Any::Moose;
 
 package <?=r app_name() ?>::Dispatcher;
+use Acore::WAF::Util qw/ :dispatcher /;
 use HTTPx::Dispatcher;
-connect "",
-    { controller => "<?=r app_name() ?>::Controller::Root", action => "hello_world" };
-connect "static/:filename",
-    { controller => "<?=r app_name() ?>", action => "dispatch_static" };
-connect "favicon.ico",
-    { controller => "<?=r app_name() ?>", action => "dispatch_favicon" };
+
+connect "", to controller "Root" => "hello_world";
+
+connect "static/:filename", to class "<?=r app_name() ?>" => "dispatch_static";
+connect "favicon.ico",      to class "<?=r app_name() ?>" => "dispatch_favicon" };
 
 # Admin console
-connect "admin_console/",
-    { controller => "Acore::WAF::Controller::AdminConsole",
-      action     => "index" };
-connect "admin_console/static/:filename",
-    { controller => "Acore::WAF::Controller::AdminConsole",
-      action     => "static" };
-connect "admin_console/:action",
-    { controller => "Acore::WAF::Controller::AdminConsole" };
+for (bundled "AdminConsole") {
+    connect "admin_console/",                 to $_ => "index";
+    connect "admin_console/static/:filename", to $_ => "static";
+    connect "admin_console/:action",          to $_;
+}
 
 # Sites
-connect "sites/",
-    { controller => "Acore::WAF::Controller::Sites", action => "page" };
-connect "sites/:page",
-    { controller => "Acore::WAF::Controller::Sites", action => "page" };
+connect "sites/",      to bundled "Sites" => "page";
+connect "sites/:page", to bundled "Sites" => "page";
 
 1;
     _END_OF_FILE_

@@ -19,6 +19,8 @@ __PACKAGE__->setup(qw/ Sample FormValidator Session FillInForm TT /);
 {
     package t::WAFTest::Dispatcher;
     use HTTPx::Dispatcher;
+    use Acore::WAF::Util qw/:dispatcher/;
+
     connect "",
         { controller => "t::WAFTest::Controller", action => "index" };
     connect "favicon.ico",
@@ -45,14 +47,12 @@ __PACKAGE__->setup(qw/ Sample FormValidator Session FillInForm TT /);
     connect "rest/document",
         { controller => "Acore::WAF::Controller::REST", action => "new_document" };
 
-    connect "sites/",
-        { controller => "Acore::WAF::Controller::Sites", action => "page" };
-    connect "sites/path/:page",
-        { controller => "Acore::WAF::Controller::Sites", action => "path" };
-    connect "sites/:page/id=:id",
-        { controller => "Acore::WAF::Controller::Sites", action => "page" };
-    connect "sites/:page",
-        { controller => "Acore::WAF::Controller::Sites", action => "page" };
+    for (bundled "Sites") {
+        connect "sites/",             to $_ => "page";
+        connect "sites/path/:page",   to $_ => "path";
+        connect "sites/:page/id=:id", to $_ => "page";
+        connect "sites/:page",        to $_ => "page";
+    }
 }
 
 1;
