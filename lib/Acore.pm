@@ -1,8 +1,8 @@
 package Acore;
-# $Revision$
+
 use strict;
 use warnings;
-our $VERSION = '0.01';
+our $VERSION = sprintf '0.%05d', ('$Revision$' =~ /(\d+)/ && $1);
 use Acore::Storage;
 use Acore::User;
 use Acore::Document;
