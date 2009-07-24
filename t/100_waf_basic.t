@@ -929,6 +929,23 @@ Status: 200
 
 args.foo=bar
 
+=== custom error page
+--- preprocess
+Path::Class::file("t/templates/404.mt")->openw->print(q{? my $c = shift;
+<h1>Custom Error Page. <?= $c->res->status ?></h1>
+});
+--- uri
+http://localhost/not_found
+--- response
+Content-Length: 32
+Content-Type: text/html; charset=utf-8
+Status: 404
+
+<h1>Custom Error Page. 404</h1>
+
+--- postprocess
+Path::Class::file("t/templates/404.mt")->remove;
+
 === ovreride finalize
 --- preprocess
 {

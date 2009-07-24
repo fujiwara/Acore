@@ -431,8 +431,14 @@ sub error {
     $self->log->error($message . " at $file line $line");
     require HTTP::Status;
     $status ||= 500;
-    $self->res->body( HTTP::Status::status_message($status) );
     $self->res->status($status);
+
+    if ( -e $self->path_to("templates/${status}.mt") ) {
+        eval { $self->render("$status.mt") };
+    }
+    $self->res->body( HTTP::Status::status_message($status) )
+        unless $self->res->body;
+
     detach();
 }
 
