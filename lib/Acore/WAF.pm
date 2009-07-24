@@ -1027,6 +1027,8 @@ Send error to client and detach().
      # not reached here
  }
 
+If templates/[status_code].mt exists, it be use for error message.
+
 =item welcome_message
 
 Returns welcome message HTML.
