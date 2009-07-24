@@ -304,7 +304,7 @@ use HTTPx::Dispatcher;
 connect "", to controller "Root" => "hello_world";
 
 connect "static/:filename", to class "<?=r app_name() ?>" => "dispatch_static";
-connect "favicon.ico",      to class "<?=r app_name() ?>" => "dispatch_favicon" };
+connect "favicon.ico",      to class "<?=r app_name() ?>" => "dispatch_favicon";
 
 # Admin console
 for (bundled "AdminConsole") {
