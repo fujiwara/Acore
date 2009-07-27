@@ -18,6 +18,7 @@ use CGI::ExceptionManager;
 use CGI::ExceptionManager::StackTrace;
 use Data::Dumper;
 use Acore::WAF::Dispatcher;
+use Scalar::Util qw/ blessed /;
 
 our $VERSION = 0.1;
 our $COUNT   = 1;
@@ -171,7 +172,7 @@ sub _build_user {
     my $self = shift;
     my $user = $self->session->get('user');
     my $class = blessed $user;
-    do { $class->require or die $! } if $class;
+    do { $class->require or die $@ } if $class;
     $user;
 }
 
