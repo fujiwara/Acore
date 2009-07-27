@@ -172,6 +172,7 @@ sub _build_user {
     my $self = shift;
     my $user = $self->session->get('user');
     my $class = blessed $user;
+    require Acore;
     do { $class->require or die $@ } if $class;
     $user;
 }
