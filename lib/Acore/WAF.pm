@@ -151,12 +151,20 @@ sub _build_acore {
 
     require Acore;
     require DBI;
-    my $dbh = DBI->connect( @{ $self->config->{dsn} } )
+    my $config = $self->config;
+
+    my $dbh = DBI->connect( @{ $config->{dsn} } )
         or die "Can't connect DB: " . DBI->errstr;
-    Acore->new({
+    my $acore = Acore->new({
         dbh   => $dbh,
         cache => $self->can('cache') ? $self->cache : undef,
     });
+    if ( defined $config->{user_class} ) {
+        $config->{user_class}->require
+            or die "Can't require $config->{user_class}. $@";
+        $acore->user_class( $config->{user_class} );
+    }
+    $acore;
 }
 
 sub _build_user {
@@ -841,6 +849,7 @@ Acore object.
      dsn => ['dbi:SQLite:dbname=foo', '', '',
              { AutoCommit => 1, RaiseError => 1 }
      ],
+     user_class => 'YourUser', # default Acore::User
  };
 
  $doc = $c->acore->get_document({ path => "/" });
