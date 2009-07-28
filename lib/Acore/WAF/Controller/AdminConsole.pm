@@ -374,7 +374,7 @@ sub _document_add_keys {
 sub _get_document {
     my ($self, $c, $id) = @_;
 
-    my $id  = $id || $c->req->param('id');
+    $id ||= $c->req->param('id');
     my $doc = $c->acore->get_document({ id => $id });
     $c->error( 404 => "document not found." )
         unless $doc;
