@@ -198,6 +198,7 @@ sub user_form_POST {
 
     $c->acore->save_user($user);
 
+    $c->flash->set( user_saved => 1 );
     $c->redirect(
         $c->uri_for('/admin_console/user_form', { name => $name })
     );
@@ -238,6 +239,7 @@ sub user_create_form_POST {
     $user->set_password( $c->req->param('password1') );
     $c->acore->save_user($user);
 
+    $c->flash->set( user_saved => 1 );
     $c->redirect(
         $c->uri_for('/admin_console/user_form', { name => $name })
     );
@@ -411,6 +413,7 @@ sub document_form_POST {
         $doc->execute_on_update($c, $old_doc);
     }
 
+    $c->flash->set( document_saved => 1 );
     $c->redirect(
         $c->uri_for('/admin_console/document_form', { id => $id, _t => time } )
     );
@@ -469,6 +472,7 @@ sub document_create_form_POST {
         $doc->execute_on_create($c);
     }
 
+    $c->flash->set( document_saved => 1 );
     $c->redirect(
         $c->uri_for('/admin_console/document_form', { id => $doc->id, _t => time } )
     );
@@ -624,6 +628,7 @@ sub view_form_POST {
             $backend->create_view( $design->{_id}, $design );
         });
 
+    $c->flash->set( view_saved => 1 );
     $c->redirect(
         $c->uri_for(
             '/admin_console/view_form',

@@ -21,6 +21,9 @@
                 <a href="<?= $c->uri_for('/admin_console/view') ?>">View の管理</a></div></h2>
             <h3><a href="<?= $c->uri_for('/admin_console/view_create_form') ?>">新規作成</a></h3>
           </div>
+? if ( $c->flash->get('view_saved') ) {
+          <div class="flash-message"><p>保存されました</p></div>
+? }
           <div class="form-container">
 ? if ( $modify_alert ) {
             <div class="ui-widget">

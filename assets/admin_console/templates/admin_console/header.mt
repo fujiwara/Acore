@@ -11,4 +11,16 @@
     <link type="text/css" href="<?= $c->uri_for('/admin_console/static/css/ui-lightness/jquery-ui-1.7.2.custom.css') ?>" rel="stylesheet" />
     <script type="text/javascript" src="<?= $c->uri_for('/admin_console/static/js/jquery-ui-1.7.2.custom.min.js') ?>"></script>
 ? }
+    <style type="text/css">
+      .flash-message {
+        border: 1px solid #fda;
+        background-color: #ffd;
+        padding-left: 1em;
+        width: 40%;
+      }
+      .flash-message p {
+        padding: 0.5em;
+        margin: 0;
+      }
+    </style>
   </head>

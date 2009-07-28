@@ -22,6 +22,9 @@
 ?=r $c->render_part('admin_console/document_serach_form.mt');
 
             </div>
+?        if ( $c->flash->get('document_saved') ) {
+            <div class="flash-message"><p>保存されました</p></div>
+?        }
             <div class="form-container">
 
 ? if (!$doc) {

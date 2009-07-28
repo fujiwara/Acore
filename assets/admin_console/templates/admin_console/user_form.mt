@@ -15,6 +15,12 @@
           <div id="beta-inner">
             <h2 class="icon"><div class="app_kuser"><a href="<?= $c->uri_for('/admin_console/user_list') ?>">ユーザの管理</a></div></h2>
           </div>
+?       if ( $c->flash->get('user_saved') ) {
+          <div class="flash-message">
+            <p>保存されました</p>
+          </div>
+?       }
+
           <div class="form-container">
               <form action="<?= $c->uri_for('/admin_console/user_form') ?>" method="post" id="user-form">
 <?      if ($c->form->has_error) {
