@@ -22,7 +22,7 @@ BEGIN {
     use_ok 'Acore::Document';
 };
 {
-    my $doc = FileDocument->new;
+    my $doc = FileDocument->new({ id => 12345 });
     my $file = file("t/tmp/foo.txt");
     $file->openw->print("foo\nbar\n");
     my $added = $doc->add_attachment_file($file);
@@ -38,23 +38,23 @@ BEGIN {
     my $fh = file("t/tmp/bar.txt")->openr;
     $newdoc->add_attachment_file($fh);
 
-    is file("t/tmp/2.dat")->slurp => "bar\nbaz\n";
+    is file("t/tmp/12345/2.dat")->slurp => "bar\nbaz\n";
 
     $fh = file("t/tmp/bar.txt")->openr;
     $newdoc->add_attachment_file($fh => "xxx.txt");
-    is file("t/tmp/xxx.txt")->slurp => "bar\nbaz\n";
+    is file("t/tmp/12345/xxx.txt")->slurp => "bar\nbaz\n";
 
     throws_ok { $newdoc->add_attachment_file("xxx") } qr/requires/;
 
     ok $newdoc->remove_attachment_file(1);
     is_deeply $newdoc->attachment_files => [
         file("t/tmp/foo.txt"),
-        file("t/tmp/xxx.txt"),
+        file("t/tmp/12345/xxx.txt"),
     ];
-    ok !-e file("t/tmp/2.dat");
+    ok !-e file("t/tmp/12345/2.dat");
 
     ok $newdoc->remove_attachment_file( $newdoc->attachment_files->[0] );
-    is_deeply $newdoc->attachment_files => [ file("t/tmp/xxx.txt") ];
+    is_deeply $newdoc->attachment_files => [ file("t/tmp/12345/xxx.txt") ];
     ok !-e file("t/tmp/foo.dat");
 }
 
