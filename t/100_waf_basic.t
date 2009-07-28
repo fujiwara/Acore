@@ -978,6 +978,41 @@ Status: 200
 
 flash=
 
+=== serve_static_file
+--- uri
+http://localhost/act/static_file
+--- response
+Content-Length: 11
+Content-Type: text/plain; charset=utf-8
+Last-Modified: Tue, 28 Jul 2009 02:22:33 GMT
+Status: 200
+
+STATIC_FILE
+
+=== send serve_static_file
+--- preprocess
+$config->{x_sendfile_header} = "X-Sendfile";
+--- uri
+http://localhost/act/static_file
+--- response
+Content-Length: 0
+Content-Type: text/plain; charset=utf-8
+Last-Modified: Tue, 28 Jul 2009 02:22:33 GMT
+Status: 200
+X-Sendfile: t/tmp/static_file.txt
+
+=== send serve_static_file
+--- preprocess
+$config->{x_sendfile_header} = "X-LIGHTTPD-send-file";
+--- uri
+http://localhost/act/static_file
+--- response
+Content-Length: 0
+Content-Type: text/plain; charset=utf-8
+Last-Modified: Tue, 28 Jul 2009 02:22:33 GMT
+Status: 200
+X-LIGHTTPD-Send-File: t/tmp/static_file.txt
+
 === ovreride finalize
 --- preprocess
 {

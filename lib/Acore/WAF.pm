@@ -473,7 +473,6 @@ sub serve_static_file {
     $file = Path::Class::file($file) unless ref $file;
 
     $self->log->debug("serving static file. $file");
-
     my $res = $self->res;
     if ( -f $file ) {
         unless ( -r _ ) {
@@ -488,7 +487,14 @@ sub serve_static_file {
                 return;
             }
         }
-        $res->body( scalar $file->slurp );
+        if ($self->config->{x_sendfile_header}) {
+            $res->header(
+                $self->config->{x_sendfile_header} => $file->stringify
+            );
+        }
+        else {
+            $res->body( scalar $file->slurp )
+        }
 
         require Acore::MIME::Types;
         my $ext = ( $file =~ /\.(\w+)$/ ) ? lc($1) : "";
@@ -970,6 +976,14 @@ Like TT's [% INCLUDE %]
 Serve static file in $config->{root} dir.
 
  $c->serve_static_file("static/foo.jpg");
+
+If $c->config->{x_sendfile_header} is set, send HTTP header for X-Sendfile (or X-LIGHTTPD-send-file).
+
+ $c->config->{x_sendfile_header} = "X-Sendfile";
+ $c->serve_static_file("/path/to/file");
+
+http header output
+ X-Sendfile: /path/to/file
 
 =item forward
 

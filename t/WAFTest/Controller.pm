@@ -66,6 +66,14 @@ sub sample_plugin {
     $c->sample_method;
 }
 
+sub static_file {
+    my ($self, $c, $args) = @_;
+    use Path::Class qw/ file /;
+    file("t/tmp/static_file.txt")->openw->print("STATIC_FILE");
+    qx{ touch -m -t 200907281122.33 t/tmp/static_file.txt };
+    $c->serve_static_file("t/tmp/static_file.txt");
+}
+
 sub adoc {
     my ($self, $c, $args) = @_;
     $c->serve_acore_document( "/" . $args->{path} );
