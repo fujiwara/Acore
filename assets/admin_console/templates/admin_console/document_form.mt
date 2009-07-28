@@ -69,6 +69,23 @@
                     <label for="class">Content-Type</label>
                     <input type="text" name="content_type" value="<?= $doc->content_type ?>" size="20" />
                   </div>
+?               if ( $doc->can('attachment_files') ) {
+                  <div>
+                    <label for="attachment-files">添付ファイル</label>
+                    <input type="file" id="attachment-file" name="attachment_file" size="30"/>
+                    <input type="button" id="add-attachment" value="upload"/>
+                    <input type="hidden" name="n" id="attachment-number" value=""/>
+                    <ul style="margin-left: 200px;">
+<?                  my $n = 0;
+                    for my $file (@{ $doc->attachment_files }) {
+?>
+                      <li><a href="<?= $c->uri_for('/admin_console/document_attachment', { id => $doc->id, n => $n }) ?>"><?= $file->basename ?></a>
+                        <input type="button" rel="<?= $n ?>" class="delete-attachment-button" value="×" />
+                      </li>
+<?                      $n++; } ?>
+                    </ul>
+?               }
+
                 </fieldset>
 
                 <?=r $c->render_string( $doc->html_form_to_update, $doc ) | fillform($doc) ?>
@@ -99,6 +116,11 @@
       <span class="ui-icon ui-icon-alert" style="float:left; margin:0 7px 20px 0;"></span>
       本当に削除しますか?
     </div>
+    <div id="delete-attachment-dialog" title="確認">
+      <span class="ui-icon ui-icon-alert" style="float:left; margin:0 7px 20px 0;"></span>
+      添付ファイルを削除しますか?
+    </div>
+
     <script type="text/javascript">
       $('#delete-dialog').dialog({
         bgiframe: true,
@@ -130,6 +152,47 @@
       $('#show-document-yaml').click( function() {
          $('#document-yaml').toggle();
       }).css({ cursor: "pointer" })
+
+
+      $('#add-attachment').click( function() {
+        if ( $('#attachment-file').val() ) {
+          var f = $('#document-form');
+          f.attr('action', '<?= $c->uri_for('/admin_console/document_attachment') | js ?>').submit();
+        }
+        else {
+          return false;
+        }
+      });
+
+      $('#delete-attachment-dialog').dialog({
+        bgiframe: true,
+        resizable: false,
+        height:140,
+        modal: true,
+        overlay: {
+          backgroundColor: '#000',
+          opacity: 0.5
+        },
+        buttons: {
+          '削除する': function() {
+            $('#document-form').attr({'action' : '<?= $c->uri_for('/admin_console/document_attachment') | js ?>'});
+            $('#document-form').append('<input type="hidden" name="_method" value="DELETE"/>');
+            $(this).dialog('close');
+            $('#document-form').submit();
+          },
+          Cancel: function() {
+             $(this).dialog('close');
+          }
+        }
+      });
+      $('#delete-attachment-dialog').dialog('close');
+
+      $('input.delete-attachment-button').click( function() {
+         var n = $(this).attr('rel');
+         $('#attachment-number').val(n);
+         $('#delete-attachment-dialog').dialog('open');
+      });
+
     </script>
 </body>
 </html>

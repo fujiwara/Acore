@@ -1,6 +1,6 @@
 # -*- mode:perl -*-
 use strict;
-use Test::More tests => 15;
+use Test::More tests => 16;
 use Test::Exception;
 use Data::Dumper;
 use utf8;
@@ -56,5 +56,8 @@ BEGIN {
     ok $newdoc->remove_attachment_file( $newdoc->attachment_files->[0] );
     is_deeply $newdoc->attachment_files => [ file("t/tmp/12345/xxx.txt") ];
     ok !-e file("t/tmp/foo.dat");
+
+    $newdoc->call_trigger('delete');
+    ok !-e file("t/tmp/12345/xxx.txt");
 }
 

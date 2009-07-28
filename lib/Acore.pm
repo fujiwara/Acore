@@ -388,10 +388,10 @@ sub delete_document {
             $old_for_search = $old_doc->for_search;
         }
     }
-
     my $result = $self->storage->document->delete($doc->id);
     $doc->delete_fts_index( $self, $old_for_search )
         if $old_for_search;
+    $doc->call_trigger('delete');
 
     return $result;
 }

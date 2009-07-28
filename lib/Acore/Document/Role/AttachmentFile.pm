@@ -18,19 +18,24 @@ has attachment_files => (
 Acore::Document->add_trigger(
     to_object => sub {
         my $self  = shift;
-        my @files = map { $_->stringify } @{ $self->attachment_files };
+        my @files
+            = map { ref $_ ? $_->stringify : $_ }
+              @{ $self->attachment_files };
         $self->attachment_files(\@files);
         $self;
     },
-);
-
-Acore::Document->add_trigger(
     from_object => sub {
         my $self  = shift;
         for my $file ( @{ $self->{attachment_files} } ) {
             $file = file($file);
         }
         $self;
+    },
+    delete => sub {
+        my $self  = shift;
+        $self->remove_attachment_file($_)
+            for @{ $self->attachment_files };
+        dir( $self->attachment_root_dir, $self->id )->rmtree;
     },
 );
 

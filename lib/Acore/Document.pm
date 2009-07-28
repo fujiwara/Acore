@@ -132,17 +132,20 @@ sub from_object {
 
 my $Triggers;
 sub call_trigger {
-    my ($self, $triggername, @args) = @_;
+    my ($self, $name, @args) = @_;
     my $class = blessed $self;
-    for my $code (@{ $Triggers->{$triggername} || [] }) {
+    for my $code (@{ $Triggers->{$name} || [] }) {
         $code->($self, @args);
     }
 }
 
 sub add_trigger {
-    my ($class, $triggername, $code) = @_;
-    $Triggers->{$triggername} ||= [];
-    push @{ $Triggers->{$triggername} }, $code;
+    my $class = shift;
+    while ( my ($name, $code) = ( shift, shift ) ) {
+        last if !$name || !$code;
+        $Triggers->{$name} ||= [];
+        push @{ $Triggers->{$name} }, $code;
+    }
 }
 
 sub as_string {

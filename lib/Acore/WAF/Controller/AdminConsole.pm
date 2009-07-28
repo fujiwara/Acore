@@ -371,13 +371,22 @@ sub _document_add_keys {
     $c->req->param('keys' => @keys);
 }
 
+sub _get_document {
+    my ($self, $c, $id) = @_;
+
+    my $id  = $id || $c->req->param('id');
+    my $doc = $c->acore->get_document({ id => $id });
+    $c->error( 404 => "document not found." )
+        unless $doc;
+    $doc;
+}
+
 sub document_form_GET {
     my ($self, $c) = @_;
 
     $c->forward( $self => "is_logged_in" );
 
-    $c->stash->{document}
-        = $c->acore->get_document({ id => $c->req->param('id') });
+    $c->stash->{document} = $c->forward( $self => "_get_document" );
 
     $c->render('admin_console/document_form.mt');
 }
@@ -386,13 +395,8 @@ sub document_form_POST {
     my ($self, $c) = @_;
 
     $c->forward( $self => "is_logged_in" );
-    my $id  = $c->req->param('id');
-    my $doc = $c->acore->get_document({ id => $id });
-    $c->error( 404 => "document not found." )
-        unless $doc;
-
+    my $doc = $c->forward( $self => "_get_document" );
     my $old_doc = Clone::clone($doc);
-
     $c->stash->{document} = $doc;
 
     $c->form->check(
@@ -415,7 +419,10 @@ sub document_form_POST {
 
     $c->flash->set( document_saved => 1 );
     $c->redirect(
-        $c->uri_for('/admin_console/document_form', { id => $id, _t => time } )
+        $c->uri_for(
+            '/admin_console/document_form',
+            { id => $doc->id, _t => time }
+        )
     );
 }
 
@@ -497,6 +504,57 @@ sub document_DELETE {
         });
 
     $c->render('admin_console/document_deleted.mt');
+}
+
+sub document_attachment_POST {
+    my ($self, $c) = @_;
+
+    $c->forward( $self => "is_logged_in" );
+    my $doc = $c->forward( $self => "_get_document" );
+
+    if ( my $upload = $c->req->upload('attachment_file') ) {
+        my $filename = $upload->filename;
+        utf8::decode($filename) unless utf8::is_utf8($filename);
+        $c->log->info( "upload filename: $filename" );
+        $doc->add_attachment_file( $upload->fh => $filename );
+        $c->acore->put_document($doc, { update_timestamp => 0 });
+    }
+    else {
+        $c->error( 204 => "upload file not found" );
+    }
+    $c->redirect(
+        $c->uri_for('/admin_console/document_form', { id => $doc->id, _t => time } )
+    );
+}
+
+sub document_attachment_GET {
+    my ($self, $c) = @_;
+
+    $c->forward( $self => "is_logged_in" );
+    my $doc = $c->forward( $self => "_get_document" );
+    my $n   = int $c->req->param('n');
+    my $file = $doc->attachment_files->[$n]
+        or $c->error( 404 => "attachment file $n is not found" );
+    $c->res->header(
+        "Content-Disposition"
+            => sprintf "inline; filename=%s", $file->basename
+    );
+    $c->serve_static_file($file);
+}
+
+sub document_attachment_DELETE {
+    my ($self, $c) = @_;
+
+    $c->forward( $self => "is_logged_in" );
+    my $doc = $c->forward( $self => "_get_document" );
+    my $n   = int $c->req->param('n');
+    my $file = $doc->attachment_files->[$n]
+        or $c->error( 404 => "attachment file $n is not found" );
+    $doc->remove_attachment_file($n);
+    $c->acore->put_document($doc, { update_timestamp => 0 });
+    $c->redirect(
+        $c->uri_for('/admin_console/document_form', { id => $doc->id, _t => time } )
+    );
 }
 
 sub doc_class_GET {
