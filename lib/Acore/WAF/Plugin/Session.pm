@@ -4,15 +4,19 @@ use strict;
 use warnings;
 use Want;
 use Exporter 'import';
-our @EXPORT = qw/ session /;
+our @EXPORT = qw/ session flash /;
 
 sub setup {
     my ($class, $controller) = @_;
     $controller->add_trigger(
         AFTER_DISPATCH => sub {
             my $c = shift;
-            $c->session->response_filter($c->response)
-                if $c->{_session_obj};
+            if ( my $session = $c->{_session_obj} ) {
+                if ( my $flash = $c->session->get('__flash_data') ) {
+                    $c->session->set( __flash_data => $flash->finalize );
+                }
+                $session->response_filter($c->response);
+            }
         },
     );
 }
@@ -34,9 +38,47 @@ sub session {
         );
         $c->log->debug("session inited.");
     }
-    return want('HASH') ? $c->{_session_obj}->as_hashref
-                        : $c->{_session_obj};
+    $c->{_session_obj};
 }
+
+sub flash {
+    my $c = shift;
+    my $flash = $c->session->get('__flash_data');
+    return $flash if $flash;
+
+    $flash = Acore::WAF::Plugin::Session::Flash->new;
+    $c->session->set( __flash_data => $flash );
+    $flash;
+}
+
+package Acore::WAF::Plugin::Session::Flash;
+use Any::Moose;
+
+sub get {
+    my ($self, $key) = @_;
+    $self->{__got_key}->{$key} = 1;
+    $self->{$key};
+}
+
+sub set {
+    my ($self, $key, $value) = @_;
+    delete $self->{__got_key}->{$key};
+    $self->{$key} = $value;
+}
+
+sub finalize {
+    my $self = shift;
+
+    if ( $self->{__got_key} ) {
+        for my $key ( keys %{ $self->{__got_key} } ) {
+            delete $self->{$key};
+        }
+    }
+    delete $self->{__got_key};
+    return keys %$self ? $self : undef;
+}
+
+__PACKAGE__->meta->make_immutable;
 
 1;
 __END__

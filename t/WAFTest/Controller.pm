@@ -211,6 +211,18 @@ sub _sites_auto {
     return $c->req->param('auto_ng') ? undef : 1;
 }
 
+sub set_flash {
+    my ($self, $c) = @_;
+    $c->flash->set( xxx => $c->req->param('value') );
+    $c->redirect( $c->uri_for('/act/get_flash') );
+}
+
+sub get_flash {
+    my ($self, $c) = @_;
+    my $value = $c->flash->get('xxx');
+    $c->res->body("flash=$value");
+}
+
 package t::WAFTest::Controller::X;
 
 sub xyz {

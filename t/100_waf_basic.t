@@ -946,6 +946,38 @@ Status: 404
 --- postprocess
 Path::Class::file("t/templates/404.mt")->remove;
 
+=== set flash
+--- uri
+http://localhost/act/set_flash?value=ABC
+--- response
+Location: http://localhost/act/get_flash
+Content-Length: 0
+Content-Type: text/html; charset=utf-8
+Set-Cookie: http_session_sid=SESSIONID; path=/
+Status: 302
+
+=== get flash
+--- uri
+http://localhost/act/get_flash
+--- response
+Content-Length: 9
+Content-Type: text/html; charset=utf-8
+Set-Cookie: http_session_sid=SESSIONID; path=/
+Status: 200
+
+flash=ABC
+
+=== get flash again
+--- uri
+http://localhost/act/get_flash
+--- response
+Content-Length: 6
+Content-Type: text/html; charset=utf-8
+Set-Cookie: http_session_sid=SESSIONID; path=/
+Status: 200
+
+flash=
+
 === ovreride finalize
 --- preprocess
 {
