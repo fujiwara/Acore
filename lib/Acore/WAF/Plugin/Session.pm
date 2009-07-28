@@ -112,6 +112,17 @@ Acore::WAF::Plugin::Session - AnyCMS session plugin
      $c->session->expire();
  }
 
+ # for POST REDIRECT GET pattern
+ sub update_POST {
+     my ($self, $c) = @_;
+     $c->flash->set( updated => 1 );
+     $c->redirect( $c->uri_for("/updated") );
+ }
+ sub updated_GET {
+     my ($self, $c) = @_;
+     $c->flash->get('updated');
+ }
+
 =head1 DESCRIPTION
 
 Acore session plugin by HTTP::Session
@@ -123,6 +134,10 @@ Acore session plugin by HTTP::Session
 =item session
 
 An instance of HTTP::Session.
+
+=item flash
+
+An instance of flash data.
 
 =back
 
