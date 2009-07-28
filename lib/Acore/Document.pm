@@ -99,7 +99,10 @@ sub unbless {
 
 sub to_object {
     my $self = shift;
-    my $obj  = clone $self;
+
+    my $obj = clone $self;
+    $obj->call_trigger("to_object");
+    delete $obj->{$_} for qw/ __triggers _class_trigger_results /;
 
     require Acore::DateTime;
     $obj->{created_on} = Acore::DateTime->format_datetime( $obj->created_on );
@@ -107,6 +110,7 @@ sub to_object {
     $obj->{_class}     = ref $self;
     $obj->{_id}        = delete $obj->{id} if $obj->{id};
     delete $obj->{$_} for qw/ xpath _created_on _updated_on /;
+
     return $obj->unbless;
 }
 
@@ -115,11 +119,30 @@ sub from_object {
     my $obj   = shift;
     return unless $obj->{_class};
     $obj->{_class}->require;
-    $obj->{id}    = delete $obj->{_id} if $obj->{_id};
+    $obj->{id} = delete $obj->{_id} if $obj->{_id};
     for ( qw/ created_on updated_on / ) {
         $obj->{"_$_"} ||= delete $obj->{$_};
     }
-    $obj->{_class}->new($obj);
+    $obj = $obj->{_class}->new($obj);
+
+    $obj->call_trigger("from_object");
+    delete $obj->{$_} for qw/ __triggers _class_trigger_results /;
+    $obj;
+}
+
+my $Triggers;
+sub call_trigger {
+    my ($self, $triggername, @args) = @_;
+    my $class = blessed $self;
+    for my $code (@{ $Triggers->{$triggername} || [] }) {
+        $code->($self, @args);
+    }
+}
+
+sub add_trigger {
+    my ($class, $triggername, $code) = @_;
+    $Triggers->{$triggername} ||= [];
+    push @{ $Triggers->{$triggername} }, $code;
 }
 
 sub as_string {
