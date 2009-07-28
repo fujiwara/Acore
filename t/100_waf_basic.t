@@ -989,6 +989,16 @@ Status: 200
 
 STATIC_FILE
 
+=== serve_static_file_fh
+--- uri
+http://localhost/act/static_file_fh
+--- response
+Content-Length: 11
+Content-Type: text/plain; charset=utf-8
+Status: 200
+
+STATIC_FILE
+
 === send serve_static_file
 --- preprocess
 $config->{x_sendfile_header} = "X-Sendfile";

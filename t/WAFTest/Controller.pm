@@ -74,6 +74,16 @@ sub static_file {
     $c->serve_static_file("t/tmp/static_file.txt");
 }
 
+sub static_file_fh {
+    my ($self, $c, $args) = @_;
+    use Path::Class qw/ file /;
+    file("t/tmp/static_file.txt")->openw->print("STATIC_FILE");
+    qx{ touch -m -t 200907281122.33 t/tmp/static_file.txt };
+    my $fh = file("t/tmp/static_file.txt")->openr;
+    $c->res->content_type("text/plain; charset=utf-8");
+    $c->res->body($fh);
+}
+
 sub adoc {
     my ($self, $c, $args) = @_;
     $c->serve_acore_document( "/" . $args->{path} );
