@@ -140,7 +140,7 @@
            var flag = false;
            if ($(this).html() == '＋') {
              flag = true;
-             $(this).html('ー');
+             $(this).html('&minus;');
            }
            else {
              $(this).html('＋');
