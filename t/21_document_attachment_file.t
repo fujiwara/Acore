@@ -1,6 +1,6 @@
 # -*- mode:perl -*-
 use strict;
-use Test::More tests => 16;
+use Test::More tests => 17;
 use Test::Exception;
 use Data::Dumper;
 use utf8;
@@ -59,5 +59,6 @@ BEGIN {
 
     $newdoc->call_trigger('delete');
     ok !-e file("t/tmp/12345/xxx.txt");
+    ok !-e file("t/tmp/12345");
 }
 

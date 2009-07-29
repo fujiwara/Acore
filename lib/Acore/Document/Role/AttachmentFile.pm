@@ -19,9 +19,7 @@ Acore::Document->add_trigger(
     to_object => sub {
         my $self  = shift;
         return $self unless $self->can('attachment_files');
-        my @files
-            = map { ref $_ ? $_->stringify : $_ }
-              @{ $self->attachment_files };
+        my @files = map { "$_" } @{ $self->attachment_files };
         $self->attachment_files(\@files);
         $self;
     },
@@ -38,7 +36,9 @@ Acore::Document->add_trigger(
         return $self unless $self->can('attachment_files');
         $self->remove_attachment_file($_)
             for @{ $self->attachment_files };
-        dir( $self->attachment_root_dir, $self->id )->rmtree;
+        if ($self->id) {
+            dir( $self->attachment_root_dir, $self->id )->remove;
+        }
     },
 );
 
