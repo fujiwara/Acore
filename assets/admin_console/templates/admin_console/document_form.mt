@@ -200,6 +200,8 @@
            $('#delete-attachment-dialog').dialog('open');
         });
     });
+
+    <?=r $c->render_part('admin_console/flash_message.js') ?>
     </script>
 </body>
 </html>

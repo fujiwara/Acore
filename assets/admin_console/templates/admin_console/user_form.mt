@@ -102,6 +102,8 @@
       </div>
     </div>
     <script type="text/javascript">
+    <?=r $c->render_part('admin_console/flash_message.js') ?>
+
       $('#delete-button').click( function() {
         if (confirm('削除してよろしいですか?')) {
           $('#user-form').attr({'action' : '<?= $c->uri_for('/admin_console/user') | js ?>'});
