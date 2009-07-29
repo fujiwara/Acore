@@ -957,3 +957,28 @@ __END__
  connect "admin_console/static/:filename", to bundled "AdminConsole" => "static";
  connect "admin_console/:action",          to bundled "AdminConsole";
 
+=head1 CONFIG
+
+ admin_console:
+   document_classes:
+     - MyDocument
+     - FileDocument
+     - Acore::Document
+   disable_eval_functions: 0
+   css_path: "/static/override.css"
+
+=over 4
+
+=item document_classes: []
+
+Document classes for selection in document_form.
+
+=item disable_eval_functions: 0|1
+
+default 0
+
+=item css_path: "/path/to/css"
+
+Additional css path. for $c->uri_for()
+
+=back
