@@ -78,22 +78,21 @@ sub remove_attachment_file {
     my $self = shift;
     my $arg  = shift;
 
-    my $remove_file;
+    my @remove_file;
     if ( blessed $arg && $arg->isa('Path::Class::File') ) {
         for my $file ( @{ $self->attachment_files } ) {
             if ( $file eq $arg ) {
-                $remove_file = $file;
+                push @remove_file, $file;
                 undef $file;
-                last;
             }
         }
     }
     elsif ( $arg =~ /\A(\d+)\z/ ) {
-        $remove_file = delete $self->attachment_files->[$1];
+        @remove_file = ( delete $self->attachment_files->[$1] );
     }
-    if ($remove_file) {
-        $remove_file->remove()
-            or carp("Can't remove $remove_file: $!");
+    for my $file (@remove_file) {
+        $file->remove()
+            or carp("Can't remove $file: $!");
     }
     $self->{attachment_files}
         = [ grep { $_ } @{ $self->{attachment_files} } ];
