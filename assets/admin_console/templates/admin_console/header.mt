@@ -11,6 +11,9 @@
     <link type="text/css" href="<?= $c->uri_for('/admin_console/static/css/ui-lightness/jquery-ui-1.7.2.custom.css') ?>" rel="stylesheet" />
     <script type="text/javascript" src="<?= $c->uri_for('/admin_console/static/js/jquery-ui-1.7.2.custom.min.js') ?>"></script>
 ? }
+?   if ($c->config->{admin_console}->{css_path}) {
+    <link type="text/css" href="<?= $c->uri_for($c->config->{admin_console}->{css_path}) ?>" rel="stylesheet" />
+?   }
     <style type="text/css">
       .flash-message {
         border: 1px solid #fda;
