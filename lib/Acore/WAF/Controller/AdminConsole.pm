@@ -540,7 +540,10 @@ sub document_attachment_GET {
     my $n   = int $c->req->param('n');
     my $file = $doc->attachment_files->[$n]
         or $c->error( 404 => "attachment file $n is not found" );
-    my $filename = URI::Escape::uri_unescape($file->basename);
+
+    my $filename = $c->req->user_agent =~ /MSIE/
+                 ? $file->basename   # uri escaped
+                 : URI::Escape::uri_unescape($file->basename);
     $c->res->header( "Content-Disposition" => "inline; filename=$filename" );
     $c->serve_static_file($file);
 }
