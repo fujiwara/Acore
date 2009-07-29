@@ -158,7 +158,7 @@ Returns array ref of Path::Class::File instances.
 
 =item attachment_dir
 
-Returns Path::Clas::Dir instance.
+Returns Path::Class::Dir instance.
 
 =item add_attachment_file
 

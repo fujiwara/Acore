@@ -428,6 +428,10 @@ sub _dispatch {
         $self->log->debug( "Dispatch info is:\n" . $table->draw );
     }
 
+    if ( $self->can("_auto") ) {
+        $self->forward( blessed $self, "_auto", $rule->{args} )
+            or return;
+    }
     if ( $controller->can("_auto") ) {
         $self->forward( $controller, "_auto", $rule->{args} )
             or return;
