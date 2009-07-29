@@ -122,6 +122,7 @@
     </div>
 
     <script type="text/javascript">
+    $(document).ready( function(){
       $('#delete-dialog').dialog({
         bgiframe: true,
         resizable: false,
@@ -192,7 +193,7 @@
          $('#attachment-number').val(n);
          $('#delete-attachment-dialog').dialog('open');
       });
-
+    });
     </script>
 </body>
 </html>
