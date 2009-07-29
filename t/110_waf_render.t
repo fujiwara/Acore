@@ -16,6 +16,10 @@ plan tests => (1 * blocks) ;
         package Acore::WAF::Render;
         $_[0] | uri
     }
+    sub uri_un {
+        package Acore::WAF::Render;
+        $_[0] | uri_unescape;
+    }
     sub html_line_break {
         package Acore::WAF::Render;
         $_[0] | html_line_break
@@ -102,6 +106,18 @@ a%3Db%26c%3Dd
 あいう
 --- expected chomp
 %E3%81%82%E3%81%84%E3%81%86
+
+=== uri_unescape
+--- input chomp uri_un
+a%3Db%26c%3Dd
+--- expected chomp
+a=b&c=d
+
+=== uri_unescape utf8
+--- input chomp uri_un
+%E3%81%82%E3%81%84%E3%81%86
+--- expected chomp
+あいう
 
 === replace
 --- input chomp replace

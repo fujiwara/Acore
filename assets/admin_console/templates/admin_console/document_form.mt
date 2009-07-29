@@ -24,6 +24,10 @@
             </div>
 ?        if ( $c->flash->get('document_saved') ) {
             <div class="flash-message"><p>保存されました</p></div>
+?        } elsif ( $c->flash->get('attachment_added') ) {
+            <div class="flash-message"><p>ファイルを添付しました</p></div>
+?        } elsif ( $c->flash->get('attachment_deleted') ) {
+            <div class="flash-message"><p>添付ファイルを削除しました</p></div>
 ?        }
             <div class="form-container">
 
@@ -79,8 +83,8 @@
 <?                  my $n = 0;
                     for my $file (@{ $doc->attachment_files }) {
 ?>
-                      <li><a href="<?= $c->uri_for('/admin_console/document_attachment', { id => $doc->id, n => $n }) ?>"><?= $file->basename ?></a>
-                        <input type="button" rel="<?= $n ?>" class="delete-attachment-button" value="×" />
+                      <li><a href="<?= $c->uri_for('/admin_console/document_attachment', { id => $doc->id, n => $n }) ?>"><?= $file->basename | uri_unescape ?></a>
+                        <a rel="<?= $n ?>" class="delete-attachment-button">[×]</a>
                       </li>
 <?                      $n++; } ?>
                     </ul>
@@ -188,11 +192,13 @@
       });
       $('#delete-attachment-dialog').dialog('close');
 
-      $('input.delete-attachment-button').click( function() {
-         var n = $(this).attr('rel');
-         $('#attachment-number').val(n);
-         $('#delete-attachment-dialog').dialog('open');
-      });
+      $('a.delete-attachment-button')
+        .css({ cursor: "pointer" })
+        .click( function() {
+           var n = $(this).attr('rel');
+           $('#attachment-number').val(n);
+           $('#delete-attachment-dialog').dialog('open');
+        });
     });
     </script>
 </body>

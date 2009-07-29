@@ -515,6 +515,9 @@ sub document_attachment_POST {
     if ( my $upload = $c->req->upload('attachment_file') ) {
         my $filename = $upload->filename;
         utf8::decode($filename) unless utf8::is_utf8($filename);
+        $filename = (split /\\/, $filename)[-1] if $filename =~ /\\/;
+        $filename = URI::Escape::uri_escape_utf8($filename);
+
         $c->log->info( "upload filename: $filename" );
         $doc->add_attachment_file( $upload->fh => $filename );
         $c->acore->put_document($doc, { update_timestamp => 0 });
@@ -522,6 +525,8 @@ sub document_attachment_POST {
     else {
         $c->error( 204 => "upload file not found" );
     }
+
+    $c->flash->set( attachment_added => 1 );
     $c->redirect(
         $c->uri_for('/admin_console/document_form', { id => $doc->id, _t => time } )
     );
@@ -535,10 +540,8 @@ sub document_attachment_GET {
     my $n   = int $c->req->param('n');
     my $file = $doc->attachment_files->[$n]
         or $c->error( 404 => "attachment file $n is not found" );
-    $c->res->header(
-        "Content-Disposition"
-            => sprintf "inline; filename=%s", $file->basename
-    );
+    my $filename = URI::Escape::uri_unescape($file->basename);
+    $c->res->header( "Content-Disposition" => "inline; filename=$filename" );
     $c->serve_static_file($file);
 }
 
@@ -552,6 +555,8 @@ sub document_attachment_DELETE {
         or $c->error( 404 => "attachment file $n is not found" );
     $doc->remove_attachment_file($n);
     $c->acore->put_document($doc, { update_timestamp => 0 });
+
+    $c->flash->set( attachment_deleted => 1 );
     $c->redirect(
         $c->uri_for('/admin_console/document_form', { id => $doc->id, _t => time } )
     );
