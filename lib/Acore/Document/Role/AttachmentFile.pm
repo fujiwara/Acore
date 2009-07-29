@@ -37,10 +37,15 @@ Acore::Document->add_trigger(
         $self->remove_attachment_file($_)
             for @{ $self->attachment_files };
         if ($self->id) {
-            dir( $self->attachment_root_dir, $self->id )->remove;
+            $self->attachment_dir->remove;
         }
     },
 );
+
+sub attachment_dir {
+    my $self = shift;
+    dir( $self->attachment_root_dir, $self->id );
+}
 
 sub has_attachment_files {
     my $self = shift;
@@ -57,7 +62,7 @@ sub add_attachment_file {
     }
     elsif ( ref $arg ) { # handle
         my $filename = shift || ($self->has_attachment_files + 1).".dat";
-        my $dir = dir( $self->attachment_root_dir, $self->id );
+        my $dir = $self->attachment_dir;
         $dir->mkpath;
         my $file = $dir->file($filename);
         my $fh   = $file->openw or croak("Can't open $file. $!");
@@ -121,6 +126,7 @@ Acore::Document::Role::AttachmentFile - role for attachment file
   $doc = YourDocument->new({ attachment_root_dir => "/path/to/dir" });
   $doc->add_attachment_file( $fh => "filename.ext" );
   $doc->add_attachment_file( Path::Class::file("/path/to/dir/file.txt") );
+  $doc->attachment_dir;  # dir for store files
 
   @files = @{ $doc->attachment_files };
 
@@ -149,6 +155,10 @@ Directory to store attachment file.
 =item attachment_files
 
 Returns array ref of Path::Class::File instances.
+
+=item attachment_dir
+
+Returns Path::Clas::Dir instance.
 
 =item add_attachment_file
 
