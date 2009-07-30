@@ -26,6 +26,7 @@ use URI;
         $self->{base};
     }
     sub address { $ENV{REMOTE_ADDR} }
+    sub user_agent { $ENV{HTTP_USER_AGENT} }
 
     no warnings 'redefine';
     sub method { $ENV{REQUEST_METHOD} || 'GET' }

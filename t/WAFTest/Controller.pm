@@ -117,7 +117,8 @@ sub minimal_cgi {
     $body   .= "base=" . $c->req->base . "\n";
     $body   .= "path=" . $c->req->path . "\n";
     $body   .= "address=" . $c->req->address . "\n";
-    $c->res->body( $c->encode($body) );
+    $body   .= "user_agent=" . $c->req->user_agent . "\n";
+    $c->res->body( $body );
 }
 
 sub _private {
