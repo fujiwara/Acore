@@ -15,6 +15,7 @@
           <div id="beta-inner">
             <h2 class="icon"><div class="action_viewmag">View の管理</div></h2>
             <h3><a href="<?= $c->uri_for('/admin_console/view_create_form') ?>">新規作成</a></h3>
+            <h3><a href="<?= $c->uri_for('/admin_console/view', { backup => 1 }) ?>">バックアップ</a></h3>
           </div>
           <div class="data">
             <table class="data">

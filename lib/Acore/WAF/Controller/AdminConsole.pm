@@ -628,7 +628,16 @@ sub view_GET {
     $c->stash->{all_views} = [
         map { $_->{value}->{id} = $_->{id}; $_->{value} } @design
     ];
-    $c->render('admin_console/view.mt');
+    if ( $c->req->param('backup') ) {
+        $c->res->content_type('text/plain; charset=utf-8');
+        $c->res->header(
+            "Content-Disposition" => "attachment; filename=restore_views.pl"
+        );
+        $c->render('admin_console/view_backup.mt');
+    }
+    else {
+        $c->render('admin_console/view.mt');
+    }
 }
 
 sub view_form_GET {
