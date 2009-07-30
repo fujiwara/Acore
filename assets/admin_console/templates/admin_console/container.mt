@@ -1,4 +1,6 @@
 ? my $c = $_[0];
+<div id="container">
+  <div id="container-inner">
     <div id="header">
       <div id="header-inner">
       <h1><?= $c->config->{name} ?> Admin console</h1>

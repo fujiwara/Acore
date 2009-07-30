@@ -203,5 +203,5 @@
 
     <?=r $c->render_part('admin_console/flash_message.js') ?>
     </script>
-</body>
-</html>
+?=r $c->render_part("admin_console/container_close.mt");
+

@@ -109,5 +109,5 @@
       });
 
     </script>
-</body>
-</html>
+?=r $c->render_part("admin_console/container_close.mt");
+
