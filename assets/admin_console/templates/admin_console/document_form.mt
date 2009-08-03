@@ -80,7 +80,7 @@
                     <input type="button" id="add-attachment" value="upload"/>
                     <img src="<?= $c->uri_for('/admin_console/static/images/uploading.gif') ?>" alt="uploading..." style="display: none;" id="uploading-icon"/>
                     <input type="hidden" name="n" id="attachment-number" value=""/>
-                    <ul style="margin-left: 200px;">
+                    <ul style="margin-left: 200px; list-style-image: url(<?= $c->uri_for('/admin_console/static/css/icon/16/mimetype_misc.png') ?>);">
 <?                  my $n = 0;
                     for my $file (@{ $doc->attachment_files }) {
 ?>
