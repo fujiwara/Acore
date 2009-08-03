@@ -78,6 +78,7 @@
                     <label for="attachment-files">添付ファイル</label>
                     <input type="file" id="attachment-file" name="attachment_file" size="30"/>
                     <input type="button" id="add-attachment" value="upload"/>
+                    <img src="<?= $c->uri_for('/admin_console/static/images/uploading.gif') ?>" alt="uploading..." style="display: none;" id="uploading-icon"/>
                     <input type="hidden" name="n" id="attachment-number" value=""/>
                     <ul style="margin-left: 200px;">
 <?                  my $n = 0;
@@ -162,6 +163,8 @@
       $('#add-attachment').click( function() {
         if ( $('#attachment-file').val() ) {
           var f = $('#document-form');
+          $(this).hide();
+          $('#uploading-icon').show();
           f.attr('action', '<?= $c->uri_for('/admin_console/document_attachment') | js ?>').submit();
         }
         else {

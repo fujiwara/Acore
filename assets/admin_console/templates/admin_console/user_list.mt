@@ -22,7 +22,8 @@
             <form action="<?= $c->uri_for('/admin_console/user_upload') ?>" method="post" enctype="multipart/form-data" id="upload-form">
               <input type="hidden" name="sid" value="<?= $c->session->session_id ?>"/>
               CSV <input type="file" name="upload_file" size="20"/>
-              <input type="submit" value="アップロード"/>
+              <input type="submit" value="アップロード" id="upload-submit-button"/>
+              <img src="<?= $c->uri_for('/admin_console/static/images/uploading.gif') ?>" alt="uploading..." id="uploading-icon" style="display: none;"/>
               <a href="#" id="help-for-csv">ファイル形式のヘルプ</a>
             </form>
           </div>
@@ -68,32 +69,40 @@
       </p>
     </div>
     <script type="text/javascript">
-      $('#upload-form').hide();
+    $(document).ready( function() {
+
+      $('#upload-form').hide().submit( function() {
+         $('#upload-submit-button').hide();
+         $('#uploading-icon').show();
+      });
+
       $('#toggle-upload-form').click( function() {
          $('#upload-form').toggle();
          return false;
       });
+
+
       $('#help-for-csv-dialog').hide()
       $('#help-for-csv').click( function() {
         $('#help-for-csv-dialog').show().dialog({ width: 400 });
         return false;
       });
 
-      (function () {
-        var users_dl = $('dl.users');
-        $('#search-users').keyup( function() {
-          var text = $('#search-users').val();
-          var regex = new RegExp(text, "i");
-          users_dl.each( function() {
-            if ($(this).attr('rel').match(regex)) {
-              $(this).show();
-            }
-            else {
-              $(this).hide();
-            }
-          });
+      var users_dl = $('dl.users');
+      $('#search-users').keyup( function() {
+        var text = $('#search-users').val();
+        var regex = new RegExp(text, "i");
+        users_dl.each( function() {
+          if ($(this).attr('rel').match(regex)) {
+            $(this).show();
+          }
+          else {
+            $(this).hide();
+          }
         });
-      })();
+      });
+
+    });
     </script>
 ?=r $c->render_part("admin_console/container_close.mt");
 

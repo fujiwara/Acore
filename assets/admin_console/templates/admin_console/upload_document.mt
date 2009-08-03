@@ -19,7 +19,7 @@
                 Document の一括投入</div></h2>
           </div>
           <div class="form-container">
-            <form action="<?= $c->uri_for('/admin_console/upload_document') ?>" method="post" enctype="multipart/form-data">
+            <form action="<?= $c->uri_for('/admin_console/upload_document') ?>" method="post" enctype="multipart/form-data" id="upload-form">
 ?      if ($c->form->has_error) {
                <div class="errors">
                 <p><em>下記の項目の入力にエラーがあります。</em></p>
@@ -49,6 +49,7 @@
               <div class="buttonrow">
                 <input type="submit" value="投入する" class="button" id="submit-button"/>
                 <input type="hidden" name="sid" value="<?= $c->session->session_id ?>"/>
+                <div id="uploading-icon" style="display: none"><img src="<?= $c->uri_for('/admin_console/static/images/uploading.gif') ?>" alt="uploading..."/></div>
               </div>
             </form>
           </div>
@@ -59,4 +60,12 @@
         </div>
       </div>
     </div>
+    <script type="text/javascript">
+      $(document).ready( function() {
+        $('#upload-form').submit( function() {
+          $('#submit-button').hide();
+          $('#uploading-icon').show();
+        });
+      });
+    </script>
 ?=r $c->render_part('admin_console/container_close.mt');
