@@ -3,8 +3,8 @@
    $c->stash->{title}          = "Document の管理";
    $c->stash->{load_jquery_ui} = 1;
 ?>
-?=r $c->render_part("admin_console/header.mt");
-?=r $c->render_part("admin_console/container.mt");
+?=r $c->render_part("@{[ location ]}/header.mt");
+?=r $c->render_part("@{[ location ]}/container.mt");
     <div id="pagebody">
       <div id="pagebody-inner" class="clearfix">
         <div id="alpha">
@@ -15,12 +15,12 @@
         <div id="beta">
           <div id="beta-inner">
             <h2 class="icon"><div class="mimetype_kmultiple">Document の管理</div></h2>
-            <h3 class="icon"><div class="mimetype_document_s"><a href="<?= $c->uri_for('/admin_console/document_create_form') ?>">新規作成</a></div></h3>
-            <h3 class="icon"><div class="action_db_add_s"><a href="<?= $c->uri_for('/admin_console/upload_document') ?>">一括投入</a></div></h3>
+            <h3 class="icon"><div class="mimetype_document_s"><a href="<?= $c->uri_for("/@{[ location ]}/document_create_form") ?>">新規作成</a></div></h3>
+            <h3 class="icon"><div class="action_db_add_s"><a href="<?= $c->uri_for("/@{[ location ]}/upload_document") ?>">一括投入</a></div></h3>
           </div>
           <div class="data">
 
-?=r $c->render_part('admin_console/document_serach_form.mt');
+?=r $c->render_part("@{[ location ]}/document_serach_form.mt");
 
             <p>
 <?
@@ -32,13 +32,13 @@
    my $match  = $c->req->param('match');
 ?>
               <? if ( $page >= 2 ) { ?>
-              <a href="<?= $c->uri_for('/admin_console/document_list', { page => $page - 1, type => $type, q => $query, match => $match, limit => $limit }) ?>">&lt;</a> |
+              <a href="<?= $c->uri_for("/@{[ location ]}/document_list", { page => $page - 1, type => $type, q => $query, match => $match, limit => $limit }) ?>">&lt;</a> |
               <? } ?>
               <?= $offset + 1 ?> 〜 <?= $offset + $limit ?>
               |
-              <a href="<?= $c->uri_for('/admin_console/document_list', { page => $page + 1, type => $type, q => $query, match => $match, limit => $limit }) ?>">&gt;</a>
+              <a href="<?= $c->uri_for("/@{[ location ]}/document_list", { page => $page + 1, type => $type, q => $query, match => $match, limit => $limit }) ?>">&gt;</a>
             </p>
-            <form action="<?= $c->uri_for('/admin_console/document') ?>" method="post" id="delete-form">
+            <form action="<?= $c->uri_for("/@{[ location ]}/document") ?>" method="post" id="delete-form">
               <input type="hidden" name="sid" value="<?= $c->session->session_id ?>"/>
             <input type="button" value="チェックした Document を削除" class="delete-button" />
             <table class="data">
@@ -59,7 +59,7 @@
 ? for my $doc ( @{ $c->stash->{all_documents} } ) {
                 <tr>
                   <td><input type="checkbox" name="id" value="<?= $doc->id ?>" class="document-id-check"/></td>
-                  <td><a href="<?= $c->uri_for('/admin_console/document_form', { id => $doc->id } ) ?>" title="<?= $doc->{title} ?>"><?= $doc->id ?></a></td>
+                  <td><a href="<?= $c->uri_for("/@{[ location ]}/document_form", { id => $doc->id } ) ?>" title="<?= $doc->{title} ?>"><?= $doc->id ?></a></td>
                   <td><?= $doc->path ?></td>
 ? for my $key ( @$keys ) {
                   <td><?= $doc->param($key) | json ?></td>
@@ -75,11 +75,11 @@
             </form>
             <p>
               <? if ( $page >= 2 ) { ?>
-              <a href="<?= $c->uri_for('/admin_console/document_list', { page => $page - 1, type => $type, q => $query, match => $match, limit => $limit }) ?>">&lt;</a> |
+              <a href="<?= $c->uri_for("/@{[ location ]}/document_list", { page => $page - 1, type => $type, q => $query, match => $match, limit => $limit }) ?>">&lt;</a> |
               <? } ?>
               <?= $offset + 1 ?> 〜 <?= $offset + $limit ?>
               |
-              <a href="<?= $c->uri_for('/admin_console/document_list', { page => $page + 1, type => $type, q => $query, match => $match, limit => $limit }) ?>">&gt;</a>
+              <a href="<?= $c->uri_for("/@{[ location ]}/document_list", { page => $page + 1, type => $type, q => $query, match => $match, limit => $limit }) ?>">&gt;</a>
             </p>
           </div>
         </div>
@@ -150,5 +150,5 @@
         });
     });
     </script>
-?=r $c->render_part("admin_console/container_close.mt");
+?=r $c->render_part("@{[ location ]}/container_close.mt");
 

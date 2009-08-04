@@ -2,8 +2,8 @@
   my $c = $_[0];
   $c->stash->{title} = "ユーザの管理";
 ?>
-?=r $c->render_part("admin_console/header.mt");
-?=r $c->render_part("admin_console/container.mt");
+?=r $c->render_part("@{[ location ]}/header.mt");
+?=r $c->render_part("@{[ location ]}/container.mt");
     <div id="pagebody">
       <div id="pagebody-inner" class="clearfix">
         <div id="alpha">
@@ -18,7 +18,7 @@
           <div class="form-container">
             <h3><?= $c->stash->{imported} ?> ユーザが登録・更新されました</h3>
             <p>
-              <a href="<?= $c->uri_for('/admin_console/user_list') ?>">ユーザ一覧へ</a>
+              <a href="<?= $c->uri_for("/@{[ location ]}/user_list") ?>">ユーザ一覧へ</a>
             </p>
           </div>
           <div id="gamma">
@@ -28,5 +28,5 @@
         </div>
       </div>
     </div>
-?=r $c->render_part("admin_console/container_close.mt");
+?=r $c->render_part("@{[ location ]}/container_close.mt");
 

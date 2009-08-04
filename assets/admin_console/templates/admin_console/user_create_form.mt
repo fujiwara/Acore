@@ -2,8 +2,8 @@
   my $c = $_[0];
   $c->stash->{title} = "ユーザの管理";
 ?>
-?=r $c->render_part("admin_console/header.mt");
-?=r $c->render_part("admin_console/container.mt");
+?=r $c->render_part("@{[ location ]}/header.mt");
+?=r $c->render_part("@{[ location ]}/container.mt");
     <div id="pagebody">
       <div id="pagebody-inner" class="clearfix">
         <div id="alpha">
@@ -13,10 +13,10 @@
         </div>
         <div id="beta">
           <div id="beta-inner">
-            <h2 class="icon"><div class="app_kuser"><a href="<?= $c->uri_for('/admin_console/user_list') ?>">ユーザの管理</a></div></h2>
+            <h2 class="icon"><div class="app_kuser"><a href="<?= $c->uri_for("/@{[ location ]}/user_list") ?>">ユーザの管理</a></div></h2>
           </div>
           <div class="form-container">
-              <form action="<?= $c->uri_for('/admin_console/user_create_form') ?>" method="post" id="user-form">
+              <form action="<?= $c->uri_for("/@{[ location ]}/user_create_form") ?>" method="post" id="user-form">
 ?      if ($c->form->has_error) {
               <p class="error">
                 エラーがあります
@@ -73,5 +73,5 @@
       });
 
     </script>
-?=r $c->render_part("admin_console/container_close.mt");
+?=r $c->render_part("@{[ location ]}/container_close.mt");
 

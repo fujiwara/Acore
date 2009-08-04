@@ -3,8 +3,8 @@
   $c->stash->{title} = "Document Class 作成";
   $c->stash->{load_jquery_ui} = 1;
 ?>
-?=r $c->render_part("admin_console/header.mt");
-?=r $c->render_part("admin_console/container.mt");
+?=r $c->render_part("@{[ location ]}/header.mt");
+?=r $c->render_part("@{[ location ]}/container.mt");
     <div id="pagebody">
       <div id="pagebody-inner" class="clearfix">
         <div id="alpha">
@@ -17,7 +17,7 @@
             <h2 class="icon"><div class="mimetype_source">Document Class の作成</div></h2>
           </div>
           <div class="data">
-            <form action="<?= $c->uri_for('/admin_console/doc_class') ?>" method="post">
+            <form action="<?= $c->uri_for("/@{[ location ]}/doc_class") ?>" method="post">
               <input type="hidden" name="sid" value="<?= $c->session->session_id ?>"/>
               <h3>作成するクラス名</h3>
               <input type="text" id="document-class" size="20" name="class" /><br/>
@@ -109,5 +109,5 @@
       });
 
     </script>
-?=r $c->render_part("admin_console/container_close.mt");
+?=r $c->render_part("@{[ location ]}/container_close.mt");
 

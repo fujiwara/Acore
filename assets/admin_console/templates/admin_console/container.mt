@@ -11,10 +11,10 @@
         <? if ($c->user) { ?>
         <ul id="remote-navi">
           <li>こんにちは <?= $c->user->name ?> さん</li>
-          <li><a href="<?= $c->uri_for('/admin_console/logout') ?>">ログアウト</a></li>
+          <li><a href="<?= $c->uri_for("/@{[ location ]}/logout") ?>">ログアウト</a></li>
         </ul>
         <ul id="bread-crumb-navi">
-          <li><a href="<?= $c->uri_for('/admin_console/menu') ?>">メニュー</a>/</li>
+          <li><a href="<?= $c->uri_for("/@{[ location ]}/menu") ?>">メニュー</a>/</li>
         </ul>
         <? } ?>
       </div>

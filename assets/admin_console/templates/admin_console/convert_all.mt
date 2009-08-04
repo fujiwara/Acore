@@ -3,8 +3,8 @@
    $c->stash->{title}          = "Document の一括置換";
    $c->stash->{load_jquery_ui} = 1;
 ?>
-?=r $c->render_part("admin_console/header.mt");
-?=r $c->render_part("admin_console/container.mt");
+?=r $c->render_part("@{[ location ]}/header.mt");
+?=r $c->render_part("@{[ location ]}/container.mt");
     <div id="pagebody">
       <div id="pagebody-inner" class="clearfix">
         <div id="alpha">
@@ -17,7 +17,7 @@
             <h2 class="icon"><div class="action_run">Document の一括置換</div></h2>
           </div>
           <div class="form-container">
-            <form action="<?= $c->uri_for('/admin_console/convert_all') ?>" method="post" id="convert-form">
+            <form action="<?= $c->uri_for("/@{[ location ]}/convert_all") ?>" method="post" id="convert-form">
               <fieldset>
                 <legend>置換処理</legend>
                 <div>
@@ -82,8 +82,8 @@ sub {
       })
 
       $('#test-button').click( function() {
-        var url = "<?= $c->uri_for('/admin_console/convert_test') | js ?>";
-        $('#test-result').html('<img src="<?= $c->uri_for('/admin_console/static/css/img/loading.gif') | js ?>"/>');
+        var url = "<?= $c->uri_for("/@{[ location ]}/convert_test") | js ?>";
+        $('#test-result').html('<img src="<?= $c->uri_for("/@{[ location ]}/static/css/img/loading.gif") | js ?>"/>');
         $('#test-result').load(
           url, {
             code  : $('#code').val(),
@@ -96,5 +96,5 @@ sub {
         );
       });
     </script>
-?=r $c->render_part("admin_console/container_close.mt");
+?=r $c->render_part("@{[ location ]}/container_close.mt");
 

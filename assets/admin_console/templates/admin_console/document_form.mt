@@ -4,8 +4,8 @@
    $c->stash->{title} = "Document の編集 - " . ($doc && $doc->{title} or "" );
    $c->stash->{load_jquery_ui} = 1;
 ?>
-?=r $c->render_part("admin_console/header.mt");
-?=r $c->render_part("admin_console/container.mt");
+?=r $c->render_part("@{[ location ]}/header.mt");
+?=r $c->render_part("@{[ location ]}/container.mt");
     <div id="pagebody">
       <div id="pagebody-inner" class="clearfix">
         <div id="alpha">
@@ -17,24 +17,24 @@
           <div id="beta-inner">
             <div class="data">
 
-              <h2 class="icon"><div class="mimetype_kmultiple"><a href="<?= $c->uri_for('/admin_console/document_list') ?>">Document の管理</a></div></h2>
+              <h2 class="icon"><div class="mimetype_kmultiple"><a href="<?= $c->uri_for("/@{[ location ]}/document_list") ?>">Document の管理</a></div></h2>
 
-?=r $c->render_part('admin_console/document_serach_form.mt');
+?=r $c->render_part("@{[ location ]}/document_serach_form.mt");
 
             </div>
 ?        if ( $c->flash->get('document_saved') ) {
-?=r          $c->render_part('admin_console/notice.mt', '保存されました');
+?=r          $c->render_part("@{[ location ]}/notice.mt", '保存されました');
 ?        } elsif ( $c->flash->get('attachment_added') ) {
-?=r          $c->render_part('admin_console/notice.mt', '添付ファイルを保存しました');
+?=r          $c->render_part("@{[ location ]}/notice.mt", '添付ファイルを保存しました');
 ?        } elsif ( $c->flash->get('attachment_deleted') ) {
-?=r          $c->render_part('admin_console/notice.mt', '添付ファイルを削除しました');
+?=r          $c->render_part("@{[ location ]}/notice.mt", '添付ファイルを削除しました');
 ?        }
             <div class="form-container">
 
 ? if (!$doc) {
               <p class="error">id = <?= $c->req->param('id') ?> の Document は存在しません</p>
 ? } else {
-              <form action="<?= $c->uri_for('/admin_console/document_form') ?>" method="post" id="document-form" enctype="multipart/form-data">
+              <form action="<?= $c->uri_for("/@{[ location ]}/document_form") ?>" method="post" id="document-form" enctype="multipart/form-data">
 ?      if ($c->form->has_error) {
                <div class="errors">
                 <p><em>下記の項目の入力にエラーがあります。</em></p>
@@ -78,13 +78,13 @@
                     <label for="attachment-files">添付ファイル</label>
                     <input type="file" id="attachment-file" name="attachment_file" size="30"/>
                     <input type="button" id="add-attachment" value="upload"/>
-                    <img src="<?= $c->uri_for('/admin_console/static/images/uploading.gif') ?>" alt="uploading..." style="display: none;" id="uploading-icon"/>
+                    <img src="<?= $c->uri_for("/@{[ location ]}/static/images/uploading.gif") ?>" alt="uploading..." style="display: none;" id="uploading-icon"/>
                     <input type="hidden" name="n" id="attachment-number" value=""/>
-                    <ul style="margin-left: 200px; list-style-image: url(<?= $c->uri_for('/admin_console/static/css/icon/16/mimetype_misc.png') ?>);">
+                    <ul style="margin-left: 200px; list-style-image: url(<?= $c->uri_for("/@{[ location ]}/static/css/icon/16/mimetype_misc.png") ?>);">
 <?                  my $n = 0;
                     for my $file (@{ $doc->attachment_files }) {
 ?>
-                      <li><a href="<?= $c->uri_for('/admin_console/document_attachment', { id => $doc->id, n => $n }) ?>"><?= $file->basename | uri_unescape ?></a>
+                      <li><a href="<?= $c->uri_for("/@{[ location ]}/document_attachment", { id => $doc->id, n => $n }) ?>"><?= $file->basename | uri_unescape ?></a>
                         <a rel="<?= $n ?>" class="delete-attachment-button">[×]</a>
                       </li>
 <?                      $n++; } ?>
@@ -139,7 +139,7 @@
         },
         buttons: {
           '削除する': function() {
-            $('#document-form').attr({'action' : '<?= $c->uri_for('/admin_console/document') | js ?>'});
+            $('#document-form').attr({'action' : '<?= $c->uri_for("/@{[ location ]}/document") | js ?>'});
             $('#document-form').append('<input type="hidden" name="_method" value="DELETE"/>');
             $(this).dialog('close');
             $('#document-form').submit();
@@ -165,7 +165,7 @@
           var f = $('#document-form');
           $(this).hide();
           $('#uploading-icon').show();
-          f.attr('action', '<?= $c->uri_for('/admin_console/document_attachment') | js ?>').submit();
+          f.attr('action', '<?= $c->uri_for("/@{[ location ]}/document_attachment") | js ?>').submit();
         }
         else {
           return false;
@@ -183,7 +183,7 @@
         },
         buttons: {
           '削除する': function() {
-            $('#document-form').attr({'action' : '<?= $c->uri_for('/admin_console/document_attachment') | js ?>'});
+            $('#document-form').attr({'action' : '<?= $c->uri_for("/@{[ location ]}/document_attachment") | js ?>'});
             $('#document-form').append('<input type="hidden" name="_method" value="DELETE"/>');
             $(this).dialog('close');
             $('#document-form').submit();
@@ -204,7 +204,7 @@
         });
     });
 
-    <?=r $c->render_part('admin_console/flash_message.js') ?>
+    <?=r $c->render_part("@{[ location ]}/flash_message.js") ?>
     </script>
-?=r $c->render_part("admin_console/container_close.mt");
+?=r $c->render_part("@{[ location ]}/container_close.mt");
 

@@ -8,7 +8,17 @@ use List::Util;
 use Scalar::Util qw/ blessed /;
 use utf8;
 
-my $PermitRole = "AdminConsoleLogin";
+my $PermitRole      = "AdminConsoleLogin";
+my $DefaultLocation = "admin_console";
+my $Location;
+
+sub _auto {
+    my ($self, $c, $args) = @_;
+    $Location =  defined $args->{location} ? $args->{location}
+                                           : $DefaultLocation;
+    Acore::WAF::Render::set_location($Location);
+    1;
+}
 
 sub is_logged_in {
     my ($self, $c) = @_;
@@ -24,13 +34,13 @@ sub is_logged_in {
     }
     $c->log->debug( $c->user );
 
-    $c->redirect( $c->uri_for('/admin_console/login_form') );
+    $c->redirect( $c->uri_for("/$Location/login_form") );
     $c->detach();
 }
 
 sub _allow_eval {
     my ($self, $c) = @_;
-    if ( $c->config->{admin_console}->{disable_eval_functions} ) {
+    if ( $c->config->{$Location}->{disable_eval_functions} ) {
         $c->error( 403 => "eval functions is not allowed by config." );
     }
     1;
@@ -40,10 +50,10 @@ sub index {
     my ($self, $c) = @_;
     my @all_users = $c->acore->all_users;
     if (@all_users) {
-        $c->redirect( $c->uri_for('/admin_console/login_form') );
+        $c->redirect( $c->uri_for("/$Location/login_form") );
     }
     else {
-        $c->redirect( $c->uri_for('/admin_console/setup_at_first') );
+        $c->redirect( $c->uri_for("/$Location/setup_at_first") );
     }
 }
 
@@ -60,7 +70,7 @@ sub static {
 
 sub login_form_GET {
     my ($self, $c) = @_;
-    $c->render("admin_console/login_form.mt");
+    $c->render("$Location/login_form.mt");
 }
 
 sub login_form_POST {
@@ -69,25 +79,25 @@ sub login_form_POST {
     my $r = $c->req;
     if ( $c->login( $r->param('name'), $r->param('password') ) ) {
         $c->log->info("login succeeded.");
-        $c->redirect( $c->uri_for('/admin_console/menu') ) ;
+        $c->redirect( $c->uri_for("/$Location/menu") ) ;
     }
     else {
         $c->form->set_error('login' => "FAILED");
-        $c->render('admin_console/login_form.mt');
+        $c->render("$Location/login_form.mt");
     }
 }
 
 sub logout {
     my ($self, $c) = @_;
     $c->logout;
-    $c->redirect( $c->uri_for('/admin_console/login_form') );
+    $c->redirect( $c->uri_for("/$Location/login_form") );
 }
 
 sub menu_GET {
     my ($self, $c) = @_;
 
     $c->forward( $self => "is_logged_in" );
-    $c->render("admin_console/menu.mt");
+    $c->render("$Location/menu.mt");
 }
 
 sub setup_at_first_GET {
@@ -98,7 +108,7 @@ sub setup_at_first_GET {
         $c->stash->{user_exists} = 1;
     }
 
-    $c->render('admin_console/setup_at_first.mt');
+    $c->render("$Location/setup_at_first.mt");
 }
 
 sub setup_at_first_POST {
@@ -110,7 +120,7 @@ sub setup_at_first_POST {
         { password => [qw/password1 password2/]} => ['DUP'],
     );
     if ($c->form->has_error) {
-        $c->render('admin_console/setup_at_first.mt');
+        $c->render("$Location/setup_at_first.mt");
         $c->fillform;
         return;
     }
@@ -122,7 +132,7 @@ sub setup_at_first_POST {
     $user->set_password($c->req->param('password1'));
     $c->acore->save_user($user);
 
-    $c->render('admin_console/setup_done.mt');
+    $c->render("$Location/setup_done.mt");
 }
 
 sub user_list_GET {
@@ -131,7 +141,7 @@ sub user_list_GET {
     $c->forward( $self => "is_logged_in" );
 
     $c->stash->{all_users} = [ $c->acore->all_users ];
-    $c->render('admin_console/user_list.mt');
+    $c->render("$Location/user_list.mt");
 }
 
 sub user_download_GET {
@@ -145,7 +155,7 @@ sub user_download_GET {
         "Content-Type"        => "text/csv; charset=utf-8",
         "Content-Disposition" => "attachment; filename=users.csv",
     );
-    $c->render('admin_console/user_download.mt');
+    $c->render("$Location/user_download.mt");
 }
 
 sub user_form_GET {
@@ -156,7 +166,7 @@ sub user_form_GET {
     $c->stash->{user} = $c->acore->get_user({ name => $name })
         or $c->error( 404, "user name='$name' not found" );
 
-    $c->render('admin_console/user_form.mt');
+    $c->render("$Location/user_form.mt");
 }
 
 sub user_form_POST {
@@ -174,7 +184,7 @@ sub user_form_POST {
         );
         if ($c->form->has_error) {
             $c->stash->{user} = $user;
-            $c->render('admin_console/user_form.mt');
+            $c->render("$Location/user_form.mt");
             $c->fillform;
             return;
         }
@@ -200,7 +210,7 @@ sub user_form_POST {
 
     $c->flash->set( user_saved => 1 );
     $c->redirect(
-        $c->uri_for('/admin_console/user_form', { name => $name })
+        $c->uri_for("/$Location/user_form", { name => $name })
     );
 }
 
@@ -208,7 +218,7 @@ sub user_create_form_GET {
     my ($self, $c) = @_;
 
     $c->forward( $self => "is_logged_in" );
-    $c->render('admin_console/user_create_form.mt');
+    $c->render("$Location/user_create_form.mt");
 }
 
 sub user_create_form_POST {
@@ -226,7 +236,7 @@ sub user_create_form_POST {
         { password => [qw/password1 password2/]} => ['DUP'],
     );
     if ($c->form->has_error) {
-        $c->render('admin_console/user_create_form.mt');
+        $c->render("$Location/user_create_form.mt");
         $c->fillform;
         return;
     }
@@ -241,7 +251,7 @@ sub user_create_form_POST {
 
     $c->flash->set( user_saved => 1 );
     $c->redirect(
-        $c->uri_for('/admin_console/user_form', { name => $name })
+        $c->uri_for("/$Location/user_form", { name => $name })
     );
 }
 
@@ -260,7 +270,7 @@ sub user_DELETE {
 
     $c->acore->delete_user($user);
 
-    $c->render('admin_console/user_deleted.mt');
+    $c->render("$Location/user_deleted.mt");
 }
 
 
@@ -300,7 +310,7 @@ sub user_upload_POST {
         }
     });
     $c->stash->{imported} = $imported;
-    $c->render('admin_console/user_upload.mt');
+    $c->render("$Location/user_upload.mt");
 }
 
 sub document_list_GET {
@@ -353,11 +363,11 @@ sub document_list_GET {
 
     if ( $c->req->param('download') ) {
         require YAML;
-        $c->render('admin_console/document_list_download.mt');
+        $c->render("$Location/document_list_download.mt");
         $c->res->content_type('application/x-yaml; charset=utf-8');
     }
     else {
-        $c->render('admin_console/document_list.mt');
+        $c->render("$Location/document_list.mt");
         $c->fillform;
     }
 }
@@ -388,7 +398,7 @@ sub document_form_GET {
 
     $c->stash->{document} = $c->forward( $self => "_get_document" );
 
-    $c->render('admin_console/document_form.mt');
+    $c->render("$Location/document_form.mt");
 }
 
 sub document_form_POST {
@@ -407,7 +417,7 @@ sub document_form_POST {
 
     if ( $c->form->has_error ) {
         $doc->call_trigger('from_object');
-        $c->render('admin_console/document_form.mt');
+        $c->render("$Location/document_form.mt");
         $c->fillform;
         return;
     }
@@ -421,7 +431,7 @@ sub document_form_POST {
     $c->flash->set( document_saved => 1 );
     $c->redirect(
         $c->uri_for(
-            '/admin_console/document_form',
+            "/$Location/document_form",
             { id => $doc->id, _t => time }
         )
     );
@@ -432,7 +442,7 @@ sub document_create_form_GET {
 
     $c->forward( $self => "is_logged_in" );
 
-    my $classes = $c->config->{admin_console}->{document_classes};
+    my $classes = $c->config->{$Location}->{document_classes};
     $c->log->debug("document_classes: @$classes") if $classes;
     my $class = $c->req->param('_class')
              || ( (ref $classes eq 'ARRAY') ? $classes->[0]
@@ -442,7 +452,7 @@ sub document_create_form_GET {
     }
     $c->stash->{_class} = $class;
 
-    $c->render('admin_console/document_create_form.mt');
+    $c->render("$Location/document_create_form.mt");
 }
 
 sub document_create_form_POST {
@@ -466,7 +476,7 @@ sub document_create_form_POST {
     }
 
     if ( $c->form->has_error || !$doc ) {
-        $c->render('admin_console/document_create_form.mt');
+        $c->render("$Location/document_create_form.mt");
         $c->fillform;
         return;
     }
@@ -482,7 +492,7 @@ sub document_create_form_POST {
 
     $c->flash->set( document_saved => 1 );
     $c->redirect(
-        $c->uri_for('/admin_console/document_form', { id => $doc->id, _t => time } )
+        $c->uri_for("/$Location/document_form", { id => $doc->id, _t => time } )
     );
 }
 
@@ -504,7 +514,7 @@ sub document_DELETE {
             }
         });
 
-    $c->render('admin_console/document_deleted.mt');
+    $c->render("$Location/document_deleted.mt");
 }
 
 sub document_attachment_POST {
@@ -529,7 +539,7 @@ sub document_attachment_POST {
 
     $c->flash->set( attachment_added => 1 );
     $c->redirect(
-        $c->uri_for('/admin_console/document_form', { id => $doc->id, _t => time } )
+        $c->uri_for("/$Location/document_form", { id => $doc->id, _t => time } )
     );
 }
 
@@ -562,14 +572,14 @@ sub document_attachment_DELETE {
 
     $c->flash->set( attachment_deleted => 1 );
     $c->redirect(
-        $c->uri_for('/admin_console/document_form', { id => $doc->id, _t => time } )
+        $c->uri_for("/$Location/document_form", { id => $doc->id, _t => time } )
     );
 }
 
 sub doc_class_GET {
     my ($self, $c) = @_;
     $c->forward( $self => "is_logged_in" );
-    $c->render('admin_console/doc_class.mt');
+    $c->render("$Location/doc_class.mt");
 }
 
 sub _doc_class_validate {
@@ -581,7 +591,7 @@ sub _doc_class_validate {
 
     my $class = $c->req->param('class');
     if ($c->form->has_error) {
-        $c->render('admin_console/doc_class.mt');
+        $c->render("$Location/doc_class.mt");
         $c->fillform;
         $c->detach;
     }
@@ -600,7 +610,7 @@ sub doc_class_POST {
         my @names = ($html =~ m/name=['"]\/(\w+)['"]/g );
         $c->stash->{names} = [ uniq(@names) ];
 
-        $c->render('admin_console/doc_class_pm.mt');
+        $c->render("$Location/doc_class_pm.mt");
         $c->res->header(
             "Content-Type"        => "text/plain",
             "Content-Disposition" =>
@@ -608,7 +618,7 @@ sub doc_class_POST {
         );
     }
     elsif ($c->req->param('download-tmpl')) {
-        my $body = $c->render_part('admin_console/doc_class_tmpl.mt');
+        my $body = $c->render_part("$Location/doc_class_tmpl.mt");
         $body =~ s/\r*\n/\n/g;
         $c->res->body( $body );
         $c->res->header(
@@ -634,10 +644,10 @@ sub view_GET {
         $c->res->header(
             "Content-Disposition" => "attachment; filename=restore_views.pl"
         );
-        $c->render('admin_console/view_backup.mt');
+        $c->render("$Location/view_backup.mt");
     }
     else {
-        $c->render('admin_console/view.mt');
+        $c->render("$Location/view.mt");
     }
 }
 
@@ -651,7 +661,7 @@ sub view_form_GET {
     my $design = $c->acore->storage->document->get($id)
         or $c->error( 404 => "design not found" );
     $c->stash->{design} = $design;
-    $c->render('admin_console/view_form.mt');
+    $c->render("$Location/view_form.mt");
 }
 
 sub view_form_POST {
@@ -693,7 +703,7 @@ sub view_form_POST {
     }
     if ($c->form->has_error) {
         $c->stash->{design} = $design;
-        $c->render('admin_console/view_form.mt');
+        $c->render("$Location/view_form.mt");
         return $c->fillform;
     }
 
@@ -707,7 +717,7 @@ sub view_form_POST {
     $c->flash->set( view_saved => 1 );
     $c->redirect(
         $c->uri_for(
-            '/admin_console/view_form',
+            "/$Location/view_form",
             { id => $design->{_id}, _t => time },
         )
     );
@@ -724,7 +734,7 @@ sub view_form_DELETE {
         or $c->error( 404 => "design not found" );
 
     $c->acore->storage->document->delete($design->{_id});
-    $c->render('admin_console/view_deleted.mt');
+    $c->render("$Location/view_deleted.mt");
 }
 
 sub view_create_form_GET {
@@ -744,7 +754,7 @@ sub {
         views => { all => { map => $map, reduce => "" } },
     };
     $c->stash->{design} = $design;
-    $c->render('admin_console/view_form.mt');
+    $c->render("$Location/view_form.mt");
 }
 
 
@@ -763,7 +773,7 @@ sub view_test_POST {
         $pair = $c->forward( $self => "_do_reduce", $reduce, @$pair );
     }
     $c->stash->{pairs} = $pair;
-    $c->render("admin_console/view_test.mt");
+    $c->render("$Location/view_test.mt");
 }
 
 sub _eval_code {
@@ -834,7 +844,7 @@ sub upload_document_GET {
     my ($self, $c) = @_;
 
     $c->forward( $self => "is_logged_in" );
-    $c->render('admin_console/upload_document.mt');
+    $c->render("$Location/upload_document.mt");
 }
 
 sub upload_document_POST {
@@ -849,7 +859,7 @@ sub upload_document_POST {
     };
     if ($@) {
         $c->form->set_error( exception => $@ );
-        $c->render('admin_console/upload_document.mt');
+        $c->render("$Location/upload_document.mt");
         return;
     }
 
@@ -874,7 +884,7 @@ sub upload_document_POST {
             = sprintf "%d 件の Document が投入されました", $loader->loaded;
     }
 
-    $c->render('admin_console/upload_document.mt');
+    $c->render("$Location/upload_document.mt");
 }
 
 sub convert_all_GET {
@@ -883,7 +893,7 @@ sub convert_all_GET {
     $c->forward( $self => "is_logged_in" );
     $c->forward( $self => "_allow_eval" );
 
-    $c->render('admin_console/convert_all.mt');
+    $c->render("$Location/convert_all.mt");
 }
 
 sub convert_all_POST {
@@ -922,7 +932,7 @@ sub convert_all_POST {
         });
 
     $c->stash->{converted} = $converted;
-    $c->render("admin_console/convert_done.mt");
+    $c->render("$Location/convert_done.mt");
 }
 
 sub convert_test_POST {
@@ -954,7 +964,7 @@ sub convert_test_POST {
     }
     $c->stash->{pair} = \@pair;
 
-    $c->render("admin_console/convert_test.mt");
+    $c->render("$Location/convert_test.mt");
 }
 
 1;

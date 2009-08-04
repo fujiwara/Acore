@@ -1,6 +1,6 @@
 ? my $c = $_[0];
-?=r $c->render_part("admin_console/header.mt");
-?=r $c->render_part("admin_console/container.mt");
+?=r $c->render_part("@{[ location ]}/header.mt");
+?=r $c->render_part("@{[ location ]}/container.mt");
 
     <div id="pagebody">
       <div id="pagebody-inner" class="clearfix">
@@ -13,7 +13,7 @@
         <div id="beta">
           <div id="beta-inner">
             <div class="form-container">
-              <form class="login" action="<?= $c->uri_for('/admin_console/login_form') ?>" method="post">
+              <form class="login" action="<?= $c->uri_for("/@{[ location ]}/login_form") ?>" method="post">
                 <fieldset>
                   <legend>ログインしてください</legend>
 <?
@@ -54,5 +54,5 @@
         </div>
       </div>
     </div>
-?=r $c->render_part("admin_console/container_close.mt");
+?=r $c->render_part("@{[ location ]}/container_close.mt");
 

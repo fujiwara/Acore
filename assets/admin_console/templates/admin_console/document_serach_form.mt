@@ -1,5 +1,5 @@
 ? my $c = $_[0];
-            <form action="<?= $c->uri_for('/admin_console/document_list') ?>" method="get" id="document-search-form">
+            <form action="<?= $c->uri_for("/@{[ location ]}/document_list") ?>" method="get" id="document-search-form">
               <select name="type" id="type-selector">
                 <option value=""></option>
 ? for my $design ( $c->acore->storage->document->all_designs ) {

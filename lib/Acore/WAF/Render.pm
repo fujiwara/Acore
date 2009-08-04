@@ -7,6 +7,10 @@ use Encode ();
 use Sub::Pipe;
 use Data::Dumper;
 
+our $Location;
+sub set_location { $Location = $_[0] }
+sub location     { $Location }
+
 sub html() { ## no critic
     joint {
         local $_ = $_[0];

@@ -3,8 +3,8 @@
   $c->stash->{title} = "ユーザの管理";
   $c->stash->{load_jquery_ui} = 1;
 ?>
-?=r $c->render_part("admin_console/header.mt");
-?=r $c->render_part("admin_console/container.mt");
+?=r $c->render_part("@{[ location ]}/header.mt");
+?=r $c->render_part("@{[ location ]}/container.mt");
     <div id="pagebody">
       <div id="pagebody-inner" class="clearfix">
         <div id="alpha">
@@ -14,14 +14,14 @@
         </div>
         <div id="beta">
           <div id="beta-inner">
-            <h2 class="icon"><div class="app_kuser"><a href="<?= $c->uri_for('/admin_console/user_list') ?>">ユーザの管理</a></div></h2>
+            <h2 class="icon"><div class="app_kuser"><a href="<?= $c->uri_for("/@{[ location ]}/user_list") ?>">ユーザの管理</a></div></h2>
           </div>
 ?       if ( $c->flash->get('user_saved') ) {
-?=r         $c->render_part('admin_console/notice.mt', '保存されました');
+?=r         $c->render_part("@{[ location ]}/notice.mt", '保存されました');
 ?       }
 
           <div class="form-container">
-              <form action="<?= $c->uri_for('/admin_console/user_form') ?>" method="post" id="user-form">
+              <form action="<?= $c->uri_for("/@{[ location ]}/user_form") ?>" method="post" id="user-form">
 <?      if ($c->form->has_error) {
             $c->form->set_message(
                "password.dup"       => "パスワードが確認入力と一致しません",
@@ -101,11 +101,11 @@
       </div>
     </div>
     <script type="text/javascript">
-    <?=r $c->render_part('admin_console/flash_message.js') ?>
+    <?=r $c->render_part("@{[ location ]}/flash_message.js") ?>
 
       $('#delete-button').click( function() {
         if (confirm('削除してよろしいですか?')) {
-          $('#user-form').attr({'action' : '<?= $c->uri_for('/admin_console/user') | js ?>'});
+          $('#user-form').attr({'action' : '<?= $c->uri_for("/@{[ location ]}/user") | js ?>'});
           $('#user-form').append('<input type="hidden" name="_method" value="DELETE"/>');
           $('#user-form').submit();
         }
@@ -152,5 +152,5 @@
         });
       });
     </script>
-?=r $c->render_part("admin_console/container_close.mt");
+?=r $c->render_part("@{[ location ]}/container_close.mt");
 

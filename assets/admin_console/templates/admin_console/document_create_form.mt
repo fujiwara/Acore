@@ -2,8 +2,8 @@
    my $c = $_[0];
    $c->stash->{title} = "Document の作成";
 ?>
-?=r $c->render_part("admin_console/header.mt");
-?=r $c->render_part("admin_console/container.mt");
+?=r $c->render_part("@{[ location ]}/header.mt");
+?=r $c->render_part("@{[ location ]}/container.mt");
     <div id="pagebody">
       <div id="pagebody-inner" class="clearfix">
         <div id="alpha">
@@ -15,10 +15,10 @@
           <div id="beta-inner">
             <div class="form-container">
 
-              <h2 class="icon"><div class="mimetype_kmultiple"><a href="<?= $c->uri_for('/admin_console/document_list') ?>">Document の管理</a></div></h2>
+              <h2 class="icon"><div class="mimetype_kmultiple"><a href="<?= $c->uri_for("/@{[ location ]}/document_list") ?>">Document の管理</a></div></h2>
               <h3>新規作成</h3>
 
-              <form action="<?= $c->uri_for('/admin_console/document_create_form') ?>" method="post">
+              <form action="<?= $c->uri_for("/@{[ location ]}/document_create_form") ?>" method="post">
 ?      if ($c->form->has_error) {
               <div class="errors">
                 <p><em>下記の項目の入力にエラーがあります。</em></p>
@@ -37,9 +37,9 @@
                   </div>
                   <div>
                     <label for="class">Class</label>
-? if ( ref $c->config->{admin_console}->{document_classes} eq 'ARRAY' ) {
+? if ( ref $c->config->{@{[ location ]}}->{document_classes} eq 'ARRAY' ) {
                     <select name="_class" id="document-class">
-?   for my $class (@{ $c->config->{admin_console}->{document_classes} }) {
+?   for my $class (@{ $c->config->{@{[ location ]}}->{document_classes} }) {
                       <option value="<?= $class ?>"<?=r ' selected="selected"' if $c->stash->{_class} eq $class ?>><?= $class ?></option>
 ?   }
                     </select>
@@ -70,10 +70,10 @@
     </div>
     <script type="text/javascript">
       $('#document-class-change-button').click( function() {
-        var url = "<? $c->uri_for('/admin_console/document_create_form') | js ?>";
+        var url = "<? $c->uri_for("/@{[ location ]}/document_create_form") | js ?>";
         url = url + "?_class=" + $('#document-class').val();
         location.href = url;
       });
     </script>
-?=r $c->render_part("admin_console/container_close.mt");
+?=r $c->render_part("@{[ location ]}/container_close.mt");
 

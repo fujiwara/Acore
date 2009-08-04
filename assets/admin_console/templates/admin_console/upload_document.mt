@@ -4,8 +4,8 @@
    $c->stash->{title} = "Document の一括投入";
    $c->stash->{load_jquery_ui} = 1;
 ?>
-?=r $c->render_part("admin_console/header.mt");
-?=r $c->render_part("admin_console/container.mt");
+?=r $c->render_part("@{[ location ]}/header.mt");
+?=r $c->render_part("@{[ location ]}/container.mt");
     <div id="pagebody">
       <div id="pagebody-inner" class="clearfix">
         <div id="alpha">
@@ -19,7 +19,7 @@
                 Document の一括投入</div></h2>
           </div>
           <div class="form-container">
-            <form action="<?= $c->uri_for('/admin_console/upload_document') ?>" method="post" enctype="multipart/form-data" id="upload-form">
+            <form action="<?= $c->uri_for("/@{[ location ]}/upload_document") ?>" method="post" enctype="multipart/form-data" id="upload-form">
 ?      if ($c->form->has_error) {
                <div class="errors">
                 <p><em>下記の項目の入力にエラーがあります。</em></p>
@@ -32,9 +32,9 @@
 ?      }
 
 ?      if ($c->stash->{notice}) {
-?=r        $c->render_part("admin_console/notice.mt", $c->stash->{notice});
+?=r        $c->render_part("@{[ location ]}/notice.mt", $c->stash->{notice});
             <p>
-              <a href="<?= $c->uri_for('/admin_console/document_list') ?>">一覧へ</a>
+              <a href="<?= $c->uri_for("/@{[ location ]}/document_list") ?>">一覧へ</a>
             </p>
 ?      }
               <fieldset>
@@ -46,7 +46,7 @@
               <div class="buttonrow">
                 <input type="submit" value="投入する" class="button" id="submit-button"/>
                 <input type="hidden" name="sid" value="<?= $c->session->session_id ?>"/>
-                <div id="uploading-icon" style="display: none"><img src="<?= $c->uri_for('/admin_console/static/images/uploading.gif') ?>" alt="uploading..."/></div>
+                <div id="uploading-icon" style="display: none"><img src="<?= $c->uri_for("/@{[ location ]}/static/images/uploading.gif") ?>" alt="uploading..."/></div>
               </div>
             </form>
           </div>
@@ -65,4 +65,4 @@
         });
       });
     </script>
-?=r $c->render_part('admin_console/container_close.mt');
+?=r $c->render_part("@{[ location ]}/container_close.mt");

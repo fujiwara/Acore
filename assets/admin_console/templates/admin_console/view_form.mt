@@ -6,8 +6,8 @@
    my $design       = $c->stash->{design};
    my $modify_alert = ( $design->{_id} =~ m{^_design/(?:tags|path)$} );
 ?>
-?=r $c->render_part("admin_console/header.mt");
-?=r $c->render_part("admin_console/container.mt");
+?=r $c->render_part("@{[ location ]}/header.mt");
+?=r $c->render_part("@{[ location ]}/container.mt");
     <div id="pagebody">
       <div id="pagebody-inner" class="clearfix">
         <div id="alpha">
@@ -18,11 +18,11 @@
         <div id="beta">
           <div id="beta-inner">
             <h2 class="icon"><div class="action_viewmag">
-                <a href="<?= $c->uri_for('/admin_console/view') ?>">View の管理</a></div></h2>
-            <h3><a href="<?= $c->uri_for('/admin_console/view_create_form') ?>">新規作成</a></h3>
+                <a href="<?= $c->uri_for("/@{[ location ]}/view") ?>">View の管理</a></div></h2>
+            <h3><a href="<?= $c->uri_for("/@{[ location ]}/view_create_form") ?>">新規作成</a></h3>
           </div>
 ?   if ( $c->flash->get('view_saved') ) {
-?=r     $c->render_part('admin_console/notice.mt', '保存されました');
+?=r     $c->render_part("@{[ location ]}/notice.mt", '保存されました');
 ?   }
           <div class="form-container">
 ? if ( $modify_alert ) {
@@ -34,7 +34,7 @@
             </div>
 ? }
 
-            <form action="<?= $c->uri_for('/admin_console/view_form') ?>" method="post" id="design-form">
+            <form action="<?= $c->uri_for("/@{[ location ]}/view_form") ?>" method="post" id="design-form">
 ?      if ($c->form->has_error) {
                <div class="errors">
                 <p><em>下記の項目の入力にエラーがあります。</em></p>
@@ -157,8 +157,8 @@
 
       $('.test-button').click( function() {
         var view = $(this).attr("rel").match('^test-for-(.+)$')[1];
-        var url = "<?= $c->uri_for('/admin_console/view_test') | js ?>";
-        $('#test-result').html('<img src="<?= $c->uri_for('/admin_console/static/css/img/loading.gif') | js ?>"/>');
+        var url = "<?= $c->uri_for("/@{[ location ]}/view_test") | js ?>";
+        $('#test-result').html('<img src="<?= $c->uri_for("/@{[ location ]}/static/css/img/loading.gif") | js ?>"/>');
         $('#test-result').load(
           url, {
             map   : $('#'+view+'-map').val(),
@@ -171,5 +171,5 @@
         );
       });
     </script>
-?=r $c->render_part("admin_console/container_close.mt");
+?=r $c->render_part("@{[ location ]}/container_close.mt");
 
