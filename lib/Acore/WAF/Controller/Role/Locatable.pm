@@ -6,19 +6,26 @@ use String::CamelCase qw/ decamelize /;
 
 requires '_auto';
 
-sub locatable {
+sub set_location {
     my ($class, $c, $args) = @_;
 
     my $location = defined $args->{location}
                  ? $args->{location}
                  : decamelize( (split /::/, $class)[-1] );
 
-    $c->log->debug("set location: $location");
+    $c->log->info("set location: $location");
 
     no strict 'refs';
     ${"${class}::Location"} = $location;
     Acore::WAF::Render::set_location($location);
     1;
+}
+
+sub location {
+    my $class = shift;
+    $class ||= (caller)[0];
+    no strict 'refs';
+    ${"${class}::Location"};
 }
 
 1;
@@ -36,7 +43,7 @@ Acore::WAF::Controller::Role::Locatable - Role for locatable controller
  connect "/any_location/:action", to controller "AnyLocation";
  
  # locate on the other location
- connect "/somewhere/:action", to controller "AnyLocation",
+ connect "/somewhere/:action", to controller "AnyLocation" => undef,
      args => { location => "somewhere" };
 
  package YourApp::Controller::AnyLocation;
@@ -54,7 +61,7 @@ Acore::WAF::Controller::Role::Locatable - Role for locatable controller
  }
  sub foo {
      my ($self, $c, $args) = @_;
-     $c->render("$Location/foo.mt");
+     $c->render( location() . "/foo.mt" );
  }
 
  # foo.mt
@@ -85,6 +92,22 @@ In "_auto" method, call $self->locatable($c, $args).
 Default location is decamelize(ControllerName).
 
  YourApp::Controller::AnyLocationr => any_location
+
+=back
+
+=head1 PROVIDES
+
+=over 4
+
+=item set_location
+
+Set $Location by $args.
+
+ $self->set_location( $c, $args );
+
+=item location
+
+returns $Location
 
 =back
 

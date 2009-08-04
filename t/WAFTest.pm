@@ -7,7 +7,7 @@ extends 'Acore::WAF';
 
 override _build_log => sub {
     my $self = shift;
-    Acore::WAF::Log->new({ file => "t/tmp/error_log" });
+    my $log = Acore::WAF::Log->new({ file => "t/tmp/error_log" });
 };
 
 
@@ -53,6 +53,10 @@ __PACKAGE__->setup(qw/ Sample FormValidator Session FillInForm TT /);
         connect "sites/:page/id=:id", to $_ => "page";
         connect "sites/:page",        to $_ => "page";
     }
+
+    connect "any_location/:action", to controller "AnyLocation";
+    connect "somewhere/:action",    to controller "AnyLocation" => undef,
+        args => { location => "somewhere" };
 }
 
 1;

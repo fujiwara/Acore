@@ -1023,6 +1023,26 @@ Last-Modified: Tue, 28 Jul 2009 02:22:33 GMT
 Status: 200
 X-LIGHTTPD-Send-File: t/tmp/static_file.txt
 
+=== any_location
+--- uri
+http://localhost/any_location/locate
+--- response
+Content-Length: 38
+Content-Type: text/html; charset=utf-8
+Status: 200
+
+any_location any_location any_location
+
+=== any_location somewhere
+--- uri
+http://localhost/somewhere/locate
+--- response
+Content-Length: 29
+Content-Type: text/html; charset=utf-8
+Status: 200
+
+somewhere somewhere somewhere
+
 === ovreride finalize
 --- preprocess
 {
