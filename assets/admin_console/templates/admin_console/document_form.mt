@@ -23,11 +23,11 @@
 
             </div>
 ?        if ( $c->flash->get('document_saved') ) {
-            <div class="flash-message"><p>保存されました</p></div>
+?=r          $c->render_part('admin_console/notice.mt', '保存されました');
 ?        } elsif ( $c->flash->get('attachment_added') ) {
-            <div class="flash-message"><p>ファイルを添付しました</p></div>
+?=r          $c->render_part('admin_console/notice.mt', '添付ファイルを保存しました');
 ?        } elsif ( $c->flash->get('attachment_deleted') ) {
-            <div class="flash-message"><p>添付ファイルを削除しました</p></div>
+?=r          $c->render_part('admin_console/notice.mt', '添付ファイルを削除しました');
 ?        }
             <div class="form-container">
 

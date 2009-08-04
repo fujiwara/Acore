@@ -1,6 +1,7 @@
 <?
   my $c = $_[0];
   $c->stash->{title} = "ユーザの管理";
+  $c->stash->{load_jquery_ui} = 1;
 ?>
 ?=r $c->render_part("admin_console/header.mt");
 ?=r $c->render_part("admin_console/container.mt");
@@ -16,9 +17,7 @@
             <h2 class="icon"><div class="app_kuser"><a href="<?= $c->uri_for('/admin_console/user_list') ?>">ユーザの管理</a></div></h2>
           </div>
 ?       if ( $c->flash->get('user_saved') ) {
-          <div class="flash-message">
-            <p>保存されました</p>
-          </div>
+?=r         $c->render_part('admin_console/notice.mt', '保存されました');
 ?       }
 
           <div class="form-container">

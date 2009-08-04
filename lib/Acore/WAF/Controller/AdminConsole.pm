@@ -406,6 +406,7 @@ sub document_form_POST {
     $doc->validate_to_update($c);
 
     if ( $c->form->has_error ) {
+        $doc->call_trigger('from_object');
         $c->render('admin_console/document_form.mt');
         $c->fillform;
         return;
