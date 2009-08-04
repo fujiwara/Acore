@@ -8,15 +8,18 @@ use List::Util;
 use Scalar::Util qw/ blessed /;
 use utf8;
 
-my $PermitRole      = "AdminConsoleLogin";
-my $DefaultLocation = "admin_console";
-my $Location;
+use Any::Moose;
+with "Acore::WAF::Controller::Role::Locatable";
+
+no Any::Moose;
+__PACKAGE__->meta->make_immutable;
+
+our $PermitRole = "AdminConsoleLogin";
+our $Location;
 
 sub _auto {
     my ($self, $c, $args) = @_;
-    $Location =  defined $args->{location} ? $args->{location}
-                                           : $DefaultLocation;
-    Acore::WAF::Render::set_location($Location);
+    $self->locatable($args);
     1;
 }
 
