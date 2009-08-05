@@ -81,7 +81,7 @@ Acore::WAF::Controller::Role::Locatable is Role for locatable controller.
 
 =item _auto
 
-In "_auto" method, call $self->locatable($c, $args).
+In "_auto" method, call $self->set_location($c, $args).
 
  sub _auto {
      my ($self, $c, $args) = @_;
