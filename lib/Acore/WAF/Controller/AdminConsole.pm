@@ -19,7 +19,7 @@ our $Location;
 
 sub _auto {
     my ($self, $c, $args) = @_;
-    $self->locatable($c, $args);
+    $self->set_location($c, $args);
     1;
 }
 
