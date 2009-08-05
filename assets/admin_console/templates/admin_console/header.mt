@@ -13,8 +13,8 @@
     <link type="text/css" href="<?= $c->uri_for("/@{[ location ]}/static/css/ui-lightness/jquery-ui-1.7.2.custom.css") ?>" rel="stylesheet" />
     <script type="text/javascript" src="<?= $c->uri_for("/@{[ location ]}/static/js/jquery-ui-1.7.2.custom.min.js") ?>"></script>
 ? }
-?   if ($c->config->{@{[ location ]}}->{css_path}) {
-    <link type="text/css" href="<?= $c->uri_for($c->config->{@{[ location ]}}->{css_path}) ?>" rel="stylesheet" />
+?   if ($c->config->{${[ location ]}[0]}->{css_path}) {
+    <link type="text/css" href="<?= $c->uri_for($c->config->{${[ location ]}[0]}->{css_path}) ?>" rel="stylesheet" />
 ?   }
   </head>
 <body>
