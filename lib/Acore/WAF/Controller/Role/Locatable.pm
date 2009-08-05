@@ -52,7 +52,7 @@ Acore::WAF::Controller::Role::Locatable - Role for locatable controller
  with 'Acore::WAF::Controller::Role::Locatable';
  sub _auto {
      my ($self, $c, $args) = @_;
-     $self->locatable($c, $args);
+     $self->set_location($c, $args);
      1;
  }
  sub action {
@@ -85,7 +85,7 @@ In "_auto" method, call $self->locatable($c, $args).
 
  sub _auto {
      my ($self, $c, $args) = @_;
-     $self->locatable($c, $args);
+     $self->set_location($c, $args);
      1;
  }
 
