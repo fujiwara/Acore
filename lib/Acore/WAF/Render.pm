@@ -11,7 +11,7 @@ our $Location;
 sub set_location { $Location = $_[0] }
 sub location     { $Location }
 
-sub encoded_string {
+sub raw {
     if (@_) {
         return Text::MicroTemplate::encoded_string($_[0]);
     }
@@ -20,7 +20,10 @@ sub encoded_string {
     };
 }
 
-*r = \&Text::MicroTemplate::encoded_string;
+sub r {
+    warn "'?=r' and '<?=r ?>' was deprecated! Use 'raw' instead.\n";
+    Text::MicroTemplate::encoded_string($_[0]);
+}
 
 sub html() { ## no critic
     joint {
@@ -134,8 +137,8 @@ Acore::WAF::Render - Rendering package
 
 In Text::MicroTemplate like TT.
 
- <?= $foo | html | encoded_string ?>
- <?= $foo | html | html_line_break | encoded_string ?>
+ <?= $foo | html | raw ?>
+ <?= $foo | html | html_line_break | raw ?>
  <?= $foo | uri ?>
  <?= $foo | replace('a','b') ?>
  <?= $array_ref | join(',') ?>
@@ -151,6 +154,10 @@ Acore is AnyCMS core module.
 =head1 METHODS
 
 =over 4
+
+=item raw
+
+Turn off HTML escape by Text::MicroTemplate.
 
 =item html
 

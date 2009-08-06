@@ -73,6 +73,6 @@ BEGIN {
     isa_ok $d => "MyDocument";
     is $d->create_template => "create.mt";
     is $d->edit_template   => "edit.mt";
-    like $d->html_form_to_create => qr{^\?= encoded_string };
-    like $d->html_form_to_update => qr{^\?= encoded_string };
+    like $d->html_form_to_create => qr{^\?= raw};
+    like $d->html_form_to_update => qr{^\?= raw};
 }
