@@ -180,7 +180,7 @@ sub _build_user {
 
 my $Triggers = {};
 
-my $Record_time = sub {
+sub _record_time {
     my $display_code = shift;
     sub {
         my $next   = shift;
@@ -219,7 +219,7 @@ my $Record_time = sub {
 
         return $res;
     };
-};
+}
 
 sub setup {
     my $class   = shift;
@@ -579,7 +579,7 @@ sub render {
     $self->res->body( $self->render_part(@_) );
 }
 
-around "render_part" => $Record_time->( sub { sprintf "render('%s')", $_[1] } );
+around "render_part" => _record_time( sub { sprintf "render('%s')", $_[1] } );
 sub render_part {
     my ($self, $tmpl, @args) = @_;
     return $self->renderer->render_file( $tmpl, $self, @args )->as_string;
@@ -613,7 +613,7 @@ sub _call_trigger {
     }
 }
 
-around "forward" => $Record_time->( sub { sprintf "%s->%s", @_[1,2] } );
+around "forward" => _record_time( sub { sprintf "%s->%s", @_[1,2] } );
 sub forward {
     my $self = shift;
     my ($class, $action, @args) = @_;
