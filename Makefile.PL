@@ -16,7 +16,7 @@ requires 'HTTP::Session';
 requires 'HTTPx::Dispatcher';
 requires 'MIME::Base64';
 requires 'Path::Class';
-requires 'Text::MicroTemplate';
+requires 'Text::MicroTemplate' => 0.07;
 requires 'Want';
 requires 'Sub::Pipe';
 requires 'Data::Path';

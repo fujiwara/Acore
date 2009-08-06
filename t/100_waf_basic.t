@@ -358,13 +358,14 @@ ok
 --- uri
 http://localhost/act/render
 --- response
-Content-Length: 113
+Content-Length: 127
 Content-Type: text/html; charset=utf-8
 Status: 200
 
 uri: http://localhost/act/render
 html: &lt;html&gt;
-raw: <html>
+raw1: <html>
+raw2: <html>
 日本語は UTF-8 で書きます
 include file
 
@@ -372,13 +373,14 @@ include file
 --- uri
 http://localhost/act/render_string
 --- response
-Content-Length: 120
+Content-Length: 134
 Content-Type: text/html; charset=utf-8
 Status: 200
 
 uri: http://localhost/act/render_string
 html: &lt;html&gt;
-raw: <html>
+raw1: <html>
+raw2: <html>
 日本語は UTF-8 で書きます
 include file
 

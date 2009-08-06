@@ -31,4 +31,4 @@ print "done.\n";
 exit;
 
 __DATA__
-?=r JSON->new->pretty->encode($views);
+?= r JSON->new->pretty->encode($views);

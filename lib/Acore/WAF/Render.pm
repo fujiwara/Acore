@@ -11,6 +11,17 @@ our $Location;
 sub set_location { $Location = $_[0] }
 sub location     { $Location }
 
+sub encoded_string {
+    if (@_) {
+        return Text::MicroTemplate::encoded_string($_[0]);
+    }
+    return joint {
+        Text::MicroTemplate::encoded_string($_[0]);
+    };
+}
+
+*r = \&Text::MicroTemplate::encoded_string;
+
 sub html() { ## no critic
     joint {
         local $_ = $_[0];
@@ -123,15 +134,15 @@ Acore::WAF::Render - Rendering package
 
 In Text::MicroTemplate like TT.
 
- <?=r $foo | html ?>
- <?=r $foo | html | html_line_break ?>
- <?=  $foo | uri ?>
- <?=  $foo | replace('a','b') ?>
- <?=  $array_ref | join(',') ?>
- <?=  $foo | js ?>
- <?=  $html | fillform($c->req) ?>
- <?=  $array_ref | sort_by('foo') ?>
- <?=  $array_ref | nsort_by('bar') ?>
+ <?= $foo | html | encoded_string ?>
+ <?= $foo | html | html_line_break | encoded_string ?>
+ <?= $foo | uri ?>
+ <?= $foo | replace('a','b') ?>
+ <?= $array_ref | join(',') ?>
+ <?= $foo | js ?>
+ <?= $html | fillform($c->req) ?>
+ <?= $array_ref | sort_by('foo') ?>
+ <?= $array_ref | nsort_by('bar') ?>
 
 =head1 DESCRIPTION
 

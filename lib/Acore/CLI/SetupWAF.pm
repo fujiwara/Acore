@@ -4,7 +4,7 @@ use strict;
 use warnings;
 use Getopt::Long;
 use Acore::CLI::SetupDB;
-use Text::MicroTemplate qw/:all/;
+use Text::MicroTemplate 0.07 qw/:all/;
 use utf8;
 use Encode qw/ encode_utf8 /;
 use MIME::Base64;
@@ -82,16 +82,16 @@ use warnings;
 use FindBin;
 use lib "$FindBin::Bin/../lib";
 use HTTP::Engine;
-use <?=r app_name() ?>;
+use <?= encoded_string app_name() ?>;
 use Getopt::Std;
 use Acore::WAF::ConfigLoader;
 
 my $opts = {};
 getopts("p:c:", $opts);
-$opts->{c} ||= "config/<?=r app_name() ?>.yaml";
+$opts->{c} ||= "config/<?= encoded_string app_name() ?>.yaml";
 
 my $config = Acore::WAF::ConfigLoader->new->load(
-    $opts->{c}, $ENV{'<?=r uc app_name() ?>_CONFIG_LOCAL'},
+    $opts->{c}, $ENV{'<?= encoded_string uc app_name() ?>_CONFIG_LOCAL'},
 );
 my $engine = HTTP::Engine->new(
     interface => {
@@ -101,7 +101,7 @@ my $engine = HTTP::Engine->new(
             port => $opts->{p} || 3000,
         },
         request_handler => sub {
-            my $app = <?=r app_name() ?>->new;
+            my $app = <?= encoded_string app_name() ?>->new;
             $app->handle_request($config, @_);
         },
     },
@@ -181,13 +181,13 @@ use lib "$FindBin::Bin/../lib";
 use HTTP::Engine::MinimalCGI;
 use Acore::WAF::MinimalCGI;
 use Acore::WAF::ConfigLoader;
-use <?=r app_name() ?>;
+use <?= encoded_string app_name() ?>;
 use utf8;
 
 my $loader = Acore::WAF::ConfigLoader->new({ cache_dir => "../db" });
 my $config = $loader->load(
-    $ENV{'<?=r uc app_name() ?>_CONFIG_FILE'} || "../config/<?=r app_name() ?>.yaml",
-    $ENV{'<?=r uc app_name() ?>_CONFIG_LOCAL'},
+    $ENV{'<?= encoded_string uc app_name() ?>_CONFIG_FILE'} || "../config/<?= encoded_string app_name() ?>.yaml",
+    $ENV{'<?= encoded_string uc app_name() ?>_CONFIG_LOCAL'},
 );
 $config->{root} = ".." if $config->{root} eq '.';
 
@@ -195,7 +195,7 @@ HTTP::Engine->new(
     interface => {
         module => 'MinimalCGI',
         request_handler => sub {
-            my $app = <?=r app_name() ?>->new;
+            my $app = <?= encoded_string app_name() ?>->new;
             $app->log->timestamp(0);
             $app->handle_request($config, @_);
         },
@@ -207,17 +207,17 @@ HTTP::Engine->new(
 
 sub lib_app_modperl_pm {
     return ("lib/${AppName}/ModPerl.pm" => <<'    _END_OF_FILE_'
-package <?=r app_name() ?>::ModPerl;
+package <?= encoded_string app_name() ?>::ModPerl;
 use Any::Moose;
 extends 'HTTP::Engine::Interface::ModPerl';
 use HTTP::Engine;
-use <?=r app_name() ?>;
+use <?= encoded_string app_name() ?>;
 use Acore::WAF::ConfigLoader;
 
 my $loader = Acore::WAF::ConfigLoader->new();
 my $config = $loader->load(
-    $ENV{'<?=r uc app_name() ?>_CONFIG_FILE'},
-    $ENV{'<?=r uc app_name() ?>_CONFIG_LOCAL'},
+    $ENV{'<?= encoded_string uc app_name() ?>_CONFIG_FILE'},
+    $ENV{'<?= encoded_string uc app_name() ?>_CONFIG_LOCAL'},
 );
 
 sub create_engine {
@@ -228,7 +228,7 @@ sub create_engine {
             request_handler => sub {
                 my $req = shift;
                 $req = Acore::WAF::Util->adjust_request_mod_perl($req);
-                <?=r app_name() ?>->new->handle_request($config, $req);
+                <?= encoded_string app_name() ?>->new->handle_request($config, $req);
             },
         },
     );
@@ -242,17 +242,17 @@ __END__
   LoadModule env_module  modules/mod_env.so
   LoadModule perl_module modules/mod_perl.so
   
-  PerlSwitches -Mlib=/path/to/<?=r app_name() ?>/lib
+  PerlSwitches -Mlib=/path/to/<?= encoded_string app_name() ?>/lib
   PerlOptions +SetupEnv
   PerlModule Acore::LoadModules
-  PerlModule <?=r app_name() ?>
+  PerlModule <?= encoded_string app_name() ?>
   
   <VirtualHost 127.0.0.1:8080>
-      <Location /<?=r lc app_name() ?>>
-          PerlSetENV <?=r uc app_name() ?>_CONFIG_FILE  "/path/to/<?=r app_name() ?>/config/<?=r app_name() ?>.yaml"
-          PerlSetENV <?=r uc app_name() ?>_CONFIG_LOCAL "/path/to/<?=r app_name() ?>/config/local.yaml"
+      <Location /<?= encoded_string lc app_name() ?>>
+          PerlSetENV <?= encoded_string uc app_name() ?>_CONFIG_FILE  "/path/to/<?= encoded_string app_name() ?>/config/<?= encoded_string app_name() ?>.yaml"
+          PerlSetENV <?= encoded_string uc app_name() ?>_CONFIG_LOCAL "/path/to/<?= encoded_string app_name() ?>/config/local.yaml"
           SetHandler modperl
-          PerlResponseHandler <?=r app_name() ?>::ModPerl
+          PerlResponseHandler <?= encoded_string app_name() ?>::ModPerl
       </Location>
   </VirtualHost>
 
@@ -262,7 +262,7 @@ __END__
 
 sub lib_app_controller_pm {
     return ("lib/${AppName}/Controller/Root.pm" => <<'    _END_OF_FILE_'
-package <?=r app_name() ?>::Controller::Root;
+package <?= encoded_string app_name() ?>::Controller::Root;
 
 use strict;
 use warnings;
@@ -280,7 +280,7 @@ sub hello_world {
 
 sub lib_app_pm {
     return ("lib/${AppName}.pm" => <<'    _END_OF_FILE_'
-package <?=r app_name() ?>;
+package <?= encoded_string app_name() ?>;
 
 use strict;
 use warnings;
@@ -297,14 +297,14 @@ __PACKAGE__->setup(@plugins);
 __PACKAGE__->meta->make_immutable;
 no Any::Moose;
 
-package <?=r app_name() ?>::Dispatcher;
+package <?= encoded_string app_name() ?>::Dispatcher;
 use Acore::WAF::Util qw/ :dispatcher /;
 use HTTPx::Dispatcher;
 
 connect "", to controller "Root" => "hello_world";
 
-connect "static/:filename", to class "<?=r app_name() ?>" => "dispatch_static";
-connect "favicon.ico",      to class "<?=r app_name() ?>" => "dispatch_favicon";
+connect "static/:filename", to class "<?= encoded_string app_name() ?>" => "dispatch_static";
+connect "favicon.ico",      to class "<?= encoded_string app_name() ?>" => "dispatch_favicon";
 
 # Admin console
 for (bundled "AdminConsole") {
@@ -324,13 +324,13 @@ connect "sites/:page", to bundled "Sites" => "page";
 
 sub config_yaml {
     return ("config/${AppName}.yaml" => <<'    _END_OF_FILE_'
-name: <?=r app_name() ?>
+name: <?= encoded_string app_name() ?>
 root: .
 log:
   level: debug
 debug: on
 dsn:
-  - dbi:SQLite:dbname=db/<?=r lc app_name() ?>.acore.sqlite
+  - dbi:SQLite:dbname=db/<?= encoded_string lc app_name() ?>.acore.sqlite
   -
   -
   - AutoCommit: 1
@@ -339,12 +339,12 @@ session:
   store:
     class: DBM
     args:
-      file: db/<?=r lc app_name() ?>.session.dbm
+      file: db/<?= encoded_string lc app_name() ?>.session.dbm
       dbm_class: DB_File
   state:
     class: Cookie
     args:
-      name: <?=r lc app_name() ?>_session_id
+      name: <?= encoded_string lc app_name() ?>_session_id
 
 admin_console:
   disable_eval_functions:
@@ -366,7 +366,7 @@ LlCGEkREyUUFokZFBagGpgsArcIY91nxh2cAAAAASUVORK5CYII=
 sub makefile_pl {
     return ("Makefile.PL", <<'    _END_OF_FILE_'
 use inc::Module::Install;
-name '<?=r app_name() ?>';
+name '<?= encoded_string app_name() ?>';
 build_requires 'Module::Install' => 0.77;
 build_requires 'Test::More';
 test_requires 'DBD::SQLite';

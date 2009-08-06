@@ -3,8 +3,8 @@
    $c->stash->{title}          = "Document の管理";
    $c->stash->{load_jquery_ui} = 1;
 ?>
-?=r $c->render_part("@{[ location ]}/header.mt");
-?=r $c->render_part("@{[ location ]}/container.mt");
+?= r $c->render_part("@{[ location ]}/header.mt");
+?= r $c->render_part("@{[ location ]}/container.mt");
     <div id="pagebody">
       <div id="pagebody-inner" class="clearfix">
         <div id="alpha">
@@ -20,7 +20,7 @@
           </div>
           <div class="data">
 
-?=r $c->render_part("@{[ location ]}/document_serach_form.mt");
+?= r $c->render_part("@{[ location ]}/document_serach_form.mt");
 
             <p>
 <?
@@ -150,5 +150,5 @@
         });
     });
     </script>
-?=r $c->render_part("@{[ location ]}/container_close.mt");
+?= r $c->render_part("@{[ location ]}/container_close.mt");
 

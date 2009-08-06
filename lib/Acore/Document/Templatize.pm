@@ -17,7 +17,8 @@ sub html_form_to_create {
     return $class->SUPER::html_form_to_create(@_)
         unless $class->create_template;
 
-    sprintf q{?=r $_[0]->render_part("%s");}, $class->create_template;
+    sprintf q{?= encoded_string $_[0]->render_part("%s");},
+        $class->create_template;
 }
 
 sub html_form_to_update {
@@ -26,7 +27,8 @@ sub html_form_to_update {
     return $self->SUPER::html_form_to_update(@_)
         unless $self->edit_template;
 
-    sprintf q{?=r $_[0]->render_part("%s");}, $self->edit_template;
+    sprintf q{?= encoded_string $_[0]->render_part("%s");},
+        $self->edit_template;
 }
 
 sub validate_to_create {

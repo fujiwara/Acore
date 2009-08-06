@@ -206,7 +206,7 @@ sub html_form_to_create {
   <div>
 ? if ($c->stash->{yaml_error_message}) {
     <p class="error">
-      <?=r $c->stash->{yaml_error_message} | html | html_line_break ?>
+      <?= $c->stash->{yaml_error_message} | html | html_line_break | encoded_string ?>
     </p>
 ? }
     <label for="content">YAML</label>
@@ -232,7 +232,7 @@ sub html_form_to_update {
   <div>
 ? if ($c->stash->{yaml_error_message}) {
     <p class="error">
-      <?=r $c->stash->{yaml_error_message} | html | html_line_break ?>
+      <?= $c->stash->{yaml_error_message} | html | html_line_break | encoded_string ?>
     </p>
 ? }
     <label for="content">YAML</label>

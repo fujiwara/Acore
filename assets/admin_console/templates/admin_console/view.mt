@@ -2,8 +2,8 @@
    my $c = $_[0];
    $c->stash->{title} = "View の管理";
 ?>
-?=r $c->render_part("@{[ location ]}/header.mt");
-?=r $c->render_part("@{[ location ]}/container.mt");
+?= r $c->render_part("@{[ location ]}/header.mt");
+?= r $c->render_part("@{[ location ]}/container.mt");
     <div id="pagebody">
       <div id="pagebody-inner" class="clearfix">
         <div id="alpha">
@@ -42,5 +42,5 @@
         </div>
       </div>
     </div>
-?=r $c->render_part("@{[ location ]}/container_close.mt");
+?= r $c->render_part("@{[ location ]}/container_close.mt");
 

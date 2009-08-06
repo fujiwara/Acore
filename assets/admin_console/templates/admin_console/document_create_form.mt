@@ -2,8 +2,8 @@
    my $c = $_[0];
    $c->stash->{title} = "Document の作成";
 ?>
-?=r $c->render_part("@{[ location ]}/header.mt");
-?=r $c->render_part("@{[ location ]}/container.mt");
+?= r $c->render_part("@{[ location ]}/header.mt");
+?= r $c->render_part("@{[ location ]}/container.mt");
     <div id="pagebody">
       <div id="pagebody-inner" class="clearfix">
         <div id="alpha">
@@ -75,5 +75,5 @@
         location.href = url;
       });
     </script>
-?=r $c->render_part("@{[ location ]}/container_close.mt");
+?= r $c->render_part("@{[ location ]}/container_close.mt");
 

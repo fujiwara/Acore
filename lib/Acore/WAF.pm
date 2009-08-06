@@ -4,6 +4,7 @@ use v5.8.1;
 use strict;
 use warnings;
 use Any::Moose;
+use Text::MicroTemplate 0.07;
 use Text::MicroTemplate::File ();
 use Path::Class ();
 use HTTP::Date;
@@ -973,7 +974,7 @@ Render template, but not set response body.
 
 Like TT's [% INCLUDE %]
 
- ?=r $_[0]->render_part("file");
+ ?= r $_[0]->render_part("file");
 
 =item serve_static_file
 

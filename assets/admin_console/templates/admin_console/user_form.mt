@@ -3,8 +3,8 @@
   $c->stash->{title} = "ユーザの管理";
   $c->stash->{load_jquery_ui} = 1;
 ?>
-?=r $c->render_part("@{[ location ]}/header.mt");
-?=r $c->render_part("@{[ location ]}/container.mt");
+?= r $c->render_part("@{[ location ]}/header.mt");
+?= r $c->render_part("@{[ location ]}/container.mt");
     <div id="pagebody">
       <div id="pagebody-inner" class="clearfix">
         <div id="alpha">
@@ -17,7 +17,7 @@
             <h2 class="icon"><div class="app_kuser"><a href="<?= $c->uri_for("/@{[ location ]}/user_list") ?>">ユーザの管理</a></div></h2>
           </div>
 ?       if ( $c->flash->get('user_saved') ) {
-?=r         $c->render_part("@{[ location ]}/notice.mt", '保存されました');
+?= r         $c->render_part("@{[ location ]}/notice.mt", '保存されました');
 ?       }
 
           <div class="form-container">
@@ -152,5 +152,5 @@
         });
       });
     </script>
-?=r $c->render_part("@{[ location ]}/container_close.mt");
+?= r $c->render_part("@{[ location ]}/container_close.mt");
 

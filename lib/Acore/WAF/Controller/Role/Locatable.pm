@@ -91,7 +91,7 @@ In "_auto" method, call $self->set_location($c, $args).
 
 Default location is decamelize(ControllerName).
 
- YourApp::Controller::AnyLocationr => any_location
+ YourApp::Controller::AnyLocation => any_location
 
 =back
 
