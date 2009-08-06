@@ -4,8 +4,8 @@
    $c->stash->{title} = "Document の編集 - " . ($doc && $doc->{title} or "" );
    $c->stash->{load_jquery_ui} = 1;
 ?>
-?= r $c->render_part("@{[ location ]}/header.mt");
-?= r $c->render_part("@{[ location ]}/container.mt");
+?= raw $c->render_part("@{[ location ]}/header.mt");
+?= raw $c->render_part("@{[ location ]}/container.mt");
     <div id="pagebody">
       <div id="pagebody-inner" class="clearfix">
         <div id="alpha">
@@ -19,15 +19,15 @@
 
               <h2 class="icon"><div class="mimetype_kmultiple"><a href="<?= $c->uri_for("/@{[ location ]}/document_list") ?>">Document の管理</a></div></h2>
 
-?= r $c->render_part("@{[ location ]}/document_serach_form.mt");
+?= raw $c->render_part("@{[ location ]}/document_serach_form.mt");
 
             </div>
 ?        if ( $c->flash->get('document_saved') ) {
-?= r          $c->render_part("@{[ location ]}/notice.mt", '保存されました');
+?= raw          $c->render_part("@{[ location ]}/notice.mt", '保存されました');
 ?        } elsif ( $c->flash->get('attachment_added') ) {
-?= r          $c->render_part("@{[ location ]}/notice.mt", '添付ファイルを保存しました');
+?= raw          $c->render_part("@{[ location ]}/notice.mt", '添付ファイルを保存しました');
 ?        } elsif ( $c->flash->get('attachment_deleted') ) {
-?= r          $c->render_part("@{[ location ]}/notice.mt", '添付ファイルを削除しました');
+?= raw          $c->render_part("@{[ location ]}/notice.mt", '添付ファイルを削除しました');
 ?        }
             <div class="form-container">
 
@@ -93,7 +93,7 @@
 
                 </fieldset>
 
-                <?=r $c->render_string( $doc->html_form_to_update, $doc ) | fillform($doc) ?>
+                <?= raw $c->render_string( $doc->html_form_to_update, $doc ) | fillform($doc) ?>
                 <fieldset>
                   <legend id="show-document-yaml">Raw</legend>
                   <div>
@@ -204,7 +204,7 @@
         });
     });
 
-    <?=r $c->render_part("@{[ location ]}/flash_message.js") ?>
+    <?= raw $c->render_part("@{[ location ]}/flash_message.js") ?>
     </script>
-?= r $c->render_part("@{[ location ]}/container_close.mt");
+?= raw $c->render_part("@{[ location ]}/container_close.mt");
 

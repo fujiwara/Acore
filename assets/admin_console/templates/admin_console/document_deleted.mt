@@ -3,8 +3,8 @@
    my $doc = $c->stash->{document};
    $c->stash->{title} = "Document の削除完了";
 ?>
-?= r $c->render_part("@{[ location ]}/header.mt");
-?= r $c->render_part("@{[ location ]}/container.mt");
+?= raw $c->render_part("@{[ location ]}/header.mt");
+?= raw $c->render_part("@{[ location ]}/container.mt");
     <div id="pagebody">
       <div id="pagebody-inner" class="clearfix">
         <div id="alpha">
@@ -18,7 +18,7 @@
 
               <h2 class="icon"><div class="mimetype_kmultiple"><a href="<?= $c->uri_for("/@{[ location ]}/document_list") ?>">Document の管理</a></div></h2>
 
-?= r $c->render_part("@{[ location ]}/document_serach_form.mt");
+?= raw $c->render_part("@{[ location ]}/document_serach_form.mt");
 
               <div class="result-message">
                 <h2>削除されました</h2>
@@ -36,5 +36,5 @@
         </div>
       </div>
     </div>
-?= r $c->render_part("@{[ location ]}/container_close.mt");
+?= raw $c->render_part("@{[ location ]}/container_close.mt");
 

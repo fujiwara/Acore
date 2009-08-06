@@ -974,7 +974,7 @@ Render template, but not set response body.
 
 Like TT's [% INCLUDE %]
 
- ?= r $_[0]->render_part("file");
+ ?= raw $_[0]->render_part("file");
 
 =item serve_static_file
 

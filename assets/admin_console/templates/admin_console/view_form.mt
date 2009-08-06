@@ -6,8 +6,8 @@
    my $design       = $c->stash->{design};
    my $modify_alert = ( $design->{_id} =~ m{^_design/(?:tags|path)$} );
 ?>
-?= r $c->render_part("@{[ location ]}/header.mt");
-?= r $c->render_part("@{[ location ]}/container.mt");
+?= raw $c->render_part("@{[ location ]}/header.mt");
+?= raw $c->render_part("@{[ location ]}/container.mt");
     <div id="pagebody">
       <div id="pagebody-inner" class="clearfix">
         <div id="alpha">
@@ -22,7 +22,7 @@
             <h3><a href="<?= $c->uri_for("/@{[ location ]}/view_create_form") ?>">新規作成</a></h3>
           </div>
 ?   if ( $c->flash->get('view_saved') ) {
-?= r     $c->render_part("@{[ location ]}/notice.mt", '保存されました');
+?= raw     $c->render_part("@{[ location ]}/notice.mt", '保存されました');
 ?   }
           <div class="form-container">
 ? if ( $modify_alert ) {
@@ -171,5 +171,5 @@
         );
       });
     </script>
-?= r $c->render_part("@{[ location ]}/container_close.mt");
+?= raw $c->render_part("@{[ location ]}/container_close.mt");
 

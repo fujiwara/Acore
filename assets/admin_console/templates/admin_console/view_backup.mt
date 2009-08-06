@@ -2,7 +2,7 @@
 ? my $views = $c->stash->{all_views};
 ? local $Data::Dumper::Indent = 1;
 #
-# restore_views.pl for <?=r $c->config->{name} ?>
+# restore_views.pl for <?= raw $c->config->{name} ?>
 #
 use strict;
 use warnings;
@@ -11,7 +11,7 @@ use DBI;
 use JSON;
 use utf8;
 
-my <?=r Data::Dumper->Dump([$c->config->{dsn}], ["dsn"]) ?>
+my <?= raw Data::Dumper->Dump([$c->config->{dsn}], ["dsn"]) ?>
 my $dbh     = DBI->connect(@$dsn) or die DBI->errstr;
 my $acore   = Acore->new({ dbh => $dbh });
 my $backend = $acore->storage->document;
@@ -31,4 +31,4 @@ print "done.\n";
 exit;
 
 __DATA__
-?= r JSON->new->pretty->encode($views);
+?= raw JSON->new->pretty->encode($views);

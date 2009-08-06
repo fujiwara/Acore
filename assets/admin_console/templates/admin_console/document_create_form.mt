@@ -2,8 +2,8 @@
    my $c = $_[0];
    $c->stash->{title} = "Document の作成";
 ?>
-?= r $c->render_part("@{[ location ]}/header.mt");
-?= r $c->render_part("@{[ location ]}/container.mt");
+?= raw $c->render_part("@{[ location ]}/header.mt");
+?= raw $c->render_part("@{[ location ]}/container.mt");
     <div id="pagebody">
       <div id="pagebody-inner" class="clearfix">
         <div id="alpha">
@@ -40,7 +40,7 @@
 ? if ( ref $c->config->{@{[ location ]}}->{document_classes} eq 'ARRAY' ) {
                     <select name="_class" id="document-class">
 ?   for my $class (@{ $c->config->{@{[ location ]}}->{document_classes} }) {
-                      <option value="<?= $class ?>"<?=r ' selected="selected"' if $c->stash->{_class} eq $class ?>><?= $class ?></option>
+                      <option value="<?= $class ?>"<?= raw ' selected="selected"' if $c->stash->{_class} eq $class ?>><?= $class ?></option>
 ?   }
                     </select>
 ? } else {
@@ -53,7 +53,7 @@
                     <input type="text" size="20" name="content_type" value="text/plain"/>
                   </div>
                 </fieldset>
-                <?=r $c->render_string( $c->stash->{_class}->html_form_to_create ) ?>
+                <?= raw $c->render_string( $c->stash->{_class}->html_form_to_create ) ?>
                 <div class="buttonrow">
                   <input type="submit" value="作成する" class="button"/>
                   <input type="hidden" name="sid" value="<?= $c->session->session_id ?>"/>
@@ -75,5 +75,5 @@
         location.href = url;
       });
     </script>
-?= r $c->render_part("@{[ location ]}/container_close.mt");
+?= raw $c->render_part("@{[ location ]}/container_close.mt");
 

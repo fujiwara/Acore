@@ -3,8 +3,8 @@
    my $doc = $c->stash->{document};
    $c->stash->{title} = "Document の一括置換完了";
 ?>
-?= r $c->render_part("@{[ location ]}/header.mt");
-?= r $c->render_part("@{[ location ]}/container.mt");
+?= raw $c->render_part("@{[ location ]}/header.mt");
+?= raw $c->render_part("@{[ location ]}/container.mt");
     <div id="pagebody">
       <div id="pagebody-inner" class="clearfix">
         <div id="alpha">
@@ -36,5 +36,5 @@
         </div>
       </div>
     </div>
-?= r $c->render_part("@{[ location ]}/container_close.mt");
+?= raw $c->render_part("@{[ location ]}/container_close.mt");
 

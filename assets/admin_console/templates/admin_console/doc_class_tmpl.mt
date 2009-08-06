@@ -1,6 +1,6 @@
 ? my $c = $_[0];
-<!-- create form for <?=r $c->stash->{class} ?> -->
+<!-- create form for <?= raw $c->stash->{class} ?> -->
 <fieldset>
 <legend>Content</legend>
-<?=r $c->req->param('form-html') ?>
+<?= raw $c->req->param('form-html') ?>
 </fieldset>
