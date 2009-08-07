@@ -893,6 +893,7 @@ Class method. Setup plugins.
 
  # load Acore::WAF::Plugin::Session
  YourApp->setup(qw/ Session /);
+ @plugins = qw/ Foo Bar +YourApp::Plugin::Baz /;
 
 =item handle_request
 
