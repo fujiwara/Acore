@@ -985,6 +985,7 @@ sub explorer_tree_POST {
 
     my $dir      = $c->req->param("dir");
     my $full_dir = $c->path_to($dir);
+    my $root     = $c->path_to(".");
 
     my (@folders, @files);
     my $total = 0;
@@ -1000,6 +1001,7 @@ sub explorer_tree_POST {
 
     $c->stash->{folders} = \@folders;
     $c->stash->{files}   = \@files;
+    $c->stash->{root}    = $root;
 
     $c->render("$Location/explorer_tree.mt");
 }
@@ -1029,7 +1031,6 @@ sub explorer_file_info_GET {
         utf8::decode($info->{body});
     }
 
-    $c->log->debug( Dumper $info );
     $c->res->content_type('application/json; charset=utf-8');
     $c->res->body( JSON->new->encode($info) );
 }
