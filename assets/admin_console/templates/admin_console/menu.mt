@@ -38,6 +38,11 @@
               <div class="item">
                 <a class="action_run" href="<?= $c->uri_for("/@{[ location ]}/convert_all") ?>">Document の一括置換</a>
               </div>
+
+              <div class="item">
+                <a class="action_view_tree" href="<?= $c->uri_for("/@{[ location ]}/explorer") ?>">ファイルエクスプローラー</a>
+              </div>
+
 <? } ?>
               <!-- /menu -->
             </div>

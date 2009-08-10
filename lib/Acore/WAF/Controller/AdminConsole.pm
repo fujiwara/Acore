@@ -971,6 +971,106 @@ sub convert_test_POST {
     $c->render("$Location/convert_test.mt");
 }
 
+sub explorer_GET {
+    my ($self, $c, $args) = @_;
+    $c->forward( $self => "is_logged_in" );
+    $c->render("$Location/explorer.mt");
+}
+
+sub explorer_tree_POST {
+    my ($self, $c, $args) = @_;
+
+    $c->req->param( sid => $c->session->session_id ); # XXX
+    $c->forward( $self => "is_logged_in" );
+
+    my $dir      = $c->req->param("dir");
+    my $full_dir = $c->path_to($dir);
+
+    my (@folders, @files);
+    my $total = 0;
+    for my $file ( $full_dir->children ) {
+        $total++;
+        if ( $file->is_dir ) {
+            push (@folders, $file);
+        } else {
+            push (@files, $file);
+        }
+    }
+    return if $total == 0;
+
+    $c->stash->{folders} = \@folders;
+    $c->stash->{files}   = \@files;
+
+    $c->render("$Location/explorer_tree.mt");
+}
+
+sub explorer_file_info_GET {
+    my ($self, $c, $args) = @_;
+
+    $c->forward( $self => "is_logged_in" );
+
+    my $name = $c->req->param("file");
+    my $file = $c->path_to($name);
+    return if (! -e $file or $name =~ /\.\./ or $file->is_dir );
+
+    require Acore::MIME::Types;
+    my $mtime = Acore::DateTime->from_epoch( epoch => $file->stat->mtime );
+    my $ext   = $file->basename =~ /\.(\w+)$/ ? lc $1 : "";
+    my $info = {
+        mtime    => "$mtime",
+        size     => -s $file,
+        filename => $c->req->param("file"),
+        ext      => $ext,
+        type     => Acore::MIME::Types->mimeTypeOf($ext) || "",
+        editable => -w $file,
+    };
+    if ( $c->req->param('body') && $info->{size} <= 1024 * 1024 ) {
+        $info->{body} = $file->slurp;
+        utf8::decode($info->{body});
+    }
+
+    $c->log->debug( Dumper $info );
+    $c->res->content_type('application/json; charset=utf-8');
+    $c->res->body( JSON->new->encode($info) );
+}
+
+sub _explorer_get_file {
+    my ($self, $c, $args) = @_;
+
+    my $name = $c->req->param("file");
+    my $file = $c->path_to($name);
+    $c->error(404) if (! -e $file or $name =~ /\.\./ or $file->is_dir );
+    $file;
+}
+
+sub explorer_download_file_GET {
+    my ($self, $c, $args) = @_;
+
+    $c->forward( $self => "is_logged_in" );
+    my $file = $c->forward( $self => "_explorer_get_file" );
+
+    $c->res->header(
+        "Content-Disposition"
+            => "attachment; filename=" . $file->basename
+        );
+    $c->serve_static_file($file);
+}
+
+sub explorer_save_file_POST {
+    my ($self, $c, $args) = @_;
+
+    $c->forward( $self => "is_logged_in" );
+    my $file = $c->forward( $self => "_explorer_get_file" );
+    {
+        my $fh = $file->openw or $c->error( 405 => "permission denied" );
+        my $body = $c->req->param('body');
+        utf8::encode($body);
+        $fh->print($body);
+    }
+    $c->req->param( body => undef );
+    $c->forward( $self => "explorer_file_info_GET" );
+}
+
 1;
 
 __END__

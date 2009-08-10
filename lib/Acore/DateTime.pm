@@ -22,6 +22,13 @@ sub new {
     $DT_class->new(%args);
 }
 
+sub from_epoch {
+    my $class = shift;
+    my %args  = @_;
+    $args{time_zone} ||= $TZ;
+    $DT_class->from_epoch(%args);
+}
+
 ## copied from DateTime::Format::W3CDTF.
 
 my %valid_formats =
