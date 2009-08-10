@@ -332,9 +332,10 @@ sub document_list_GET {
     if ( $type =~ /\A(?:path|tags)\z/ && $query ne '' ) {
         $c->stash->{all_documents} = [
             $c->acore->search_documents({
-                $type  => $query,
-                offset => $offset,
-                limit  => $limit,
+                $type         => $query,
+                offset        => $offset,
+                limit         => $limit,
+                value_reverse => $c->req->param('reverse') ? 1 : 0,
             }),
         ];
     }
