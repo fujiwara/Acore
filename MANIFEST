@@ -24,8 +24,6 @@ lib/Acore/DateTime.pm
 lib/Acore/Document.pm
 lib/Acore/Document/File.pm
 lib/Acore/Document/Struct.pm
-lib/Acore/SimpleApp.pm
-lib/Acore/SimpleApp/Controller.pm
 lib/Acore/Storage.pm
 lib/Acore/User.pm
 lib/Acore/WAF.pm
