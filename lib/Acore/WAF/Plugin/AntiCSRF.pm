@@ -12,7 +12,7 @@ our $VERSION = '0.21.1';
 sub setup {
     my ($class, $controller) = @_;
     $controller->add_trigger(
-        AFTER_DISPATCH => sub {
+        BEFORE_DISPATCH => sub {
             my $c = shift;
             $c->config->{$base}->{param} ||= 'onetime_token';
         },
