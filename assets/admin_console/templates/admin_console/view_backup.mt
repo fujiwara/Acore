@@ -11,7 +11,7 @@ use DBI;
 use JSON;
 use utf8;
 
-my <?= raw Data::Dumper->Dump([$c->config->{dsn}], ["dsn"]) ?>
+my <?= raw( Data::Dumper->Dump([$c->config->{dsn}], ["dsn"]) ) ?>
 my $dbh     = DBI->connect(@$dsn) or die DBI->errstr;
 my $acore   = Acore->new({ dbh => $dbh });
 my $backend = $acore->storage->document;
@@ -31,4 +31,4 @@ print "done.\n";
 exit;
 
 __DATA__
-?= raw JSON->new->pretty->encode($views);
+?= raw( JSON->new->pretty->encode($views) );
