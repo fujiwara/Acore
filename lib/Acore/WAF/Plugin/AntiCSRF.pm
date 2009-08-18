@@ -48,7 +48,7 @@ sub csrf_proof {
         $c->log->error(__PACKAGE__. qq{: CSRF detected. "$value" is not match "$match".});
         return;
     }
-    delete $c->req->parameters->{$name};   # for no fill in form.
+    $c->req->param($name, undef);   # for no fill in form.
     1;
 }
 
