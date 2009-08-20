@@ -715,7 +715,7 @@ sub view_form_POST {
         sub {
             my $backend = $c->acore->storage->document;
             $backend->put($design);
-            $backend->create_view( $design->{_id}, $design );
+            $backend->create_view( $design );
         });
 
     $c->flash->set( view_saved => 1 );
