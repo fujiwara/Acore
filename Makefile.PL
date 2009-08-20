@@ -7,7 +7,7 @@ requires 'Any::Moose';
 requires 'CGI::ExceptionManager' => 0.05;
 requires 'Crypt::SaltedHash';
 requires 'DBI';
-requires 'DBIx::CouchLike' => 0.08;
+requires 'DBIx::CouchLike' => 0.09;
 requires 'FormValidator::Lite';
 requires 'Getopt::Long';
 requires 'HTTP::Date';
@@ -24,6 +24,7 @@ requires 'HTML::FillInForm';
 requires 'Text::SimpleTable';
 requires 'Data::Visitor';
 requires 'String::CamelCase';
+requires 'HTTP::MobileAgent' => 0.27;
 
 test_requires 'DBD::SQLite';
 test_requires 'Test::Base';
