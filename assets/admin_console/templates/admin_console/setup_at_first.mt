@@ -21,14 +21,21 @@
                   <p>
                     <a href="<?= $c->uri_for("/@{[ location ]}/login_form") ?>">ログインしてください</a>
                   </p>
-? } else {
-?     if ($c->form->has_error) {
+<? } else {
+       if ($c->form->has_error) {
+           $c->form->set_message({
+               "name.not_null"      => "ユーザ名を入力してください",
+               "name.ascii"         => "ユーザ名は半角で入力してください",
+               "password1.not_null" => "パスワードを入力してください",
+               "password1.ascii"    => "パスワードは半角で入力してください",
+               "password.dup"       => "パスワードの確認入力が一致しません",
+           });
+?>
                   <p class="error">エラーがあります</p>
-                  <ul>
-?                 for my $msg ( @{ $c->form->{_error_ary} } ) {
-                    <li><?= $msg->[0] ?> <?= $msg->[1] ?></li>
-?                 }
-                  </ul>
+
+?          for my $msg ( $c->form->get_error_messages ) {
+                  <?= $msg ?><br/>
+?          }
 ?     }
                   <div>
                     <label for="uname">ユーザ名:</label>
