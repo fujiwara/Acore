@@ -5,6 +5,7 @@ use warnings;
 use Want;
 use Exporter 'import';
 our @EXPORT = qw/ session flash /;
+use Acore::WAF ();
 
 sub setup {
     my ($class, $controller) = @_;
@@ -15,7 +16,9 @@ sub setup {
                 if ( my $flash = $c->session->get('__flash_data') ) {
                     $c->session->set( __flash_data => $flash->finalize );
                 }
-                $session->response_filter($c->response);
+                my ($type) = $c->res->content_type;
+                $session->response_filter($c->response)
+                    if $type eq "" || $type =~ m{^text/x?html};
             }
         },
     );
@@ -31,9 +34,19 @@ sub session {
         my $state_class = "HTTP::Session::State::" . $config->{state}->{class};
         $store_class->require;
         $state_class->require;
+
+        my $state = $c->for_mobile
+            ? do {
+                # mobile は常に State::URI
+                require HTTP::Session::State::URI;
+                $c->log->debug("using State::URI");
+                HTTP::Session::State::URI->new( session_id_name => "_sid" );
+            }
+            : $state_class->new( %{ $config->{state}->{args} } );
+
         $c->{_session_obj} = HTTP::Session->new(
             store   => $store_class->new( %{ $config->{store}->{args} } ),
-            state   => $state_class->new( %{ $config->{state}->{args} } ),
+            state   => $state,
             request => $c->request,
         );
         $c->log->debug("session inited.");
@@ -50,6 +63,23 @@ sub flash {
     $c->session->set( __flash_data => $flash );
     $flash;
 }
+
+package Acore::WAF;
+use Any::Moose;
+around "_uri_for" => sub {
+    my $next = shift;
+    my $self = shift;
+    my $uri  = $next->($self, @_);
+
+    if ( $self->for_mobile ) {
+        my $s    = $self->session;
+        my $name = $s->state->session_id_name;
+        my %q    = $uri->query_form;
+        $q{$name} ||= $s->session_id;
+        $uri->query_form(%q);
+    }
+    $uri;
+};
 
 package Acore::WAF::Plugin::Session::Flash;
 use Any::Moose;

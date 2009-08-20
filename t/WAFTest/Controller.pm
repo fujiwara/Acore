@@ -243,6 +243,15 @@ sub get_flash {
     $c->res->body("flash=$value");
 }
 
+sub mobile {
+    my ($self, $c) = @_;
+    my $sid = $c->session->session_id;
+    $c->res->body( $c->render_string(
+        q{session_id: <?= $_[0]->session->session_id ?>
+          <a href="<?= $_[0]->uri_for('/act/mobile') ?>"></a>}
+    ));
+}
+
 package t::WAFTest::Controller::X;
 
 sub xyz {

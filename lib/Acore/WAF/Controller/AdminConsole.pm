@@ -1013,7 +1013,10 @@ sub explorer_file_info_GET {
 
     my $name = $c->req->param("file");
     my $file = $c->path_to($name);
-    return if (! -e $file or $name =~ /\.\./ or $file->is_dir );
+    if (! -e $file or $name =~ /\.\./ or $file->is_dir ) {
+        $c->log->error("$file is not exists or is dir.");
+        return;
+    }
 
     require Acore::MIME::Types;
     my $mtime = Acore::DateTime->from_epoch( epoch => $file->stat->mtime );
@@ -1030,7 +1033,6 @@ sub explorer_file_info_GET {
         $info->{body} = $file->slurp;
         utf8::decode($info->{body});
     }
-
     $c->res->content_type('application/json; charset=utf-8');
     $c->res->body( JSON->new->encode($info) );
 }

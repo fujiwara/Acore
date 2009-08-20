@@ -93,6 +93,16 @@ has debug => (
     is => "rw",
 );
 
+has mobile_agent => (
+    is   => "rw",
+    lazy => 1,
+    default => sub {
+        my $self = shift;
+        require HTTP::MobileAgent;
+        HTTP::MobileAgent->new( $self->request->user_agent );
+    },
+);
+
 has debug_report => (
     is      => 'rw',
     isa     => 'Text::SimpleTable',
@@ -104,19 +114,19 @@ has debug_report => (
     },
 );
 
-has depth => (
-    is      => 'rw',
-    default => 0,
-);
-
 has stack => (
     is      => "rw",
     isa     => "ArrayRef",
     default => sub { [] },
 );
 
-has interface => (
-    is => "rw",
+has for_mobile => (
+    is      => "rw",
+    lazy    => 1,
+    default => sub {
+        my $self = shift;
+        $self->config->{support_mobile} && !$self->mobile_agent->is_non_mobile;
+    },
 );
 
 sub DESTROY {
@@ -276,10 +286,17 @@ sub handle_request {
         if defined $config->{log}->{level};
 
     $config->{include_path} ||= [];
-    $self->encoding( $config->{encoding} )
-        if $config->{encoding};
+
+    if ( $config->{support_mobile} ) {
+        $self->_prepare_for_mobile();
+    }
+    else {
+        $self->encoding( $config->{encoding} )
+            if $config->{encoding};
+    }
 
     $self->_decode_request;
+
     if ( $self->debug ) {
         $self->log->info("*** Request $COUNT");
         $self->log->debug(sprintf(
@@ -323,6 +340,18 @@ sub handle_request {
     return $self->response;
 }
 
+sub _prepare_for_mobile {
+    my $self = shift;
+
+    my $ma = $self->mobile_agent;
+    $self->encoding(
+        $ma->is_non_mobile                     ? 'utf-8'
+      : $ma->is_docomo && $ma->xhtml_compliant ? 'utf-8'
+      : $ma->is_softbank && $ma->is_type_3gc   ? 'utf-8'
+      :                                          'cp932'
+    );
+}
+
 sub _debug_request_data {
     my $self = shift;
 
@@ -355,6 +384,13 @@ sub _output_stack_trace {
     $res;
 }
 
+sub charset {
+    my $self = shift;
+    my $encoding = $self->encoding;
+    return $encoding eq 'cp932' ? "Shift_JIS"
+                                : $encoding;
+}
+
 sub finalize {
     my $self = shift;
 
@@ -364,7 +400,7 @@ sub finalize {
     $charset ||= "";
 
     if ( $c_type =~ m{^text/} && $charset !~ m{charset=}i ) {
-        $charset = "charset=" . ($self->config->{charset} || $self->encoding)
+        $charset = "charset=" . $self->charset;
     }
     $res->content_type( $c_type . ( $charset ? "; $charset" : "" ) );
     $res->body( $self->encode($res->body) ) if utf8::is_utf8($res->body);
@@ -555,8 +591,8 @@ sub _uri_for {
     my $uri = URI->new($path);
     $uri = $uri->abs($base);
 
-    $uri->query_form(%{ $_[-1] })
-        if ref $_[-1] eq 'HASH';
+    my $q = ref $_[-1] eq 'HASH' ? $_[-1] : {};
+    $uri->query_form(%$q);
 
     return $uri;
 }

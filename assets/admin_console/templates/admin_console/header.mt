@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/html4/loose.dtd">
 <html>
   <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=<?= $c->charset ?>"/>
     <title><?= $c->stash->{title} || "" ?> - <?= $c->config->{name} ?> 管理コンソール</title>
     <link rel="stylesheet" type="text/css" href="<?= $c->uri_for("/@{[ location ]}/static/css/import.css") ?>">
     <link rel="stylesheet" type="text/css" href="<?= $c->uri_for("/@{[ location ]}/static/css/form/import.css") ?>">
