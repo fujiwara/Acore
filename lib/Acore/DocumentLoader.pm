@@ -88,18 +88,24 @@ sub _load_from_stream {
 
     my $buffer = '';
     my $count  = 0;
+    my @docs;
  LINE:
     while ( my $line = <$handle> ) {
         utf8::decode($line) if !$Use_xs && utf8::is_utf8($line);
         $count++;
         if ( $line =~ /^$Separator$/ && $buffer ) {
-            $self->_load_object($buffer, $count);
+            push @docs, $self->_load_object($buffer, $count);
             $buffer = '';
+            if (@docs > 100) {
+                $self->_store_documents(@docs);
+                @docs = ();
+            }
             next LINE;
         }
         $buffer .= $line;
     }
-    $self->_load_object($buffer) if $buffer;
+    push @docs, $self->_load_object($buffer) if $buffer;
+    $self->_store_documents(@docs) if @docs;
 }
 
 sub _load_from_string {
@@ -107,10 +113,16 @@ sub _load_from_string {
     my $str   = shift;
     my @yaml  = split /\n$Separator\n/, $str;
     my $count = 0;
+    my @docs;
     for my $yaml (@yaml) {
         $count++;
-        $self->_load_object($yaml . "\n", $count);
+        push @docs, $self->_load_object($yaml . "\n", $count);
+        if (@docs > 100) {
+            $self->_store_documents(@docs);
+            @docs = ();
+        }
     }
+    $self->_store_documents(@docs) if @docs;
 }
 
 sub _load_object {
@@ -136,17 +148,20 @@ sub _load_object {
         $self->{loaded}++;
         return;
     }
+    return $class->from_object($object);
+}
 
+sub _store_documents {
+    my $self = shift;
+    my @docs = @_;
     eval {
-        $self->acore->put_document(
-            $class->from_object($object)
-        );
+        $self->acore->put_document_multi(@docs);
     };
     if ($@) {
         $self->add_error("Can't load into Acore. $@");
     }
     else {
-        $self->{loaded}++;
+        $self->{loaded} += scalar @docs;
     }
 }
 

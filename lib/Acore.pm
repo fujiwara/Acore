@@ -325,6 +325,62 @@ sub put_document {
     }
 }
 
+sub put_document_multi {
+    my $self = shift;
+    my @doc  = @_;
+    my %old_for_search;
+    my (@put_doc, @post_doc);
+    for my $doc (@doc) {
+        if ( $doc->id ) {
+            my $id = $doc->id;
+            my $old_for_search;
+            if ( $doc->can('update_fts_index') && $self->senna_index_path ) {
+                my $old_doc = $self->get_document({ id => $id });
+                if ($old_doc) {
+                    $old_for_search{$id} = $old_doc->for_search;
+                }
+            }
+            push @put_doc, $doc;
+        }
+        else {
+            push @post_doc, $doc;
+        }
+    }
+    my @return_doc;
+
+    if (@put_doc) {
+        my @put_obj = map { $_->to_object } @put_doc;
+        $self->storage->document->put_multi(@put_obj);
+        my $n = 0;
+        for my $doc (@put_doc) {
+            if ($self->cache) {
+                $self->cache->set("Acore::Document/id=". $doc->id, $put_obj[$n]);
+                $self->cache->remove("Acore::Document/path=". $doc->path);
+            }
+            if ( defined $old_for_search{ $doc->id } ) {
+                $doc->update_fts_index( $self, $old_for_search{ $doc->id } );
+            }
+            elsif ( $doc->can('create_fts_index') && $self->senna_index_path ) {
+                $doc->create_fts_index( $self );
+            }
+            push @return_doc, $doc;
+            ++$n;
+        }
+    }
+
+    if (@post_doc) {
+        my @post_obj = map { $_->to_object } @post_doc;
+        my @id  = $self->storage->document->post_multi(@post_obj);
+        my @doc = $self->all_documents({ id_in => \@id });
+        for my $doc (@doc) {
+            $doc->create_fts_index( $self )
+                if $doc->can('create_fts_index') && $self->senna_index_path;
+        }
+        push @return_doc, @doc;
+    }
+    return @return_doc;
+}
+
 sub _search_documents_args {
     my $self = shift;
     my $args = shift;
