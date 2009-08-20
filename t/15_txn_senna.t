@@ -17,7 +17,8 @@ has  'for_search' => ( is => "rw" );
 with 'Acore::Document::Role::FullTextSearch';
 
 package main;
-{
+SKIP: {
+    skip "Senna is not installed.", 17 unless eval { require Senna };
     my @docs;
     my $dbh = do "t/connect_db.pm";
     my $ac  = Acore->new({ dbh => $dbh });
