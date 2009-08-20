@@ -215,11 +215,17 @@ extends 'HTTP::Engine::Interface::ModPerl';
 use HTTP::Engine;
 use <?= raw app_name() ?>;
 use Acore::WAF::ConfigLoader;
+use HTTP::Engine::Middleware;
 
 my $loader = Acore::WAF::ConfigLoader->new();
 my $config = $loader->load(
     $ENV{'<?= raw uc app_name() ?>_CONFIG_FILE'},
     $ENV{'<?= raw uc app_name() ?>_CONFIG_LOCAL'},
+);
+my $mw = HTTP::Engine::Middleware->new;
+$mw->install(
+    'HTTP::Engine::Middleware::ReverseProxy',
+    { allowed_remote => $config->{allowed_remote}, }
 );
 
 sub create_engine {
@@ -227,11 +233,11 @@ sub create_engine {
     HTTP::Engine->new(
         interface => {
             module          => 'ModPerl',
-            request_handler => sub {
+            request_handler => $mw->hander( sub {
                 my $req = shift;
                 $req = Acore::WAF::Util->adjust_request_mod_perl($req);
                 <?= raw app_name() ?>->new->handle_request($config, $req);
-            },
+            } ),
         },
     );
 }
