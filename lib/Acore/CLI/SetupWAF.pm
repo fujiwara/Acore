@@ -233,7 +233,7 @@ sub create_engine {
     HTTP::Engine->new(
         interface => {
             module          => 'ModPerl',
-            request_handler => $mw->hander( sub {
+            request_handler => $mw->handler( sub {
                 my $req = shift;
                 $req = Acore::WAF::Util->adjust_request_mod_perl($req);
                 <?= raw app_name() ?>->new->handle_request($config, $req);
