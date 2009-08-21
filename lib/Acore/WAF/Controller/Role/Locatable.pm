@@ -13,7 +13,7 @@ sub set_location {
                  ? $args->{location}
                  : decamelize( (split /::/, $class)[-1] );
 
-    $c->log->info("set location: $location");
+    $c->log->debug("set location: $location");
 
     no strict 'refs';
     ${"${class}::Location"} = $location;
