@@ -91,10 +91,10 @@
           $('#file-info .size').text( result.size + " bytes" );
           $('#file-info .mtime').text( result.mtime );
           if (result.size >=  1024*1024 || !result.editable) {
-            $('#edit-file').hide();
+            $('#save-file').val("書き込み権限がありません").attr({disabled: true});
           }
           else {
-            $('#edit-file').show();
+            $('#save-file').val("保存").attr({disabled: false});
           }
           $('#editor').hide();
           $('#file-editor-main').show();
