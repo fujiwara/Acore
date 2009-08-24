@@ -57,6 +57,8 @@ __PACKAGE__->setup(qw/ Sample FormValidator Session FillInForm TT /);
     connect "any_location/:action", to controller "AnyLocation";
     connect "somewhere/:action",    to controller "AnyLocation" => undef,
         args => { location => "somewhere" };
+
+    connect "rd/:url", to bundled "Redirector" => "redirect";
 }
 
 1;

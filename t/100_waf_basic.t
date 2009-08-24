@@ -1045,6 +1045,55 @@ Status: 200
 
 somewhere somewhere somewhere
 
+=== redirector
+--- uri
+http://localhost/rd/
+--- response
+Content-Length: 9
+Content-Type: text/html; charset=utf-8
+Status: 404
+
+Not Found
+
+=== redirector http://example.com
+--- uri
+http://localhost/rd/http://example.com
+--- response
+Location: http://example.com
+Content-Length: 0
+Content-Type: text/html; charset=utf-8
+Status: 302
+
+=== redirector https://example.com
+--- uri
+http://localhost/rd/https://example.com
+
+--- response
+Location: https://example.com
+Content-Length: 0
+Content-Type: text/html; charset=utf-8
+Status: 302
+
+=== redirector example.com/foo/bar
+--- uri
+http://localhost/rd/example.com/foo/bar
+
+--- response
+Location: http://example.com/foo/bar
+Content-Length: 0
+Content-Type: text/html; charset=utf-8
+Status: 302
+
+=== redirector example.com/foo/bar?a=b&c=%20
+--- uri
+http://localhost/rd/example.com/foo/bar?a=b&c=%20
+
+--- response
+Location: http://example.com/foo/bar?a=b&c=%%20
+Content-Length: 0
+Content-Type: text/html; charset=utf-8
+Status: 302
+
 === ovreride finalize
 --- preprocess
 {
