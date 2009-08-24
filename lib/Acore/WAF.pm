@@ -342,13 +342,15 @@ sub handle_request {
 
 sub _prepare_for_mobile {
     my $self = shift;
+    require Encode::JP::Mobile;
 
     my $ma = $self->mobile_agent;
     $self->encoding(
-        $ma->is_non_mobile                     ? 'utf-8'
-      : $ma->is_docomo && $ma->xhtml_compliant ? 'utf-8'
-      : $ma->is_softbank && $ma->is_type_3gc   ? 'utf-8'
-      :                                          'cp932'
+        $ma->is_non_mobile  ? 'utf-8'
+      : $ma->is_docomo      ? 'x-sjis-docomo'
+      : $ma->is_ezweb       ? 'x-sjis-ezweb-auto'
+      : $ma->is_softbank    ? 'x-utf8-softbank'
+      :                       'cp932'
     );
 }
 
@@ -387,8 +389,9 @@ sub _output_stack_trace {
 sub charset {
     my $self = shift;
     my $encoding = $self->encoding;
-    return $encoding eq 'cp932' ? "Shift_JIS"
-                                : $encoding;
+    return $encoding =~ /cp932|sjis/i ? "Shift_JIS"
+         : $encoding =~ /utf-?8/i     ? "utf-8"
+         :                              $encoding;
 }
 
 sub finalize {

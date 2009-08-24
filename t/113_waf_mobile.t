@@ -6,7 +6,7 @@ use HTTP::Request;
 use Data::Dumper;
 use Clone qw/ clone /;
 
-plan tests => 12;
+plan tests => 13;
 
 filters {
     response => [qw/chomp/],
@@ -89,7 +89,7 @@ $req->header( "User-Agent" => "DoCoMo/2.0 N900i(c100;TB;W24H12)" );
     ok $sid, "session_id $sid";
     ok $html =~ m{\Qhttp://localhost/act/mobile?_sid=$sid\E};
     my (undef, $charset) = $response->content_type;
-    ok $charset =~ m{UTF-8}i;
+    ok $charset =~ m{Shift_JIS}i;
 }
 
 === ezweb
@@ -102,5 +102,17 @@ $req->header( "User-Agent" => "KDDI-HI31 UP.Browser/6.2.0.6.2 (GUI) MMP/2.0" );
     my $html = $response->content;
     my (undef, $charset) = $response->content_type;
     ok $charset =~ m{Shift_JIS}i;
+}
+
+=== softbank
+--- uri
+http://localhost/act/mobile
+--- preprocess
+$req->header( "User-Agent" => "SoftBank/1.0/910T/TJ001/SNXXXXXXXXX Browser/NetFront/3.3 Profile/MIDP-2.0 Configuration/CLDC-1.1" );
+--- handle_response
+{
+    my $html = $response->content;
+    my (undef, $charset) = $response->content_type;
+    ok $charset =~ m{UTF-8}i;
 }
 
