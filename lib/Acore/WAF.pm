@@ -506,8 +506,15 @@ sub detach {
 
 sub dispatch_static {
     my (undef, $self, $args) = @_;
+    require Cwd;
 
-    my $file = $self->path_to("static", $args->{filename});
+    my $dir  = $self->path_to("static");
+    my $file = $dir->file( $args->{filename} );
+    my $realpath = Cwd::realpath( $file->absolute->stringify );
+    unless ( $dir->subsumes($realpath) ) {
+        $self->error( 403 => "Can't serve above $dir" );
+        return;
+    }
     $self->serve_static_file($file);
 }
 

@@ -277,6 +277,16 @@ Status: 200
 
 0123456789
 
+=== static directory traversal
+--- uri
+http://localhost/static/../WAFTest.pm
+--- response
+Content-Length: 9
+Content-Type: text/html; charset=utf-8
+Status: 403
+
+Forbidden
+
 === redirect
 --- uri
 http://localhost/act/rd
