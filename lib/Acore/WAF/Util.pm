@@ -45,8 +45,13 @@ sub adjust_request_fcgi {
 {
     package ## hide for pause
         HTTP::Engine::Request;
-    use Any::Moose;
-    has location => ( is => "rw" );
+    sub location {
+        my $self = shift;
+        if (@_) {
+            $self->{location} = shift;
+        }
+        $self->{location};
+    }
 }
 
 {
@@ -55,8 +60,6 @@ sub adjust_request_fcgi {
 
     has uri    => ( is => "rw" );
     has method => ( is => "rw" );
-
-    __PACKAGE__->meta->make_immutable;
 }
 
 1;

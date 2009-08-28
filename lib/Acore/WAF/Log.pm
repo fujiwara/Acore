@@ -22,8 +22,6 @@ has level => (
 
 has buffer => (
     is      => "rw",
-    isa     => "Str",
-    defualt => "",
 );
 
 has timestamp => (

@@ -129,6 +129,13 @@ has for_mobile => (
     },
 );
 
+has components => (
+    is      => "rw",
+    isa     => "HashRef",
+    default => sub { +{} },
+    lazy    => 1,
+);
+
 sub DESTROY {
     my $self = shift;
     if ( $self->{acore} ) {
@@ -659,13 +666,49 @@ sub _call_trigger {
     }
 }
 
-around "forward" => _record_time( sub { sprintf "%s->%s", @_[1,2] } );
+around "forward" => _record_time(
+    sub { sprintf "%s->%s", map { blessed($_) || $_ } @_[1,2] }
+);
 sub forward {
     my $self = shift;
-    my ($class, $action, @args) = @_;
+    my ($class_or_self, $action, @args) = @_;
 
+    my $class = blessed($class_or_self) || $class_or_self;
     $self->log->debug("forward to ${class}->${action}");
-    $class->$action( $self, @args );
+
+    $class_or_self->$action( $self, @args );
+}
+
+sub _component {
+    my $self = shift;
+    my ($type, $name) = @_;
+
+    my $class     = blessed($self) || $self;
+    my $component = "${class}::${type}::${name}";
+    $self->components->{$component}
+        ||= do {
+            $self->log->debug("loading component $component");
+            $component->require or die "Can't require $component $!";
+            $component = $component->new() if $component->can("new");
+            $component->setup($self)
+                if $component->can("setup");
+            $component;
+        };
+}
+
+sub model {
+    my $self = shift;
+    $self->_component("Model", @_);
+}
+
+sub view {
+    my $self = shift;
+    $self->_component("View", @_);
+}
+
+sub controller {
+    my $self = shift;
+    $self->_component("Controller", @_);
 }
 
 sub login {
@@ -815,7 +858,6 @@ EOF
     $c->response->body($body);
 }
 
-__PACKAGE__->meta->make_immutable;
 no Any::Moose;
 
 1;
@@ -1023,6 +1065,17 @@ Like TT's [% INCLUDE %]
 
  ?= raw $_[0]->render_part("file");
 
+=item render_string
+
+Render string as template.
+
+ my $tmpl = <<'_END_';
+ ? my $c = $_[0];
+ <?= $c->stash->{foo} ?>
+ _END_
+
+ $text = $c->render_string($tmpl);
+
 =item serve_static_file
 
 Serve static file in $config->{root} dir.
@@ -1105,6 +1158,37 @@ Send error to client and detach().
  }
 
 If templates/[status_code].mt exists, it be use for error message.
+
+=item charset
+
+Returns character set string for Content-Type header's charset.
+
+  $c->encoding('cp932');
+  $charset = $c->charset;  # Shift_JIS not cp932
+
+=item view
+
+Your application's view class or instnace.
+
+  $c->view("Foo");   # YourApp::View::Foo or instance of "YourApp::View::Foo"
+
+If view class can "new" method, returns instance.
+
+=item model
+
+Your application's model class or instnace.
+
+  $c->model("Bar");   # YourApp::Model::Bar or instance of "YourApp::Model::Bar"
+
+If model class can "new" method, returns instance.
+
+=item controller
+
+Your application's controller class or instnace.
+
+  $c->controller("Baz");   # YourApp::Controller::Baz or instance of "YourApp::Controller::Foo"
+
+If controller class can "new" method, returns instance.
 
 =item welcome_message
 
