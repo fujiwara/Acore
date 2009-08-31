@@ -26,6 +26,17 @@ has no_x_json_header => (
     default => 0,
 );
 
+has converter => (
+    is      => "rw",
+    default => sub {
+        my $json = JSON->new;
+        $json->allow_blessed(1);
+        $json->convert_blessed(1);
+        $json;
+    },
+    lazy => 1,
+);
+
 __PACKAGE__->meta->make_immutable;
 no Any::Moose;
 
@@ -42,12 +53,7 @@ sub setup {
 sub process {
     my ($self, $c, $obj) = @_;
 
-    my $json_converter = JSON->new;
-    $json_converter->allow_blessed(1);
-    $json_converter->convert_blessed(1);
-    $json_converter->pretty(1);
-
-    my $json = $json_converter->encode($obj);
+    my $json = $self->converter->encode($obj);
 
     my $cb_param = $self->allow_callback ? $self->callback_param : undef;
     my $cb       = $cb_param ? $c->req->param($cb_param) : undef;

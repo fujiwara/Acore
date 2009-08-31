@@ -1,5 +1,8 @@
 package Acore::WAF::Model;
 
+use strict;
+use warnings;
+
 1;
 
 __END__
