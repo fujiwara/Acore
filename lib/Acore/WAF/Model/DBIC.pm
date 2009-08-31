@@ -14,19 +14,35 @@ has config => (
     isa => "HashRef",
 );
 
+has _dbh_builder => (
+    is  => "rw",
+    isa => "CodeRef",
+);
+
 sub setup {
     my $self   = shift;
     my $c      = shift;
-    $self->config( $c->config->{"Model::DBIC"} );
+    my $config = $c->config->{"Model::DBIC"} || {};
+    $self->config($config);
+
+    unless ( $config->{connect_info} ) {
+        $self->_dbh_builder(sub { $c->acore->dbh });
+    }
     $self;
 }
 
 sub _build_schema {
-    my $self    = shift;
-    my $config = $self->config;
+    my $self = shift;
+
+    my $config       = $self->config;
     my $schema_class = $config->{schema_class};
     $schema_class->require or die "Can't require $schema_class: $!";
-    $schema_class->connect(@{ $config->{connect_info} });
+    if ( $config->{connect_info} ) {
+        $schema_class->connect(@{ $config->{connect_info} });
+    }
+    else {
+        $schema_class->connect( $self->_dbh_builder );
+    }
 }
 
 sub resultset {
@@ -55,12 +71,29 @@ Acore::WAF::Model::DBIC - DBIC model class
  package YourApp::Controller::Foo;
  $c->model("DBIC")->schema->resultset("Foo")->find($id);
 
+ # YourApp.yaml (reuse Acore->dbh)
+ dsn:
+   - dbi:Pg:dbname=yourdb
+   - user
+   - pass
+   - AutoCommit: 0
+     RaiseError: 1
+ "Model::DBIC":
+    schema_class: YourSchema
+
  # YourApp.yaml
+ dsn:
+   - dbi:Pg:dbname=acore_db
+   - user
+   - pass
+   - AutoCommit: 0
+     RaiseError: 1
  "Model::DBIC":
     schema_class: YourSchema
     connect_info:
-      - dbi:Pg:dbname=yourdb
+      - dbi:Pg:dbname=schema_db
       - user
       - pass
       - AutoCommit: 0
         RaiseError: 1
+
