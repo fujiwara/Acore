@@ -635,7 +635,16 @@ sub render {
 around "render_part" => _record_time( sub { sprintf "render('%s')", $_[1] } );
 sub render_part {
     my ($self, $tmpl, @args) = @_;
-    return $self->renderer->render_file( $tmpl, $self, @args )->as_string;
+    my $renderer = $self->renderer;
+    if ($args[0] eq "wrapper" && defined $args[1]) {
+        shift @args;
+        my $wrapper = shift @args;
+        my $content = $renderer->render_file( $tmpl, $self, @args )->as_string;
+        return $renderer->render_file( $wrapper, $self, $content )->as_string;
+    }
+    else {
+        return $renderer->render_file( $tmpl, $self, @args )->as_string;
+    }
 }
 
 sub render_string {

@@ -4,8 +4,8 @@ use strict;
 use warnings;
 require Exporter;
 our @ISA         = qw(Exporter);
-our @EXPORT_OK   = qw( to controller bundled class );
-our %EXPORT_TAGS = ( dispatcher => [qw/ to controller bundled class /] );
+our @EXPORT_OK   = qw( to controller bundled class extra );
+our %EXPORT_TAGS = ( dispatcher => [qw/ to controller bundled class extra /] );
 
 sub to {
     my ($controller, $action, @args) = @_;
@@ -22,6 +22,11 @@ sub bundled($) { "Acore::WAF::Controller::$_[0]"} ## no critic
 sub controller($) {                               ## no critic
     ( my $class = (caller)[0] ) =~ s/::Dispatcher$//;
     "${class}::Controller::$_[0]";
+}
+
+sub extra($) {                                   ## no critic
+    my ($type, $name) = split /::/, $_[0];
+    "AcoreX::${type}::Controller::${name}";
 }
 
 sub adjust_request_mod_perl {
