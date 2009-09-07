@@ -689,7 +689,7 @@ sub _component {
     $self->components->{$component}
         ||= do {
             $self->log->debug("loading component $component");
-            $component->require or die "Can't require $component $!";
+            $component->require or die "Can't require $component $@";
             $component = $component->new() if $component->can("new");
             $component->setup($self)
                 if $component->can("setup");
