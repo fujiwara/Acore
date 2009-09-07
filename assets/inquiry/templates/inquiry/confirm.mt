@@ -1,5 +1,7 @@
 ? my $c        = shift;
 ? my $location = location();
+? $c->renderer->wrapper_file("$location/wrapper.mt", $c)->(sub {
+
 <form action="<?= $c->uri_for(qq{$location/finish}) ?>" method="post">
 <p>以下の内容で送信してよろしいですか?</p>
   お名前 : <?= $c->req->param("$location/name") ?><br/>
@@ -11,3 +13,5 @@
   <input type="submit" value="送信する"/>
   <input type="submit" value="入力画面へ戻る" name="back" />
 </form>
+
+? });

@@ -223,10 +223,10 @@ my $config = $loader->load(
     $ENV{'<?= raw uc app_name() ?>_CONFIG_LOCAL'},
 );
 my $mw = HTTP::Engine::Middleware->new;
-$mw->install(
-    'HTTP::Engine::Middleware::ReverseProxy',
-    { allowed_remote => $config->{allowed_remote}, }
-);
+my $opt = {};
+$opt->{allowed_remote} = $config->{allowed_remote}
+    if defined $config->{allowed_remote};
+$mw->install('HTTP::Engine::Middleware::ReverseProxy', $opt);
 
 sub create_engine {
     my($class, $r, $context_key) = @_;

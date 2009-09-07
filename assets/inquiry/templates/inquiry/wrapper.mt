@@ -1,4 +1,4 @@
-? my ($c, $content) = @_;
+? my ($content, $c, @args) = @_;
 <html>
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=<?= $c->charset ?>"/>
@@ -6,6 +6,6 @@
   </head>
   <body>
     <h1>お問い合わせ</h1>
-?= raw $content
+?= $content
   </body>
 </html>

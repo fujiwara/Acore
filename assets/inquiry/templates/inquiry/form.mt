@@ -1,6 +1,7 @@
 <?
   my $c        = shift;
   my $location = location();
+  $c->renderer->wrapper_file("$location/wrapper.mt", $c)->(sub {
 ?>
 <form action="<?= $c->uri_for(qq{$location/confirm}) ?>" method="post">
 ? if ( $c->form->has_error ) {
@@ -20,4 +21,6 @@
   <input type="hidden" name="sid" value="<?= $c->session->session_id ?>" />
 ? }
 </form>
+
+? });
 

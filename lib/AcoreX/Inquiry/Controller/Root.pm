@@ -51,7 +51,7 @@ sub _validate {
     }
     $c->form->check( %$cur_rules );
     if ($c->form->has_error) {
-        $c->render("$Location/form.mt", wrapper => "$Location/wrapper.mt");
+        $c->render("$Location/form.mt");
         $c->fillform;
         $c->detach;
     }
@@ -59,39 +59,27 @@ sub _validate {
 
 sub form_GET {
     my ($self, $c, $args) = @_;
-    $c->render(
-        "$Location/form.mt",
-        wrapper => "$Location/wrapper.mt",
-    );
+    $c->render("$Location/form.mt");
 }
 
 sub confirm_POST {
     my ($self, $c, $args) = @_;
 
     $c->forward( $self => "_validate" );
-    $c->render(
-        "$Location/confirm.mt",
-        wrapper => "$Location/wrapper.mt",
-    );
+    $c->render("$Location/confirm.mt");
     $c->fillform;
 }
 
 sub finish_GET {
     my ($self, $c, $args) = @_;
-    $c->render(
-        "$Location/finish.mt",
-        wrapper => "$Location/wrapper.mt",
-    );
+    $c->render("$Location/finish.mt");
 }
 
 sub finish_POST {
     my ($self, $c, $args) = @_;
 
     if ($c->req->param('back')) {
-        $c->render(
-            "$Location/form.mt",
-            wrapper => "$Location/wrapper.mt",
-        );
+        $c->render("$Location/form.mt");
         $c->fillform;
         return;
     }
@@ -122,10 +110,7 @@ sub finish_POST {
     }
     else {
         $c->stash->{id} = $id;
-        $c->render(
-            "$Location/finish.mt",
-            wrapper => "$Location/wrapper.mt",
-        );
+        $c->render("$Location/finish.mt");
     }
 }
 
