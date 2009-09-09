@@ -6,9 +6,6 @@ use utf8;
 
 use LWP::UserAgent;
 use XML::Feed;
-use Data::Visitor::Encode;
-
-my $Visitor = Data::Visitor::Encode->new;
 
 sub fetch_uri {
     my ( $self, $c, $uri ) = @_;
