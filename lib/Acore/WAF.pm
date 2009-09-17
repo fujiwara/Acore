@@ -1036,6 +1036,7 @@ If config->static_base is defined and first argument for uri_for() matches /stat
 Redirect to URL.
 
  $c->redirect( $c->uri_for('/path/to') );
+ $c->redirect( $c->uri_for('/path/to'), 301 ); # Permanently
 
 =item render
 
