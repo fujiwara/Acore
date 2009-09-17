@@ -1,6 +1,6 @@
 # -*- mode:perl -*-
 use strict;
-use Test::More tests => 74;
+use Test::More tests => 76;
 use Test::Exception;
 use Data::Dumper;
 use t::Cache;
@@ -58,6 +58,9 @@ for my $cache ( undef, t::Cache->new({}) )
     is_deeply $docs[0] => $doc;
     is_deeply $docs[1] => $doc4;
     is $ac->search_documents_count({ path => "/foo/" }) => 2;
+    my %count_by_key
+        = $ac->search_documents_count_by_key({ view => "path/all" });
+    is_deeply \%count_by_key => { "/foo/bar/baz" => 1, "/foo/boo" => 1 };
 
     my $updated_on  = $docs[0]->updated_on;
     sleep 1;

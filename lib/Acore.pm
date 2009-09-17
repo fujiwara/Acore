@@ -430,6 +430,22 @@ sub search_documents_count {
     $count;
 }
 
+sub search_documents_count_by_key {
+    my $self = shift;
+    my $args = shift;
+    my $view;
+    ($view, $args) = $self->_search_documents_args($args);
+    $args->{include_docs} = 0;
+
+    my $itr = $self->storage->document->view($view);
+    my %count;
+    while ( my $map = $itr->next ) {
+        no warnings;
+        $count{ $map->{key} } += 1;
+    }
+    %count;
+}
+
 sub delete_document {
     my ($self, $doc) = @_;
 
@@ -637,6 +653,24 @@ Search Acore::Documents from storage, path (first match) or tag (full match) or 
  });
 
 Arguments are pass to DBIx::CouchLike->view( $view, \%arguments );
+
+=item search_documents_count
+
+Search Acore::Documents from storage and returning count.
+
+ $num = $acore->search_documents_count({ path => "/foo/bar" });
+ $num = $acore->search_documents_count({ tag  => "cat" });
+ $num = $acore->search_documents({ view => "xxx/all", key => "foo" });
+
+=item search_documents_count_by_key
+
+Search Acore::Documents from storage and returning count grouped by key.
+
+ %num = $acore->search_documents({ view => "xxx/all" });
+ # %num = (
+ #    key1 => $num_of_key1,
+ #    key2 => $num_of_key2,
+ # )
 
 =item fulltext_search_documents
 
