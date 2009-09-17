@@ -51,7 +51,7 @@ sub _entry_to_hashref {
 sub process {
     my ( $self, $c ) = @_;
 
-    my $res      = $self->fetch_uri( $c, $c->req->param("uri") );
+    my $res      = $c->forward( $self, "fetch_uri", $c->req->param("uri") );
     my $content  = $res ? $res->content : '';
     my $feed    = eval { XML::Feed->parse(\$content) }
                     or $c->error( 204 => "Can't parse feed. $@" );
