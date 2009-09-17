@@ -18,8 +18,7 @@ sub fetch_uri {
 
 sub _e($) {   ## no critic
     return unless defined $_[0];
-    utf8::decode($_[0]) unless utf8::is_utf8($_[0]);
-    "$_[0]";
+    Encode::decode_utf8($_[0]);
 }
 
 sub _feed_to_hashref {

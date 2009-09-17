@@ -1,6 +1,8 @@
 package Acore::WAF::Controller::REST;
+
 use strict;
 use warnings;
+use Encode;
 use JSON;
 
 sub _get_document {
@@ -19,9 +21,7 @@ sub _get_document {
 sub _decode_body {
     my ($self, $c) = @_;
 
-    my $body = $c->request->raw_body;
-    utf8::decode($body) unless utf8::is_utf8($body);
-
+    my $body   = Encode::decode_utf8( $c->request->raw_body );
     my $json   = JSON->new;
     my $object = eval { $json->decode($body) };
     if ( $@ || !$object || ref $object ne "HASH" ) {

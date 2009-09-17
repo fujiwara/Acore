@@ -47,9 +47,9 @@ sub uri_unescape() {  ## no critic
     joint {
         my $input = $_[0];
         utf8::encode($input) if utf8::is_utf8($input);
-        my $output = URI::Escape::uri_unescape($input);
-        utf8::decode($output) unless utf8::is_utf8($output);
-        $output;
+        Encode::decode_utf8(
+            URI::Escape::uri_unescape($input)
+        );
     };
 }
 

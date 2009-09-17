@@ -535,7 +535,7 @@ sub document_attachment_POST {
 
     if ( my $upload = $c->req->upload('attachment_file') ) {
         my $filename = $upload->filename;
-        utf8::decode($filename) unless utf8::is_utf8($filename);
+        $filename = Encode::decode_utf8($filename);
         $filename = (split /\\/, $filename)[-1] if $filename =~ /\\/;
         $filename = URI::Escape::uri_escape_utf8($filename);
 
@@ -1035,8 +1035,7 @@ sub explorer_file_info_GET {
         editable => -w $file,
     };
     if ( $c->req->param('body') && $info->{size} <= 1024 * 1024 ) {
-        $info->{body} = $file->slurp;
-        utf8::decode($info->{body});
+        $info->{body} = Encode::decode_utf8( $file->slurp );
     }
     $c->res->content_type('application/json; charset=utf-8');
     $c->res->body( JSON->new->encode($info) );
