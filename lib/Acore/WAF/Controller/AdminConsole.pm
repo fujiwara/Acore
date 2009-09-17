@@ -20,6 +20,12 @@ our $Location;
 sub _auto {
     my ($self, $c, $args) = @_;
     $self->set_location($c, $args);
+
+    $c->res->header(
+        "pragma"         => "no-cache",
+        "Cache-Controle" => "no-cache",
+    ) if $args->{action} ne "static";
+
     1;
 }
 

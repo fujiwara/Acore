@@ -475,6 +475,8 @@ sub _dispatch {
         $self->log->debug( "Dispatch info is:\n" . $table->draw );
     }
 
+    $rule->{args}->{action} = $action; # pass action to controller
+
     if ( $self->can("_auto") ) {
         $self->forward( blessed $self, "_auto", $rule->{args} )
             or return;
