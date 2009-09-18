@@ -1249,6 +1249,7 @@ t/114_waf_component.t
 t/115_waf_view_json.t
 t/116_waf_model_dbic.t
 t/117_waf_model_dbic2.t
+t/118_waf_feed2js.t
 t/11_document_search.t
 t/12_document_loader.t
 t/13_document_senna.t
@@ -1266,6 +1267,7 @@ t/connect_db.pm
 t/MyDocument.pm
 t/MySchema.pm
 t/MyUser.pm
+t/sample.rss
 t/templates/broken.tt
 t/templates/form.mt
 t/templates/include.mt
