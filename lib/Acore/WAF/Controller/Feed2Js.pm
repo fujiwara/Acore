@@ -16,10 +16,8 @@ sub fetch_uri {
     return $ua->get($uri);
 }
 
-sub _e($) {   ## no critic
-    return unless defined $_[0];
-    Encode::decode_utf8($_[0]);
-}
+sub _e($;$);  ## no critic
+*_e = \&Encode::decode_utf8;
 
 sub _feed_to_hashref {
     my $feed = $_[0];
