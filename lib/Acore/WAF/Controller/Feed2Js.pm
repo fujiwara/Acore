@@ -59,6 +59,8 @@ sub process {
 
     $view->encoding($encoding)
         if Encode::find_encoding($encoding);
+    my $modified = $res->header("Last-Modified");
+    $c->res->header("Last-Modified" => $modified ) if $modified;
 
     $c->forward( $view => "process", $obj );
 }
