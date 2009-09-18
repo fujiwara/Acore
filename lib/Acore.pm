@@ -660,16 +660,16 @@ Search Acore::Documents from storage and returning count.
 
  $num = $acore->search_documents_count({ path => "/foo/bar" });
  $num = $acore->search_documents_count({ tag  => "cat" });
- $num = $acore->search_documents({ view => "xxx/all", key => "foo" });
+ $num = $acore->search_documents_count({ view => "xxx/all", key => "foo" });
 
 =item search_documents_count_by_key
 
 Search Acore::Documents from storage and returning count grouped by key.
 
- %num = $acore->search_documents({ view => "xxx/all" });
+ %num = $acore->search_documents_count_by_key({ view => "tags/all" });
  # %num = (
- #    key1 => $num_of_key1,
- #    key2 => $num_of_key2,
+ #    tagA => $num_of_tagA,
+ #    tagB => $num_of_tagB,
  # )
 
 =item fulltext_search_documents
