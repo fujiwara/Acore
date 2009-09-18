@@ -1149,8 +1149,6 @@ assets/inquiry/templates/inquiry/finish.mt
 assets/inquiry/templates/inquiry/form.mt
 assets/inquiry/templates/inquiry/wrapper.mt
 Changes
-inc/Clone.pm
-inc/DBD/SQLite.pm
 inc/Math/BigInt.pm
 inc/Module/Install.pm
 inc/Module/Install/AuthorTests.pm
@@ -1284,6 +1282,7 @@ t/templates/sites/page.mt
 t/templates/sites/page/foo/bar.mt
 t/templates/test.mt
 t/templates/test.tt
+t/tmp/dummy
 t/WAFTest.pm
 t/WAFTest/Controller.pm
 t/WAFTest/Controller/AnyLocation.pm

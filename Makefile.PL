@@ -27,11 +27,9 @@ requires 'Data::Visitor';
 requires 'String::CamelCase';
 requires 'HTTP::MobileAgent' => 0.27;
 
-test_requires 'DBD::SQLite';
 test_requires 'Test::Base';
 test_requires 'Text::Diff';
 test_requires 'Math::BigInt';
-test_requires 'Clone';
 
 tests 't/*.t';
 author_tests 'xt';

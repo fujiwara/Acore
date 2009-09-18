@@ -1,11 +1,13 @@
 # -*- mode:perl -*-
 use strict;
-use Test::More tests => 19;
+use Test::More;
 use Test::Exception;
 use Data::Dumper;
 use utf8;
 
 BEGIN {
+    eval "use Senna";
+    plan $@ ? (skip_all => "Senna in not installed") : (tests => 19);
     use_ok 'Acore';
     use_ok 'Acore::Document';
 };
@@ -17,8 +19,7 @@ has  'for_search' => ( is => "rw" );
 with 'Acore::Document::Role::FullTextSearch';
 
 package main;
-SKIP: {
-    skip "Senna is not installed.", 17 unless eval { require Senna };
+{
     my @docs;
     my $dbh = do "t/connect_db.pm";
     my $ac  = Acore->new({ dbh => $dbh });
