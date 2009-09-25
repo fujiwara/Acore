@@ -1,6 +1,6 @@
 # -*- mode:perl -*-
 use strict;
-use Test::More tests => 31;
+use Test::More tests => 34;
 use Path::Class qw/ file /;
 
 BEGIN {
@@ -74,5 +74,18 @@ BEGIN {
     $log->error('put to file more');
     $log->flush;
     like file("t/tmp/error_log")->slurp => qr/put to file more/;
+}
+
+
+{
+    my $log = Acore::WAF::Log->new();
+    $log->error("%s %d", "string", 123);
+    like $log->buffer => qr{string 123};
+
+    $log->error("float %.2f", 0.123456);
+    like $log->buffer => qr{float 0\.12};
+
+    $log->error('%percent');
+    like $log->buffer => qr{\%percent};
 }
 

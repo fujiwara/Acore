@@ -50,13 +50,15 @@ for my $level ( keys %$Levels ) {
     no strict "refs";
     my $level_num = $Levels->{$level};
     *{$level} = sub {
-        my ($self, $msg) = @_;
+        my ($self, $msg, @args) = @_;
         return if $level_num > $Levels->{ $self->{level} };
         return if $self->{disabled};
 
         $self->{buffer} .= sprintf("[%s] ", scalar localtime(time) )
             if $self->{timestamp};
 
+        $msg = sprintf $msg, @args
+            if @args;
         if ($self->{caller}) {
             my (undef, $filename, $line) = caller;
             $self->{buffer} .= "[$level] $msg at $filename line $line\n";
@@ -96,6 +98,7 @@ Acore::WAF::Log - log module
   $log = Acore::WAF::Log->new;
   $log->level('error');
   $log->error('Error message.'); # send message to STDERR
+  $log->error('message %s %d', "string", 12345); # format by sprintf
 
   $log->file('/path/to/log_file'); # output log to file.
 
