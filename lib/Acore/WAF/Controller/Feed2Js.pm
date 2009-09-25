@@ -46,7 +46,7 @@ sub _entry_to_hashref {
 }
 
 sub process {
-    my ( $self, $c ) = @_;
+    my ( $self, $c, $args ) = @_;
 
     my $res      = $c->forward( $self, "fetch_uri", $c->req->param("uri") );
     my $content  = $res ? $res->content : '';
@@ -60,7 +60,10 @@ sub process {
     $view->encoding($encoding)
         if Encode::find_encoding($encoding);
     my $modified = $res->header("Last-Modified");
-    $c->res->header("Last-Modified" => $modified ) if $modified;
+    if ($modified) {
+        $c->res->header( "Last-Modified" => $modified );
+        $c->log->debug("Feed2Js: Set Last-Modified: $modified");
+    }
 
     $c->forward( $view => "process", $obj );
 }
