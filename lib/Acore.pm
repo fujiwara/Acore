@@ -6,7 +6,7 @@ our $VERSION = sprintf '0.%05d', ('$Revision$' =~ /(\d+)/ && $1);
 use Acore::Storage;
 use Acore::User;
 use Acore::Document;
-use Carp;
+use Carp qw/ croak carp /;
 use utf8;
 use Any::Moose;
 use Encode qw/ encode_utf8 /;
