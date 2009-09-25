@@ -21,7 +21,7 @@ sub _auto {
     $args->{location} ||= "inquiry";
     $self->set_location($c, $args);
 
-    if ( $c->req->method eq 'POST' && $c->can('session') ) {
+    if ( $c->req->method eq 'POST' && $c->does('Acore::WAF::Plugin::Session') ) {
         $c->log->debug("session id: " . $c->session->session_id);
         $c->log->debug("session id: " . $c->req->param('sid') );
         if ( $c->req->param('sid') ne $c->session->session_id ) {
@@ -102,7 +102,7 @@ sub finish_POST {
         or $c->error("Can't require $document_class. $@");
 
     $c->acore->put_document( $document_class->new($obj) );
-    if ($c->can('flash')) {
+    if ($c->does('Acore::WAF::Plugin::Session')) {
         $c->flash->set( id => $id );
         $c->redirect(
             $c->uri_for("$Location/finish")

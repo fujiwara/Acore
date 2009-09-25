@@ -18,14 +18,14 @@ has attachment_files => (
 Acore::Document->add_trigger(
     to_object => sub {
         my $self  = shift;
-        return $self unless $self->can('attachment_files');
+        return $self unless $self->does(__PACKAGE__);
         my @files = map { "$_" } @{ $self->attachment_files };
         $self->attachment_files(\@files);
         $self;
     },
     from_object => sub {
         my $self  = shift;
-        return $self unless $self->can('attachment_files');
+        return $self unless $self->does(__PACKAGE__);
         for my $file ( @{ $self->{attachment_files} } ) {
             $file = file($file);
         }
@@ -33,7 +33,7 @@ Acore::Document->add_trigger(
     },
     delete => sub {
         my $self  = shift;
-        return $self unless $self->can('attachment_files');
+        return $self unless $self->does(__PACKAGE__);
         $self->remove_attachment_file($_)
             for @{ $self->attachment_files };
         if ($self->id) {

@@ -291,7 +291,8 @@ sub put_document {
             $doc->updated_on( Acore::DateTime->now() );
         }
         my $old_for_search;
-        if ( $doc->can('update_fts_index') && $self->senna_index_path ) {
+        if ( $doc->does("Acore::Document::Role::FullTextSearch")
+          && $self->senna_index_path ) {
             my $old_doc = $self->get_document({ id => $doc->id });
             if ($old_doc) {
                 $old_for_search = $old_doc->for_search;
@@ -307,7 +308,8 @@ sub put_document {
         if ( defined $old_for_search ) {
             $doc->update_fts_index( $self, $old_for_search );
         }
-        elsif ( $doc->can('create_fts_index') && $self->senna_index_path ) {
+        elsif ( $doc->does("Acore::Document::Role::FullTextSearch")
+             && $self->senna_index_path ) {
             $doc->create_fts_index( $self );
         }
 
@@ -319,7 +321,8 @@ sub put_document {
         $doc = $self->get_document({ id => $id });
 
         $doc->create_fts_index( $self )
-            if $doc->can('create_fts_index') && $self->senna_index_path;
+            if $doc->does("Acore::Document::Role::FullTextSearch")
+            && $self->senna_index_path;
 
         return $doc;
     }
@@ -334,7 +337,9 @@ sub put_document_multi {
         if ( $doc->id ) {
             my $id = $doc->id;
             my $old_for_search;
-            if ( $doc->can('update_fts_index') && $self->senna_index_path ) {
+            if ( $doc->does("Acore::Document::Role::FullTextSearch")
+              && $self->senna_index_path )
+            {
                 my $old_doc = $self->get_document({ id => $id });
                 if ($old_doc) {
                     $old_for_search{$id} = $old_doc->for_search;
@@ -360,7 +365,9 @@ sub put_document_multi {
             if ( defined $old_for_search{ $doc->id } ) {
                 $doc->update_fts_index( $self, $old_for_search{ $doc->id } );
             }
-            elsif ( $doc->can('create_fts_index') && $self->senna_index_path ) {
+            elsif ( $doc->does("Acore::Document::Role::FullTextSearch")
+                 && $self->senna_index_path )
+            {
                 $doc->create_fts_index( $self );
             }
             push @return_doc, $doc;
@@ -374,7 +381,8 @@ sub put_document_multi {
         my @doc = $self->all_documents({ id_in => \@id });
         for my $doc (@doc) {
             $doc->create_fts_index( $self )
-                if $doc->can('create_fts_index') && $self->senna_index_path;
+                if $doc->does("Acore::Document::Role::FullTextSearch")
+                && $self->senna_index_path;
         }
         push @return_doc, @doc;
     }
@@ -454,7 +462,9 @@ sub delete_document {
         $cache->remove("Acore::Document/path=". $doc->path);
     }
     my $old_for_search;
-    if ( $doc->can('delete_fts_index') && $self->senna_index_path ) {
+    if ( $doc->does("Acore::Document::Role::FullTextSearch")
+      && $self->senna_index_path )
+    {
         my $old_doc = $self->get_document({ id => $doc->id });
         if ($old_doc) {
             $old_for_search = $old_doc->for_search;
