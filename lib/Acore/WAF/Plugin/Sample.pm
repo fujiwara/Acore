@@ -2,15 +2,15 @@ package Acore::WAF::Plugin::Sample;
 
 use strict;
 use warnings;
-use Exporter 'import';
-our @EXPORT = qw/ sample_method /;
+use Any::Moose "::Role";
 
-sub setup {
-    my ($class, $controller) = @_;
-    $controller->add_trigger(
-        AFTER_DISPATCH => sub { },
-    );
-}
+after _dispatch => sub {
+    my $c = shift;
+};
+
+has sumple_attr => (
+    is => "rw",
+);
 
 sub sample_method {
     my $c = shift;

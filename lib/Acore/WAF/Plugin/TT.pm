@@ -3,40 +3,35 @@ package Acore::WAF::Plugin::TT;
 use strict;
 use warnings;
 use Template 2.20;
+use Any::Moose "::Role";
 
-{
-    package Acore::WAF;
-    use Any::Moose;
-
-    has renderer_tt => (
-        is         => "rw",
-        lazy_build => 1,
-    );
-
-    sub _build_renderer_tt {
+has renderer_tt => (
+    is      => "rw",
+    lazy    => 1,
+    default => sub {
         my $c = shift;
         my $config = $c->config->{tt} || {};
         $config->{ENCODING}     ||= 'utf-8';
         $config->{INCLUDE_PATH} ||= $c->path_to('templates')->stringify;
         Template->new($config);
-    }
+    },
+);
 
-    sub render_tt {
-        my ($self, $tmpl) = @_;
-        $self->res->body( $self->render_part_tt($tmpl) );
-    }
+sub render_tt {
+    my ($self, $tmpl) = @_;
+    $self->res->body( $self->render_part_tt($tmpl) );
+}
 
-    sub render_part_tt {
-        my $c      = shift;
-        my $tmpl   = shift;
-        my $output = "";
-        $c->renderer_tt->process(
-            $tmpl,
-            { c => $c, %{ $c->stash } },
-            \$output,
-        ) or die $c->renderer_tt->error();
-        $output;
-    }
+sub render_part_tt {
+    my $c      = shift;
+    my $tmpl   = shift;
+    my $output = "";
+    $c->renderer_tt->process(
+        $tmpl,
+        { c => $c, %{ $c->stash } },
+        \$output,
+    ) or die $c->renderer_tt->error();
+    $output;
 }
 
 1;

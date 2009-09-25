@@ -2,22 +2,16 @@ package Acore::WAF::Plugin::AntiCSRF;
 
 use strict;
 use warnings;
-use Exporter 'import';
-our @EXPORT = qw/ onetime_token csrf_proof /;
 use Digest::SHA;
+use Any::Moose "::Role";
 
 our $base    = qq{anti_csrf};
 our $VERSION = '0.21.1';
 
-sub setup {
-    my ($class, $controller) = @_;
-    $controller->add_trigger(
-        BEFORE_DISPATCH => sub {
-            my $c = shift;
-            $c->config->{$base}->{param} ||= 'onetime_token';
-        },
-    );
-}
+before _dispatch => sub {
+    my $c = shift;
+    $c->config->{$base}->{param} ||= 'onetime_token';
+};
 
 sub onetime_token {
     my $c = shift;
@@ -51,8 +45,6 @@ sub csrf_proof {
     $c->req->param($name, undef);   # for no fill in form.
     1;
 }
-
-
 
 1;
 

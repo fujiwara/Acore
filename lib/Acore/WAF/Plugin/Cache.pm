@@ -2,21 +2,20 @@ package Acore::WAF::Plugin::Cache;
 
 use strict;
 use warnings;
-use Exporter 'import';
-our @EXPORT = qw/ cache /;
+use Carp 'croak';
+use Any::Moose '::Role';
 
-sub cache {
-    my $c = shift;
-    $c->{_cache_obj} ||= _build_cache($c);
-}
-
-sub _build_cache {
-    my $c = shift;
-    my $config      = $c->config->{cache};
-    my $cache_class = $config->{class};
-    $cache_class->require;
-    $cache_class->new($config->{args});
-}
+has cache => (
+    is      => "rw",
+    lazy    => 1,
+    default => sub {
+        my $c           = shift;
+        my $config      = $c->config->{cache};
+        my $cache_class = $config->{class};
+        $cache_class->require or croak("Can't require $cache_class. $@");
+        $cache_class->new($config->{args});
+    },
+);
 
 1;
 __END__

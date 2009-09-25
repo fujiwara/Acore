@@ -2,38 +2,30 @@ package Acore::WAF::Plugin::Session;
 
 use strict;
 use warnings;
-use Want;
-use Exporter 'import';
-our @EXPORT = qw/ session flash /;
-use Acore::WAF ();
+use Any::Moose "::Role";
 
-sub setup {
-    my ($class, $controller) = @_;
-    $controller->add_trigger(
-        AFTER_DISPATCH => sub {
-            my $c = shift;
-            if ( my $session = $c->{_session_obj} ) {
-                if ( my $flash = $c->session->get('__flash_data') ) {
-                    $c->session->set( __flash_data => $flash->finalize );
-                }
-                my ($type) = $c->res->content_type;
-                $session->response_filter($c->response)
-                    if $type eq "" || $type =~ m{^text/x?html};
-            }
-        },
-    );
-}
-
-sub session {
+after _dispatch => sub {
     my $c = shift;
+    if ( my $session = $c->{session} ) {
+        if ( my $flash = $session->get('__flash_data') ) {
+            $session->set( __flash_data => $flash->finalize );
+        }
+        my ($type) = $c->res->content_type;
+        $session->response_filter($c->response)
+            if $type eq "" || $type =~ m{^text/x?html};
+    }
+};
 
-    unless ( $c->{_session_obj} ) {
+has session => (
+    is      => "rw",
+    lazy    => 1,
+    default => sub {
+        my $c = shift;
         require HTTP::Session;
         my $config = $c->config->{session};
         my $store_class = "HTTP::Session::Store::" . $config->{store}->{class};
         my $state_class = "HTTP::Session::State::" . $config->{state}->{class};
         $store_class->require;
-        $state_class->require;
 
         my $state = $c->for_mobile
             ? do {
@@ -42,20 +34,23 @@ sub session {
                 $c->log->debug("using State::URI");
                 HTTP::Session::State::URI->new( session_id_name => "_sid" );
             }
-            : $state_class->new( %{ $config->{state}->{args} } );
+            : do {
+                $state_class->require;
+                $state_class->new( %{ $config->{state}->{args} } );
+            };
 
-        $c->{_session_obj} = HTTP::Session->new(
+        my $s = HTTP::Session->new(
             store   => $store_class->new( %{ $config->{store}->{args} } ),
             state   => $state,
             request => $c->request,
         );
-        $c->log->debug("session inited.");
-    }
-    $c->{_session_obj};
-}
+        $c->log->debug("Session inited. state=$state_class store=$store_class");
+        return $s;
+    },
+);
 
 sub flash {
-    my $c = shift;
+    my $c     = shift;
     my $flash = $c->session->get('__flash_data');
     return $flash if $flash;
 
@@ -64,9 +59,8 @@ sub flash {
     $flash;
 }
 
-package Acore::WAF;
-use Any::Moose;
-around "_uri_for" => sub {
+requires "_uri_for";
+around   "_uri_for" => sub {
     my $next = shift;
     my $self = shift;
     my $uri  = $next->($self, @_);

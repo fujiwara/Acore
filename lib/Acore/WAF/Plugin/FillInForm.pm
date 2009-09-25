@@ -2,8 +2,7 @@ package Acore::WAF::Plugin::FillInForm;
 
 use strict;
 use warnings;
-use Exporter 'import';
-our @EXPORT = qw/ fillform /;
+use Any::Moose "::Role";
 
 sub fillform {
     my $c   = shift;

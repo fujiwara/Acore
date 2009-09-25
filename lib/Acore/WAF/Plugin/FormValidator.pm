@@ -3,16 +3,18 @@ package Acore::WAF::Plugin::FormValidator;
 use strict;
 use warnings;
 use FormValidator::Lite;
-use Exporter 'import';
-our @EXPORT = qw/ form /;
+use Any::Moose "::Role";
 
 FormValidator::Lite->load_constraints(qw/Japanese/);
 
-sub form {
-    my $c = shift;
-    $c->{_form} ||= FormValidator::Lite->new( $c->request );
-    $c->{_form};
-}
+has form => (
+    is      => "rw",
+    lazy    => 1,
+    default => sub {
+        my $c = shift;
+        FormValidator::Lite->new( $c->request );
+    },
+);
 
 1;
 __END__

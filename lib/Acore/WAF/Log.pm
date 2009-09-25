@@ -2,7 +2,7 @@ package Acore::WAF::Log;
 use strict;
 use warnings;
 use Any::Moose;
-use Carp qw/ carp /;
+use Carp qw/ carp croak /;
 
 my $Levels = {
     emerge   => 0,

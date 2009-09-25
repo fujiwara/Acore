@@ -2,8 +2,7 @@ package Acore::WAF::Plugin::OpenID;
 
 use strict;
 use warnings;
-
-our @EXPORT = qw/ authenticate_openid /;
+use Any::Moose "::Role";
 
 sub authenticate_openid {
     my $c = shift;

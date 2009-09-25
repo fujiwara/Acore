@@ -54,11 +54,6 @@ has acore => (
     lazy_build => 1,
 );
 
-has _triggers => (
-    is  => "rw",
-    isa => "HashRef",
-);
-
 has log => (
     is         => "rw",
     isa        => "Acore::WAF::Log",
@@ -176,7 +171,7 @@ sub _build_acore {
         or die "Can't connect DB: " . DBI->errstr;
     my $acore = Acore->new({
         dbh   => $dbh,
-        cache => $self->can('cache') ? $self->cache : undef,
+        cache => $self->does('Acore::WAF::Plugin::Cache') ? $self->cache : undef,
     });
     if ( defined $config->{user_class} ) {
         $config->{user_class}->require
@@ -194,8 +189,6 @@ sub _build_user {
     do { $class->require or die $@ } if $class;
     $user;
 }
-
-my $Triggers = {};
 
 sub _record_time {
     my $display_code = shift;
@@ -242,20 +235,18 @@ sub setup {
     my $class   = shift;
     my @plugins = @_;
 
-    $Triggers->{$class} = +{
-        BEFORE_DISPATCH => [],
-        AFTER_DISPATCH  => [],
-    };
     my $log = Acore::WAF::Log->new;
+    $log->info("setup $class @plugins");
+
     for my $plugin (@plugins) {
-        my $p_class = $plugin =~ /^\+/ ? $plugin : "Acore::WAF::Plugin::${plugin}";
-        $log->debug("loading plugin: $p_class");
-        {
-            no warnings 'redefine';
-            $p_class->use or die "Can't load plugin: $@";
-        }
-        $p_class->setup($class) if $p_class->can('setup');
+        my $p_class
+            = $plugin =~ /^\+/
+                ? do { $plugin =~ s/^\+//; $plugin }
+                : "Acore::WAF::Plugin::${plugin}";
+        $log->info("$class with $p_class");
+        with $p_class;
     }
+    $class->meta->make_immutable;
     $log->flush;
 }
 
@@ -317,8 +308,6 @@ sub handle_request {
     require Time::HiRes;
     my $start = [Time::HiRes::gettimeofday()];
 
-    $self->_triggers( $Triggers->{$class} );
-
     no warnings "redefine";
     local *CGI::ExceptionManager::StackTrace::output = sub {
         $self->_output_stack_trace(@_);
@@ -326,9 +315,7 @@ sub handle_request {
 
     CGI::ExceptionManager->run(
         callback => sub {
-            $self->_call_trigger('BEFORE_DISPATCH');
             $self->_dispatch;
-            $self->_call_trigger('AFTER_DISPATCH');
             return $self->response;
         },
         powered_by => __PACKAGE__,
@@ -652,21 +639,6 @@ sub render_string {
 sub dispatch_favicon {
     my ($self, $c) = @_;
     $c->serve_static_file( $c->path_to("static/favicon.ico") );
-}
-
-sub add_trigger {
-    my $class    = shift;
-    my %triggers = @_;
-    push @{ $Triggers->{$class}->{$_} }, $triggers{$_}
-        for keys %triggers;
-}
-
-sub _call_trigger {
-    my $self  = shift;
-    my $point = shift;
-    for my $sub (@{ $self->_triggers->{$point} }) {
-        $sub->($self);
-    }
 }
 
 around "forward" => _record_time(
@@ -1111,23 +1083,6 @@ Forward to other controller's action.
  }
 
 A forwarded function can return single value. Can't return @array;
-
-=item add_trigger
-
-Class method. Set trigger in YourApp class.
-
-Available trigger points are "BEFORE_DISPATCH" and "AFTER_DISPATCH".
-
- package Acore::WAF::Plugin::Foo;
- sub setup {
-     my ($class, $app) = @_;
-     $app->add_trigger(
-         BEFORE_DISPATCH => sub {
-             my $c = shift;
-             # ...
-         },
-     );
- }
 
 =item finalize
 
