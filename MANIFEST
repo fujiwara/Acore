@@ -1203,6 +1203,7 @@ lib/Acore/WAF/Plugin/Cache.pm
 lib/Acore/WAF/Plugin/FillInForm.pm
 lib/Acore/WAF/Plugin/FormValidator.pm
 lib/Acore/WAF/Plugin/OpenID.pm
+lib/Acore/WAF/Plugin/PageCache.pm
 lib/Acore/WAF/Plugin/Sample.pm
 lib/Acore/WAF/Plugin/Session.pm
 lib/Acore/WAF/Plugin/TT.pm
@@ -1250,6 +1251,7 @@ t/115_waf_view_json.t
 t/116_waf_model_dbic.t
 t/117_waf_model_dbic2.t
 t/118_waf_feed2js.t
+t/119_waf_plugin_page_cache.t
 t/11_document_search.t
 t/12_document_loader.t
 t/13_document_senna.t

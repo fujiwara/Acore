@@ -157,9 +157,9 @@ page-cached
 --- uri
 http://localhost/act/page_cache_enabled_age
 --- response
+Cache-Control: max-age=2
 Content-Length: 11
 Content-Type: text/html; charset=utf-8
-Cache-Control: max-age=2
 Status: 200
 X-PageCache: miss
 
@@ -169,9 +169,9 @@ page-cached
 --- uri
 http://localhost/act/page_cache_enabled_age
 --- response
+Cache-Control: max-age=2
 Content-Length: 11
 Content-Type: text/html; charset=utf-8
-Cache-Control: max-age=2
 Status: 200
 X-PageCache: hit
 
@@ -183,9 +183,9 @@ page-cached
 --- uri
 http://localhost/act/page_cache_enabled_age
 --- response
+Cache-Control: max-age=2
 Content-Length: 11
 Content-Type: text/html; charset=utf-8
-Cache-Control: max-age=2
 Status: 200
 X-PageCache: miss
 
@@ -195,9 +195,9 @@ page-cached
 --- uri
 http://localhost/act/page_cache_enabled_but_no_cache
 --- response
+Cache-Control: no-cache, no-store
 Content-Length: 11
 Content-Type: text/html; charset=utf-8
-Cache-Control: no-cache, no-store
 Status: 200
 X-PageCache: miss,no-store
 
@@ -207,9 +207,9 @@ page-cached
 --- uri
 http://localhost/act/page_cache_enabled_but_no_cache
 --- response
+Cache-Control: no-cache, no-store
 Content-Length: 11
 Content-Type: text/html; charset=utf-8
-Cache-Control: no-cache, no-store
 Status: 200
 X-PageCache: miss,no-store
 
