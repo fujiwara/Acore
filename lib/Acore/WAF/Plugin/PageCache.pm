@@ -47,7 +47,7 @@ around _dispatch => sub {
     my $res = $c->res;
 
     my $expires = $config->{expires} || 60;
-    for my $name ( qw/ Cache-Controle Pragma / ) {
+    for my $name ( qw/ Cache-Control Pragma / ) {
         my $header = $res->header($name);
         next unless $header;
         if ( $header =~ /(?:no-store|no-cache|private)/ ) {

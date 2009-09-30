@@ -23,7 +23,7 @@ sub _auto {
 
     $c->res->header(
         "pragma"         => "no-cache",
-        "Cache-Controle" => "no-cache",
+        "Cache-Control" => "no-cache",
     ) if $args->{action} ne "static";
 
     1;

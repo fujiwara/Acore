@@ -262,14 +262,14 @@ sub page_cache_enabled {
 sub page_cache_enabled_but_no_cache {
     my ($self, $c) = @_;
 
-    $c->res->header("Cache-Controle" => "no-cache, no-store");
+    $c->res->header("Cache-Control" => "no-cache, no-store");
     $c->res->body("page-cached");
 }
 
 sub page_cache_enabled_age {
     my ($self, $c) = @_;
 
-    $c->res->header("Cache-Controle" => "max-age=2");
+    $c->res->header("Cache-Control" => "max-age=2");
     $c->res->body("page-cached");
 }
 
