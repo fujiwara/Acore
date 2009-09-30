@@ -252,6 +252,32 @@ sub mobile {
     ));
 }
 
+sub page_cache_enabled {
+    my ($self, $c) = @_;
+
+    $c->res->header("Last-Modified" => HTTP::Date::time2str(1234567890));
+    $c->res->body("page-cached");
+}
+
+sub page_cache_enabled_but_no_cache {
+    my ($self, $c) = @_;
+
+    $c->res->header("Cache-Controle" => "no-cache, no-store");
+    $c->res->body("page-cached");
+}
+
+sub page_cache_enabled_age {
+    my ($self, $c) = @_;
+
+    $c->res->header("Cache-Controle" => "max-age=2");
+    $c->res->body("page-cached");
+}
+
+sub page_cache_disabled {
+    my ($self, $c) = @_;
+    $c->res->body("no-cached");
+}
+
 package t::WAFTest::Controller::X;
 
 sub xyz {

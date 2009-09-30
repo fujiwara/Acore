@@ -18,3 +18,4 @@ sub sample_method {
 }
 
 1;
+

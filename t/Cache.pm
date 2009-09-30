@@ -3,15 +3,21 @@ package t::Cache;
 use strict;
 use warnings;
 use Any::Moose;
-our $Cache = {};
+use Clone qw/ clone /;
+our $Cache   = {};
+our $Expires = {};
 
 sub get {
     my ($self, $key) = @_;
-    $Cache->{$key};
+    if ( defined $Expires->{$key} && $Expires->{$key} < time() ) {
+        delete $Cache->{$key};
+    }
+    ref $Cache->{$key} ? clone($Cache->{$key}) : $Cache->{$key};
 }
 
 sub set {
-    my ($self, $key, $value) = @_;
+    my ($self, $key, $value, $expires) = @_;
+    $Expires->{$key} = time() + $expires if defined $expires;
     $Cache->{$key} = $value;
 }
 

@@ -131,6 +131,23 @@ has components => (
     lazy    => 1,
 );
 
+has request_for_dispatcher => (
+    is      => "rw",
+    lazy    => 1,
+    default => sub {
+        my $self = shift;
+        my $req  = $self->request;
+        my $path = ref($req->uri) ? $req->uri->path : $ENV{PATH_INFO};
+        my $location = $req->location || '/';
+        $path =~ s{^$location}{};
+
+        Acore::WAF::Util::RequestForDispatcher->new({
+            method => $req->method,
+            uri    => $path,
+        });
+    },
+);
+
 sub DESTROY {
     my $self = shift;
     if ( $self->{acore} ) {
@@ -295,6 +312,7 @@ sub handle_request {
 
     $self->_decode_request;
 
+    my $start_time;
     if ( $self->debug ) {
         $self->log->info("*** Request $COUNT");
         $self->log->debug(sprintf(
@@ -303,10 +321,10 @@ sub handle_request {
         ));
         $self->_debug_request_data if $req->param;
         $COUNT++;
-    }
 
-    require Time::HiRes;
-    my $start = [Time::HiRes::gettimeofday()];
+        require Time::HiRes;
+        $start_time = [Time::HiRes::gettimeofday()];
+    }
 
     no warnings "redefine";
     local *CGI::ExceptionManager::StackTrace::output = sub {
@@ -316,13 +334,12 @@ sub handle_request {
     CGI::ExceptionManager->run(
         callback => sub {
             $self->_dispatch;
-            return $self->response;
         },
         powered_by => __PACKAGE__,
     );
 
     if ($self->debug) {
-        my $elapsed = sprintf '%f', Time::HiRes::tv_interval($start);
+        my $elapsed = sprintf '%f', Time::HiRes::tv_interval($start_time);
         my $av      = $elapsed == 0 ? '??' : sprintf '%.3f', 1 / $elapsed;
         $self->log->debug(
             "Request took ${elapsed}s (${av}/s)\n" . $self->debug_report->draw
@@ -404,25 +421,12 @@ sub finalize {
     1;
 }
 
-sub _request_for_dispatcher {
-    my $self = shift;
-    my $req  = $self->request;
-    my $path = ref($req->uri) ? $req->uri->path : $ENV{PATH_INFO};
-    my $location = $req->location || '/';
-    $path =~ s{^$location}{};
-
-    Acore::WAF::Util::RequestForDispatcher->new({
-        method => $req->method,
-        uri    => $path,
-    });
-}
-
 sub _dispatch {
     my ( $self ) = @_;
 
     my $dispatcher = (ref $self) . "::Dispatcher";
 
-    my $rule = $dispatcher->match( $self->_request_for_dispatcher );
+    my $rule = $dispatcher->match( $self->request_for_dispatcher );
     $self->error(
         404 => "dispatch rule is not found for " . $self->req->uri
     ) unless $rule;
@@ -435,9 +439,9 @@ sub _dispatch {
     $controller->require
         or $self->error( 500 => "Can't require $controller: $@" );
 
-    my $method = uc($self->req->method) eq 'POST'
-               ? uc ( $self->req->param('_method') || $self->req->method )
-               : uc ( $self->req->method );
+    my $method = uc( $self->req->method ) eq 'POST'
+               ? uc( $self->req->param('_method') || $self->req->method )
+               : uc( $self->req->method );
 
     my $sub = $controller->can("${action}_${method}")
            || $controller->can($action);
