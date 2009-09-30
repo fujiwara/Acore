@@ -18,13 +18,14 @@ around _dispatch => sub {
 
     my $config = $c->config->{page_cache} || $c->config->{"Plugin::PageCache"};
     my $regexp = $config->{path_regexp};
-    my $key    = $req->uri;
-    my $cache  = $c->cache;
 
     if ( $path !~ /$regexp/ ) {
         $c->log->debug("PageCache disabled by $path =~ /$regexp/");
         return $orig->(@_);
     }
+
+    my $cache = $c->cache;
+    my $key   = $req->uri;
 
     $c->log->debug("PageCache: match path for cache. %s", $req->uri);
     if ( my $res = $cache->get($key) ) {
