@@ -38,7 +38,6 @@ around _dispatch => sub {
             $res->status(304);
             $res->body("");
         }
-        $c->log->info($res);
         $c->response($res);
         return;
     }
