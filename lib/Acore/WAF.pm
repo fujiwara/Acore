@@ -413,7 +413,7 @@ sub finalize {
     $c_type  ||= "text/html";
     $charset ||= "";
 
-    if ( $c_type =~ m{^text/} && $charset !~ m{charset=}i ) {
+    if ( $c_type =~ m{^text/} && $charset !~ m{[cC][hH][aA][rR][sS][eE][tT]=} ) {
         $charset = "charset=" . $self->charset;
     }
     $res->content_type( $c_type . ( $charset ? "; $charset" : "" ) );
