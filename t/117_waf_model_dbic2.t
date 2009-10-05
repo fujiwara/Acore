@@ -1,10 +1,13 @@
 # -*- mode:perl -*-
 use strict;
-use Test::More tests => 8;
+use Test::More;
 use HTTP::Engine::Test::Request;
 use Scalar::Util qw/ blessed /;
 
 BEGIN {
+    eval { use DBIx::Class::Schema::Loader };
+    plan $@ ? (skip_all => "DBIx::Class::Schema::Loader in not installed") : (tests => 8);
+
     use_ok "Acore";
     use_ok 'Acore::WAF';
     use_ok 't::WAFTest';

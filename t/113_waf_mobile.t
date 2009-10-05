@@ -68,7 +68,7 @@ $req->header( "User-Agent" => "Mozilla/5.0" );
 --- handle_response
 {
     my $html = $response->content;
-    ok $html =~ m{session_id: (\w{32})};
+    ok $html =~ m{session_id: (\w{32})}, "include session_id";
     my $sid  = $1;
     ok $sid, "session_id $sid";
     ok $html =~ m{\Q"http://localhost/act/mobile"\E};
@@ -84,7 +84,7 @@ $req->header( "User-Agent" => "DoCoMo/2.0 N900i(c100;TB;W24H12)" );
 --- handle_response
 {
     my $html = $response->content;
-    ok $html =~ m{session_id: (\w{32})};
+    ok $html =~ m{session_id: (\w{32})}, "include session_id";
     my $sid  = $1;
     ok $sid, "session_id $sid";
     ok $html =~ m{\Qhttp://localhost/act/mobile?_sid=$sid\E};
