@@ -1,4 +1,4 @@
-package Acore::CLI::Loader;
+package Acore::Easy;
 
 use strict;
 use warnings;
@@ -6,11 +6,24 @@ use Acore;
 use Acore::WAF::ConfigLoader;
 use DBI;
 use Exporter "import";
-our @EXPORT = qw/ acore Dump /;
-use Data::Dumper;
 use YAML ();
+use Class::Inspector;
+our $Acore;
+our @EXPORT = qw/ acore init Dump /;
 
-sub acore {
+{
+    for my $sub (@{ Class::Inspector->functions("Acore") }) {
+        next if $sub =~ /^_/ || $sub =~ /^[A-Z_]+$/;
+        no strict "refs";
+        *{"$sub"} = sub {
+            acore()->$sub(@_);
+        };
+        push @EXPORT, $sub;
+    }
+}
+
+sub init {
+    return $Acore if $Acore;
     my $config = shift;
 
     if ( $config && ref $config eq "HASH" ) {
@@ -22,27 +35,27 @@ sub acore {
     }
 
     my $dbh = DBI->connect(@{ $config->{dsn} });
-    return Acore->new({ dbh => $dbh });
+    $Acore = Acore->new({ dbh => $dbh });
 }
+
+*acore = \&init;
 
 sub Dump {
     print YAML::Dump(@_);
 }
 
 1;
-
-__END__
-
 __END__
 
 =head1 NAME
 
-Acore::CLI::Loader - easy to create Acore instance
+Acore::Easy - easy to create Acore instance
 
 =head1 SYNOPSIS
 
- use Acore::CLI::Loader;
- $acore = acore("config/foo.yaml");
+ use Acore::Easy;
+ init("config/foo.yaml");
+ Dump search_documents({ path => "/foo" });
 
  CONFIG=config/foo.yaml perl -MAcore::CLI::Loader -e 'Dump acore->search_documents({ path => "/" })'
 
@@ -54,7 +67,7 @@ easy to create Acore instance shortcut module.
 
 =over 4
 
-=item acore
+=item acore | init
 
 Create Acore instance, using config (arguments hashref, string, $ENV{CONFIG}).
 
@@ -67,6 +80,13 @@ Create Acore instance, using config (arguments hashref, string, $ENV{CONFIG}).
 shortcut to
 
  print YAML::Dump(@_);
+
+=item all public methods in Acore
+
+All Acore's public methods shortcuts is exported.
+
+ init;  # initialize Acore instance, set to $Acore::Easy::Acore.
+ @docs = search_documents({ path => "/foo" });
 
 =back
 
