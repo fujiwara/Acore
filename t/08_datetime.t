@@ -1,15 +1,20 @@
 # -*- mode:perl -*-
 use strict;
-use Test::More tests => 60;
+use Test::More;
 use Test::Exception;
 use Data::Dumper;
-
+our @class;
 BEGIN {
+    @class = qw/ DateTime /;
+    my $tests = 29;
     use_ok 'Acore::DateTime';
     use_ok 'DateTime';
+    eval { require DateTimeX::Lite; };
+    push @class, "DateTimeX::Lite" unless $@;
+    plan tests => $@ ? (2 + $tests) : (2 + $tests * 2);
 };
 
-for my $dt_class ("DateTimeX::Lite", "DateTime") {
+for my $dt_class (@class) {
 local $Acore::DateTime::DT_class = $dt_class;
 $dt_class->require;
 {
