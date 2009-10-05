@@ -7,11 +7,11 @@ our @class;
 BEGIN {
     @class = qw/ DateTime /;
     my $tests = 29;
-    use_ok 'Acore::DateTime';
-    use_ok 'DateTime';
     eval { require DateTimeX::Lite; };
     push @class, "DateTimeX::Lite" unless $@;
     plan tests => $@ ? (2 + $tests) : (2 + $tests * 2);
+    use_ok 'Acore::DateTime';
+    use_ok 'DateTime';
 };
 
 for my $dt_class (@class) {
