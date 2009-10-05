@@ -21,24 +21,29 @@ our @EXPORT = qw/ acore init Dump /;
         push @EXPORT, $sub;
     }
 }
+init() if $ENV{CONFIG};
 
 sub init {
-    return $Acore if $Acore;
-    my $config = shift;
+    my $config = $_[0];
 
     if ( $config && ref $config eq "HASH" ) {
         # use config by arguments
     }
     else {
         my $loader = Acore::WAF::ConfigLoader->new;
-        $config = $loader->load($config || $ENV{CONFIG});
+        $config = $loader->load(
+            $_[0] ? @_
+                  : ($ENV{CONFIG}, $ENV{CONFIG_LOCAL})
+        );
     }
 
     my $dbh = DBI->connect(@{ $config->{dsn} });
     $Acore = Acore->new({ dbh => $dbh });
 }
 
-*acore = \&init;
+sub acore {
+    $Acore || init(@_);
+}
 
 sub Dump {
     print YAML::Dump(@_);
@@ -57,7 +62,7 @@ Acore::Easy - easy to create Acore instance
  init("config/foo.yaml");
  Dump search_documents({ path => "/foo" });
 
- CONFIG=config/foo.yaml perl -MAcore::CLI::Loader -e 'Dump acore->search_documents({ path => "/" })'
+ CONFIG=config/foo.yaml perl -MAcore::CLI::Loader -e 'Dump search_documents({ path => "/" })'
 
 =head1 DESCRIPTION
 
@@ -67,13 +72,17 @@ easy to create Acore instance shortcut module.
 
 =over 4
 
-=item acore | init
+=item init
 
-Create Acore instance, using config (arguments hashref, string, $ENV{CONFIG}).
+Initialize Acore instance, using config (arguments hashref, string, $ENV{CONFIG}, $ENV{CONFIG_LOCAL}).
 
- acore({ dsn => [...] });
- acore("config/foo.yaml");
- acore;
+ init({ dsn => [...] });
+ init("config/foo.yaml");
+ init;
+
+=item acore
+
+Returns initialized Acore instance. If not inialized, call init().
 
 =item Dump
 
