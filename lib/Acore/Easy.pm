@@ -4,14 +4,20 @@ use strict;
 use warnings;
 use Acore;
 use Acore::WAF::ConfigLoader;
+use Acore::WAF::Log;
 use DBI;
 use Exporter "import";
 use YAML ();
 use Class::Inspector;
 our $Acore;
-our @EXPORT = qw/ acore init Dump /;
+our $Config;
+our $Log;
+our @EXPORT = qw/ acore init Dump reset log config /;
 
 {
+    no warnings "redefine";
+    *Acore::WAF::Log::DESTROY = sub { $_[0]->flush };
+
     for my $sub (@{ Class::Inspector->methods("Acore") }) {
         next if $sub =~ /^(?:_.+|[A-Z_]+|new|meta|carp|confess
                          |croak|weaken|dump|does|any_moose)$/x;
@@ -37,10 +43,21 @@ sub init {
                   : ($ENV{CONFIG}, $ENV{CONFIG_LOCAL})
         );
     }
-
+    $Log    = Acore::WAF::Log->new;
+    $Config = Storable::dclone $config;
     my $dbh = DBI->connect(@{ $config->{dsn} });
-    $Acore = Acore->new({ dbh => $dbh });
+    $Acore  = Acore->new({ dbh => $dbh });
 }
+
+sub reset {
+    undef $Acore;
+    undef $Config;
+    undef $Log;
+}
+
+sub config { $Config }
+
+sub log { $Log }
 
 sub acore {
     $Acore || init(@_);
@@ -84,6 +101,18 @@ Initialize Acore instance, using config (arguments hashref, string, $ENV{CONFIG}
 =item acore
 
 Returns initialized Acore instance. If not inialized, call init().
+
+=item config
+
+Returns config which pass to init().
+
+=item log
+
+Acore::WAF::Log instance.
+
+=item reset
+
+resert acore, config.
 
 =item Dump
 
