@@ -11,7 +11,7 @@ BEGIN {
 
 can_ok "Acore::Easy", qw/ acore Dump init log reset config /;
 unlink "t/tmp/test.sqlite";
-my $config = {
+my $base_config = {
     dsn => [
         "dbi:SQLite:dbname=t/tmp/test.sqlite",
         "",
@@ -19,13 +19,15 @@ my $config = {
         { RaiseError => 1, AutoCommit => 1 },
     ],
 };
-my $config_local = Storable::dclone($config);
+my $config_local = Storable::dclone($base_config);
 $config_local->{dsn}->[3]->{AutoCommit} = 0;
 
-YAML::DumpFile("t/tmp/config.yaml"       => $config);
+YAML::DumpFile("t/tmp/config.yaml"       => $base_config);
 YAML::DumpFile("t/tmp/config_local.yaml" => $config_local);
 
+my $config;
 sub run(&) {
+    $config = Storable::dclone($base_config);
     reset;
     $_[0]->();
 }
