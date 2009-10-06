@@ -1,6 +1,6 @@
 # -*- mode:perl -*-
 use strict;
-use Test::More tests => 31;
+use Test::More tests => 33;
 use Test::Exception;
 use Data::Dumper;
 use utf8;
@@ -114,6 +114,23 @@ run {
     init($config);
     isa_ok acore() => "Acore";
     is user_class() => "t::MyUser";
+};
+
+run {
+    init($config);
+    is log->level => "info";
+    log->debug("debug");
+    log->error("error");
+    log->info("info");
+};
+
+run {
+    $config->{log}->{level} = "debug";
+    init($config);
+    is log->level => "debug";
+    log->debug("debug");
+    log->error("error");
+    log->info("info");
 };
 
 

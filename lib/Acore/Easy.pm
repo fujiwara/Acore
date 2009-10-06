@@ -45,11 +45,15 @@ sub init {
         );
     }
     $Log    = Acore::WAF::Log->new;
+    $Log->level( $config->{log}->{level} )
+        if $config->{log} && $config->{log}->{level};
+
     $Config = Storable::dclone($config) || {};
     my $dbh = DBI->connect(@{ $config->{dsn} });
     $Acore  = Acore->new({ dbh => $dbh });
     $Acore->user_class( $config->{user_class} )
         if $config->{user_class};
+
     $Acore;
 }
 
