@@ -117,6 +117,10 @@ Acore::WAF::Log instance.
 
 resert acore, config.
 
+=item now
+
+Acore::DateTime->now().
+
 =item Dump
 
 shortcut to
