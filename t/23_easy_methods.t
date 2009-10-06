@@ -23,7 +23,7 @@ my @methods
     = qw/ acore init Dump
           all_documents all_users authenticate_user
           cache create_user dbh delete_document
-          delete_user document_loader encode_utf8
+          delete_user document_loader
           fulltext_search_documents get_document get_documents_by_id
           get_user in_transaction init_senna_index lock_senna_index
           new_document_id put_document put_document_multi

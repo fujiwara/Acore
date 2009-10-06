@@ -1,6 +1,6 @@
 # -*- mode:perl -*-
 use strict;
-use Test::More tests => 26;
+use Test::More tests => 27;
 use Test::Exception;
 use Data::Dumper;
 use utf8;
@@ -99,6 +99,8 @@ run {
     isa_ok log() => "Acore::WAF::Log";
     ok log->error("error log");
     ok log->info("info log");
+    my $now = now;
+    ok $now, "$now";
 };
 
 unlink "t/tmp/config.yaml";

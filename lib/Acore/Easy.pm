@@ -5,6 +5,7 @@ use warnings;
 use Acore;
 use Acore::WAF::ConfigLoader;
 use Acore::WAF::Log;
+use Acore::DateTime;
 use DBI;
 use Exporter "import";
 use YAML ();
@@ -12,7 +13,7 @@ use Class::Inspector;
 our $Acore;
 our $Config;
 our $Log;
-our @EXPORT = qw/ acore init Dump reset log config /;
+our @EXPORT = qw/ acore init Dump reset log config now /;
 
 {
     no warnings "redefine";
@@ -20,7 +21,7 @@ our @EXPORT = qw/ acore init Dump reset log config /;
 
     for my $sub (@{ Class::Inspector->methods("Acore") }) {
         next if $sub =~ /^(?:_.+|[A-Z_]+|new|meta|carp|confess
-                         |croak|weaken|dump|does|any_moose)$/x;
+                         |croak|weaken|dump|does|any_moose|encode_utf8)$/x;
         no strict "refs";
         *{"$sub"} = sub {
             acore()->$sub(@_);
@@ -44,7 +45,7 @@ sub init {
         );
     }
     $Log    = Acore::WAF::Log->new;
-    $Config = Storable::dclone $config;
+    $Config = Storable::dclone($config) || {};
     my $dbh = DBI->connect(@{ $config->{dsn} });
     $Acore  = Acore->new({ dbh => $dbh });
 }
@@ -58,6 +59,8 @@ sub reset {
 sub config { $Config }
 
 sub log { $Log }
+
+sub now { Acore::DateTime->now() }
 
 sub acore {
     $Acore || init(@_);
