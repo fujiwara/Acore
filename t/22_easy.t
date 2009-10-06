@@ -1,6 +1,6 @@
 # -*- mode:perl -*-
 use strict;
-use Test::More tests => 27;
+use Test::More tests => 31;
 use Test::Exception;
 use Data::Dumper;
 use utf8;
@@ -102,6 +102,20 @@ run {
     my $now = now;
     ok $now, "$now";
 };
+
+run {
+    init($config);
+    isa_ok acore() => "Acore";
+    is user_class() => "Acore::User";
+};
+
+run {
+    $config->{user_class} = "t::MyUser";
+    init($config);
+    isa_ok acore() => "Acore";
+    is user_class() => "t::MyUser";
+};
+
 
 unlink "t/tmp/config.yaml";
 unlink "t/tmp/config_local.yaml";

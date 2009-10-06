@@ -48,6 +48,9 @@ sub init {
     $Config = Storable::dclone($config) || {};
     my $dbh = DBI->connect(@{ $config->{dsn} });
     $Acore  = Acore->new({ dbh => $dbh });
+    $Acore->user_class( $config->{user_class} )
+        if $config->{user_class};
+    $Acore;
 }
 
 sub reset {
