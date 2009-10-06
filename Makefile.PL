@@ -2,6 +2,13 @@ use inc::Module::Install;
 name 'Acore';
 all_from 'lib/Acore.pm';
 
+if (-e ".svn" && -d _) {
+    # set dist version from svn revision.
+    my $rev = (qx{LANG=C svn info} =~ /Revision:\s*(\d+)/ && $1);
+    version sprintf "0.%05d", $rev;
+    warn "set version from svn revision $rev\n";
+}
+
 build_requires 'Module::Install' => 0.77;
 requires 'Any::Moose';
 requires 'CGI::ExceptionManager' => 0.05;
