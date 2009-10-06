@@ -2,6 +2,7 @@ package Acore;
 
 use strict;
 use warnings;
+use v5.8.1;
 our $VERSION = sprintf '0.%05d', ('$Revision$' =~ /(\d+)/ && $1);
 use Acore::Storage;
 use Acore::User;
@@ -13,10 +14,14 @@ use Encode qw/ encode_utf8 /;
 use Fcntl ':flock';
 
 has storage => (
-    is         => "rw",
-    isa        => "Acore::Storage",
-    lazy_build => 1,
-    handles    => {
+    is      => "rw",
+    isa     => "Acore::Storage",
+    lazy    => 1,
+    default => sub {
+        my $self = shift;
+        Acore::Storage->new({ dbh => $self->{dbh} });
+    },
+    handles => {
         setup_db => "setup",
     },
 );
@@ -36,13 +41,25 @@ has dbh => (
 );
 
 has document_loader => (
-    is         => "rw",
-    lazy_build => 1,
+    is      => "rw",
+    lazy    => 1,
+    default => sub {
+        my $self = shift;
+        require Acore::DocumentLoader;
+        Acore::DocumentLoader->new({ acore => $self });
+    },
 );
 
 has senna_index => (
-    is         => "rw",
-    lazy_build => 1,
+    is      => "rw",
+    lazy    => 1,
+    default => sub {
+        my $self = shift;
+        require Senna;
+        croak("Senna version >= 0.60000 required.")
+            if Senna->VERSION < 0.60000;
+        Senna::Index->open( $self->senna_index_path );
+    },
 );
 
 has senna_index_path => (
@@ -62,26 +79,6 @@ has transaction_data => (
 
 __PACKAGE__->meta->make_immutable;
 no Any::Moose;
-
-sub _build_storage {
-    my $self = shift;
-    Acore::Storage->new({ dbh => $self->{dbh} })
-}
-
-sub _build_document_loader {
-    my $self = shift;
-    require Acore::DocumentLoader;
-    Acore::DocumentLoader->new({ acore => $self });
-}
-
-sub _build_senna_index {
-    my $self = shift;
-    require Senna;
-    croak("Senna version >= 0.60000 required.")
-        if Senna->VERSION < 0.60000;
-
-    Senna::Index->open( $self->senna_index_path );
-}
 
 sub init_senna_index {
     my $self = shift;
