@@ -1181,6 +1181,7 @@ lib/Acore/Document/Role/FullTextSearch.pm
 lib/Acore/Document/Struct.pm
 lib/Acore/Document/Templatize.pm
 lib/Acore/DocumentLoader.pm
+lib/Acore/Easy.pm
 lib/Acore/LoadModules.pm
 lib/Acore/MIME/Types.pm
 lib/Acore/Storage.pm
@@ -1263,6 +1264,8 @@ t/18_util.t
 t/19_util_dispatcher.t
 t/20_flash.t
 t/21_document_attachment_file.t
+t/22_easy.t
+t/23_easy_methods.t
 t/999_cleanup.t
 t/Cache.pm
 t/connect_db.pm
