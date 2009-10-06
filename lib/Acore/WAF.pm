@@ -190,11 +190,8 @@ sub _build_acore {
         dbh   => $dbh,
         cache => $self->does('Acore::WAF::Plugin::Cache') ? $self->cache : undef,
     });
-    if ( defined $config->{user_class} ) {
-        $config->{user_class}->require
-            or die "Can't require $config->{user_class}. $@";
-        $acore->user_class( $config->{user_class} );
-    }
+    $acore->user_class( $config->{user_class} )
+        if $config->{user_class};
     $acore;
 }
 

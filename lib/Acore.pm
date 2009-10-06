@@ -77,6 +77,14 @@ has transaction_data => (
     lazy    => 1,
 );
 
+before user_class => sub {
+    my ($self, $user_class) = @_;
+    return $self->{user_class}
+        unless defined $user_class;
+    $user_class->require
+        or croak "Can't require $user_class. $@";
+};
+
 __PACKAGE__->meta->make_immutable;
 no Any::Moose;
 
