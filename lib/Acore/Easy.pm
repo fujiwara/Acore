@@ -12,8 +12,9 @@ our $Acore;
 our @EXPORT = qw/ acore init Dump /;
 
 {
-    for my $sub (@{ Class::Inspector->functions("Acore") }) {
-        next if $sub =~ /^_/ || $sub =~ /^[A-Z_]+$/;
+    for my $sub (@{ Class::Inspector->methods("Acore") }) {
+        next if $sub =~ /^(?:_.+|[A-Z_]+|new|meta|carp|confess
+                         |croak|weaken|dump|does|any_moose)$/x;
         no strict "refs";
         *{"$sub"} = sub {
             acore()->$sub(@_);
