@@ -93,7 +93,7 @@
       var users_dl = $('dl.users');
       $('#search-users').keyup( function() {
         var text_org = $('#search-users').val();
-        var text_arr = text_org.replace(/　/g, " ").replace(/\s+/g, " ").replace(/([+.*^$!?()\\])/g, "\\$1").split(/ +/);
+        var text_arr = text_org.replace(/　/g, " ").replace(/\s+/g, " ").replace(/([+.*^$!?(){}\[\]\\])/g, "\\$1").split(/ +/);
 
         users_dl.show();
 
