@@ -32,7 +32,9 @@
               すべてのユーザ
               <a href="<?= $c->uri_for("/@{[ location ]}/user_download") ?>">CSVダウンロード</a>
             </h3>
-            <p>絞り込み: <input type="text" id="search-users" size="30" /></p>
+            <p>絞り込み: <input type="text" id="search-users" size="30" />
+              <input type="button" id="clear-search-button" value="クリア"/>
+            </p>
 ? for my $user ( @{ $c->stash->{all_users} } ) {
             <dl class="users" rel="<?= $user->name ?> <?= CORE::join(" ", $user->roles) ?> <?= CORE::join(" ", map { $user->attr($_) } $user->attributes ) ?>">
               <dt class="data-operation"><a href="<?= $c->uri_for("/@{[ location ]}/user_form", { name => $user->name } ) ?>"><?= $user->name ?></a></dt>
@@ -101,6 +103,11 @@
           }
         });
       });
+
+      $('#clear-search-button').click( function() {
+        $('#search-users').val("");
+        users_dl.show();
+      })
 
     });
     </script>
