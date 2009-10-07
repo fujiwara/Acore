@@ -3,15 +3,20 @@ package Acore::DateTime;
 use strict;
 use warnings;
 use UNIVERSAL::require;
+my  $Loaded;
 our $DT_class = "DateTime";
-$DT_class->require;
+our $TZ       = "Asia/Tokyo";
 
-our $TZ = "Asia/Tokyo";
+sub _load {
+    return if $Loaded;
+    $Loaded = $DT_class->require;
+}
 
 sub now {
     my $class = shift;
     my %args  = @_;
     $args{time_zone} ||= $TZ;
+    _load;
     $DT_class->now(%args);
 }
 
@@ -19,6 +24,7 @@ sub new {
     my $class = shift;
     my %args  = @_;
     $args{time_zone} ||= $TZ;
+    _load;
     $DT_class->new(%args);
 }
 
@@ -26,6 +32,7 @@ sub from_epoch {
     my $class = shift;
     my %args  = @_;
     $args{time_zone} ||= $TZ;
+    _load;
     $DT_class->from_epoch(%args);
 }
 
@@ -82,6 +89,7 @@ sub parse_datetime {
 
     @p{ @{ $format->{params} } } = $date =~ /$format->{regex}/;
 
+    _load;
     return $DT_class->new( %p, %{ $format->{zero} } );
 }
 
