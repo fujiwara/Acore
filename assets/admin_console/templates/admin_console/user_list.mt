@@ -92,18 +92,22 @@
 
       var users_dl = $('dl.users');
       $('#search-users').keyup( function() {
-        var text = $('#search-users').val();
-        var regex = new RegExp(text, "i");
-        users_dl.each( function() {
-          if ($(this).attr('rel').match(regex)) {
-            $(this).show();
-          }
-          else {
-            $(this).hide();
-          }
-        });
-      });
+        var text_org = $('#search-users').val();
+        var text_arr = text_org.replace(/　/g, " ").replace(/\s+/g, " ").replace(/([+.*^$!?()\\])/g, "\\$1").split(/ +/);
 
+        users_dl.show();
+
+        for ( var i = 0; i < text_arr.length; i++ ) {
+          if (text_arr[i] == "") continue;
+          var regex = new RegExp(text_arr[i], "i");
+          users_dl.each( function() {
+            if (!$(this).attr('rel').match(regex)) {
+              $(this).hide();
+            }
+          });
+        }
+      });
+      
       $('#clear-search-button').click( function() {
         $('#search-users').val("");
         users_dl.show();
