@@ -129,7 +129,28 @@ sub all_users {
         bless $user, $self->user_class;
         $user->init;
         $user;
-    } $self->storage->user->all;
+    } $self->storage->user->all({ exclude_designs => 1 });
+    @user;
+}
+
+sub search_users_has_role {
+    my $self = shift;
+    my $role = shift;
+
+    my $itr = $self->storage->user->view(
+        "roles/all", {
+            key          => $role,
+            include_docs => 1,
+        }
+    );
+    my @user;
+    while ( my $row = $itr->next ) {
+        my $user = $row->{document};
+        $user->{id} ||= $_->{id};
+        bless $user, $self->user_class;
+        $user->init;
+        push @user, $user;
+    }
     @user;
 }
 
@@ -600,6 +621,12 @@ dbh: DBI database handle.
 
 Create tables in Storage.
 
+=item all_users
+
+Returns all Acore::User from storage.
+
+ @user = $acore->all_users;
+
 =item get_user
 
 Get Acore::User from storage.
@@ -628,6 +655,12 @@ Authenticate user. Returns Acore::User.
      name     => "foo",
      password => "secret",
  });
+
+=item search_users_has_role
+
+Returns all Acore::User which has role from storage.
+
+ @user = $acore->search_users_has_role("AdminConsoleLogin");
 
 =item new_document_id
 

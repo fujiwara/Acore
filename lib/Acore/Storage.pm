@@ -59,6 +59,18 @@ sub {
 _END_OF_CODE_
 ;
 
+our $user_roles =<<'_END_OF_CODE_';
+sub {
+    my ($obj, $emit) = @_;
+    return if ref $obj->{roles} ne 'ARRAY';
+    for my $role ( @{ $obj->{roles} } ) {
+        $emit->( $role => $obj->{_id} ) if defined $role;
+    }
+}
+_END_OF_CODE_
+;
+
+
 sub setup {
     my $self = shift;
     $self->user->create_table();
@@ -74,6 +86,13 @@ sub setup {
         views => {
             all => {
                 map => $document_tags,
+            },
+        },
+    });
+    $self->user->post( "_design/roles", {
+        views => {
+            all => {
+                map => $user_roles,
             },
         },
     });

@@ -1,6 +1,6 @@
 # -*- mode:perl -*-
 use strict;
-use Test::More tests => 51;
+use Test::More tests => 75;
 use Test::Exception;
 use Data::Dumper;
 use t::Cache;
@@ -58,6 +58,22 @@ for my $cache ( undef, t::Cache->new() )
     is $u[0]->{xxx} => "www";
     is $u[1]->name  => "foo";
     is $u[1]->{xxx} => "zzz";
+
+    {
+        # test for search_users_has_role
+        $ac->create_user({ name => "role1", roles => ['A', 'B'] });
+        $ac->create_user({ name => "role2", roles => ['A', 'C'] });
+        $ac->create_user({ name => "role3", roles => ['A', 'C', 'D'] });
+
+        for my $pair ([ A => 3 ], [ B => 1 ], [ C => 2 ], [ D => 1 ], [ E => 0 ]) {
+            my ($role, $num) = @$pair;
+            my @u = $ac->search_users_has_role($role);
+            is scalar @u => $num, "role $role: $num users";
+            for my $u (@u) {
+                ok $u->has_role($role), "has role $role";
+            }
+        }
+    }
 
     $dbh->commit;
 }
