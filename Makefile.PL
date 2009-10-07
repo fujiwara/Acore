@@ -47,5 +47,6 @@ use_test_base;
 auto_include;
 install_script 'acore_setupdb.pl';
 install_script 'acore_setupwaf.pl';
+install_script 'acoresh';
 
 WriteAll;

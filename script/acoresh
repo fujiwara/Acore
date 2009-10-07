@@ -1,0 +1,3 @@
+#!/bin/sh
+
+CONFIG="$1" CONFIG_LOCAL="$2" perl -MAcore::Easy -de0
