@@ -11,10 +11,11 @@ if (-e ".svn" && -d _) {
 
 build_requires 'Module::Install' => 0.77;
 requires 'Any::Moose';
-requires 'CGI::ExceptionManager' => 0.05;
 requires 'Crypt::SaltedHash';
 requires 'DBI';
 requires 'DBIx::CouchLike' => 0.09;
+requires 'Devel::StackTrace';
+requires 'Devel::StackTrace::AsHTML';
 requires 'Encode' => 2.13;
 requires 'FormValidator::Lite';
 requires 'Getopt::Long';

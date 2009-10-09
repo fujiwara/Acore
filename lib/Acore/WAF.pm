@@ -15,8 +15,6 @@ use Acore::WAF::Log;
 use Acore::WAF::Render;
 use Acore::WAF::Util;
 use URI::Escape;
-use CGI::ExceptionManager;
-use CGI::ExceptionManager::StackTrace;
 use Data::Dumper;
 use Acore::WAF::Dispatcher;
 use Scalar::Util qw/ blessed /;
@@ -283,6 +281,20 @@ sub _decode_request {
     }
 }
 
+my $Wrapped = {};
+sub _wrap_methods_for_debug {
+    my $class = ref $_[0];
+    return if $Wrapped->{$class};
+
+    around "render_part" => _record_time(
+        sub { sprintf "render('%s')", $_[1] }
+    );
+    around "forward"     => _record_time(
+        sub { sprintf "%s->%s", map { blessed($_) || $_ } @_[1,2] }
+    );
+
+    $Wrapped->{$class} = 1;
+}
 
 sub handle_request {
     my $self = shift;
@@ -292,7 +304,8 @@ sub handle_request {
     $self->config($config);
     $self->request($req);
 
-    $self->debug( $ENV{DEBUG} || $config->{debug} || 0 );
+    $self->debug( $ENV{DEBUG} || $config->{debug} || 0 )
+        && $self->_wrap_methods_for_debug();
 
     $self->log->level( $config->{log}->{level} )
         if defined $config->{log}->{level};
@@ -306,46 +319,80 @@ sub handle_request {
         $self->encoding( $config->{encoding} )
             if $config->{encoding};
     }
-
     $self->_decode_request;
 
-    my $start_time;
-    if ( $self->debug ) {
-        $self->log->info("*** Request $COUNT");
-        $self->log->debug(sprintf(
-            q{"%s" request for "%s" from "%s"},
-            $req->method, $req->uri, $req->address
-        ));
-        $self->_debug_request_data if $req->param;
-        $COUNT++;
+    my $start_time = $self->_begin_debug_log;
 
-        require Time::HiRes;
-        $start_time = [Time::HiRes::gettimeofday()];
-    }
+    $self->_run_with_handle_exception();
 
-    no warnings "redefine";
-    local *CGI::ExceptionManager::StackTrace::output = sub {
-        $self->_output_stack_trace(@_);
-    };
+    $self->_end_debug_log($start_time);
 
-    CGI::ExceptionManager->run(
-        callback => sub {
-            $self->_dispatch;
-        },
-        powered_by => __PACKAGE__,
-    );
-
-    if ($self->debug) {
-        my $elapsed = sprintf '%f', Time::HiRes::tv_interval($start_time);
-        my $av      = $elapsed == 0 ? '??' : sprintf '%.3f', 1 / $elapsed;
-        $self->log->debug(
-            "Request took ${elapsed}s (${av}/s)\n" . $self->debug_report->draw
-        );
-    }
     $self->log->flush;
     $self->finalize();
 
     return $self->response;
+}
+
+sub _begin_debug_log {
+    my $self = shift;
+    return unless $self->debug;
+
+    my $req = $self->request;
+    $self->log->info("*** Request $COUNT");
+    $self->log->debug(sprintf(
+        q{"%s" request for "%s" from "%s"},
+        $req->method, $req->uri, $req->address
+    ));
+    $self->_debug_request_data if $req->param;
+    $COUNT++;
+    require Time::HiRes;
+    return [ Time::HiRes::gettimeofday() ];
+}
+
+sub _end_debug_log {
+    my ($self, $start_time) = @_;
+    return unless $start_time;
+
+    my $elapsed = sprintf '%f', Time::HiRes::tv_interval($start_time);
+    my $av      = $elapsed == 0 ? '??' : sprintf '%.3f', 1 / $elapsed;
+    $self->log->debug(
+        "Request took ${elapsed}s (${av}/s)\n" . $self->debug_report->draw
+    );
+}
+
+sub _run_with_handle_exception {
+    my $self = shift;
+    my $trace;
+    my $response;
+    local $SIG{__DIE__} = sub {
+        my ($msg) = @_;
+        if (ref $msg eq 'Acore::WAF::Exception') {
+            undef $trace;
+        }
+        elsif ($self->debug) {
+            require Devel::StackTrace;
+            require Devel::StackTrace::AsHTML;
+            $trace = Devel::StackTrace->new;
+        }
+        else {
+            $trace = 1;
+        }
+        $self->log->error($msg) if $trace;
+        die @_;
+    };
+    do {
+        local $@;
+        eval {
+            $self->_dispatch();
+            undef $trace;
+        };
+    };
+    if ($trace) {
+        $self->res->body( ref $trace ? $trace->as_html
+                                     : HTTP::Status::status_message(500)
+        );
+        $self->res->status(500);
+    }
 }
 
 sub _prepare_for_mobile {
@@ -498,7 +545,7 @@ sub detach {
     if ($msg) {
         $self->log->error($msg);
     }
-    CGI::ExceptionManager::detach()
+    die bless \$msg, 'Acore::WAF::Exception';
 }
 
 sub dispatch_static {
@@ -622,8 +669,6 @@ sub render {
     $self->res->body( $self->render_part(@_) );
 }
 
-around "render_part" => _record_time( sub { sprintf "render('%s')", $_[1] } );
-
 sub render_part {
     my ($self, $tmpl, @args) = @_;
     return $self->renderer->render_file( $tmpl, $self, @args )->as_string;
@@ -642,9 +687,6 @@ sub dispatch_favicon {
     $c->serve_static_file( $c->path_to("static/favicon.ico") );
 }
 
-around "forward" => _record_time(
-    sub { sprintf "%s->%s", map { blessed($_) || $_ } @_[1,2] }
-);
 sub forward {
     my $self = shift;
     my ($class_or_self, $action, @args) = @_;
