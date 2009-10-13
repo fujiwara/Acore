@@ -6,7 +6,7 @@ use Scalar::Util qw/ blessed /;
 
 BEGIN {
     eval { use DBIx::Class::Schema::Loader };
-    plan $@ ? (skip_all => "DBIx::Class::Schema::Loader in not installed") : (tests => 11);
+    plan $@ ? (skip_all => "DBIx::Class::Schema::Loader in not installed") : (tests => 13);
 
     use_ok "Acore";
     use_ok 'Acore::WAF';
@@ -49,7 +49,11 @@ $c->config({
     $foo2->foo("BAR");
     $foo2->update;
 
-    my $foo3 = $c->model('DBIC')->rs("Foo")->find($id);
+    my $foo3 = $c->model('DBIC')->resultset("Foo")->find($id);
     is $foo3->id  => $id;
     is $foo3->foo => "BAR";
+
+    my $foo4 = $c->model('DBIC')->rs("Foo")->find($id);
+    is $foo4->id  => $id;
+    is $foo4->foo => "BAR";
 }
