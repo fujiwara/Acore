@@ -24,6 +24,7 @@ requires 'HTTP::Date';
 requires 'HTTP::Engine' => 0.001008;
 requires 'HTTP::Session';
 requires 'HTTPx::Dispatcher';
+requires 'HTML::StickyQuery';
 requires 'MIME::Base64';
 requires 'Path::Class';
 requires 'Text::MicroTemplate' => 0.07;
