@@ -1220,6 +1220,7 @@ META.yml
 README
 script/acore_setupdb.pl
 script/acore_setupwaf.pl
+script/acoresh
 t/00_compile.t
 t/01_storage.t
 t/02_user.t
@@ -1266,6 +1267,7 @@ t/20_flash.t
 t/21_document_attachment_file.t
 t/22_easy.t
 t/23_easy_methods.t
+t/24_user_class.t
 t/999_cleanup.t
 t/Cache.pm
 t/connect_db.pm
