@@ -6,6 +6,7 @@ use utf8;
 use Encode qw/ encode_utf8 /;
 use Math::BigInt;
 use Clone;
+use t::WAFTest::Engine;
 
 plan tests => (3 + 1 * blocks);
 
@@ -18,7 +19,7 @@ use_ok("HTTP::Engine");
 use_ok("Acore::WAF");
 use_ok("t::WAFTest");
 my $app = t::WAFTest->new;
-my $req = HTTP::Engine::Test::Request->new(
+my $req = create_request(
     uri    => 'http://example.com/aaa/bbb?foo=bar&bar=baz',
     method => "GET",
 );

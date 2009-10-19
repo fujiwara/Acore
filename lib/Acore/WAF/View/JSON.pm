@@ -88,7 +88,7 @@ sub process {
     $output .= $json;
     $output .= ");"   if $cb;
 
-    $c->res->output($output);
+    $c->res->body($output);
 }
 
 sub validate_callback_param {

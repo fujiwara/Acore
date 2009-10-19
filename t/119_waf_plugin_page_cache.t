@@ -5,15 +5,15 @@ use Test::Base;
 use HTTP::Request;
 use Data::Dumper;
 use Clone qw/ clone /;
+use t::WAFTest::Engine;
 
-plan tests => ( 3 + 1 * blocks );
+plan tests => ( 2 + 1 * blocks );
 
 filters {
     response => [qw/chomp/],
     uri      => [qw/chomp/],
 };
 
-use_ok("HTTP::Engine");
 use_ok("Acore::WAF");
 use_ok("t::WAFTest");
 
@@ -34,36 +34,10 @@ my $base_config = {
     },
 };
 t::WAFTest->setup("Cache", "PageCache");
-
 run {
     my $block  = shift;
     my $config = clone $base_config;
-
-    sleep( $block->wait || 0 );
-
-    my $req = HTTP::Request->new( GET => $block->uri );
-
-    for my $header_line ( split /\n/, ($block->request || "") ) {
-        my ($name, $value) = split /: /, $header_line, 2;
-        $req->header($name => $value);
-    }
-
-    $req->protocol('HTTP/1.0');
-
-    my $engine = HTTP::Engine->new(
-        interface => {
-            module => 'Test',
-            request_handler => sub {
-                my $app = t::WAFTest->new;
-                $app->handle_request($config, @_);
-            },
-        },
-    );
-    my $response = $engine->run($req);
-    my $data = $response->headers->as_string."\n".$response->content;
-    $data =~ s/[\r\n]+\z//;
-
-    is $data, $block->response, $block->name;
+    run_engine_test($config, $block);
 };
 
 __END__

@@ -3,6 +3,7 @@ use strict;
 use Test::More tests => 9;
 use HTTP::Engine::Test::Request;
 use Scalar::Util qw/ blessed /;
+use t::WAFTest::Engine;
 
 BEGIN {
     use_ok 'Acore::WAF';
@@ -11,7 +12,7 @@ BEGIN {
 };
 
 my $c = t::WAFTest->new;
-my $req = HTTP::Engine::Test::Request->new(
+my $req = create_request(
     uri    => 'http://example.com/',
     method => "GET",
 );

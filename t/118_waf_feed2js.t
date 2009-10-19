@@ -3,6 +3,7 @@ use strict;
 use Test::More;
 use HTTP::Engine::Test::Request;
 use Scalar::Util qw/ blessed /;
+use t::WAFTest::Engine;
 
 BEGIN {
     eval "use XML::Feed";
@@ -29,12 +30,13 @@ my $c = t::WAFTest->new;
 $c->config({ include_path => [] });
 
 {
-    my $req = HTTP::Engine::Test::Request->new(
+    my $req = create_request(
         uri    => "http://example.com/?uri=$uri",
         method => "GET",
     );
     $c->request($req);
     $c->forward( "Acore::WAF::Controller::Feed2Js" => "process" );
-    is $c->res->body => $json;
+    use JSON;
+    is_deeply from_json($c->res->body) => from_json($json), "decoded json ok";
 }
 

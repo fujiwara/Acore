@@ -1,6 +1,6 @@
 # -*- mode:perl -*-
 use strict;
-use Test::More tests => 34;
+use Test::More tests => 39;
 use Path::Class qw/ file /;
 
 BEGIN {
@@ -87,5 +87,20 @@ BEGIN {
 
     $log->error('%percent');
     like $log->buffer => qr{\%percent};
+}
+
+
+{
+    my $log = Acore::WAF::Log->new();
+    ok $log->configure({
+        level     => "debug",
+        file      => "tmp/foo.log",
+        timestamp => 0,
+        caller    => 1,
+    });
+    is $log->level     => "debug";
+    is $log->file      => "tmp/foo.log";
+    is $log->timestamp => 0;
+    is $log->caller    => 1;
 }
 

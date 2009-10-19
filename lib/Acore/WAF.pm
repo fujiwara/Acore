@@ -36,13 +36,18 @@ has config  => (
 
 has request => (
     is  => "rw",
-    isa => "HTTP::Engine::Request",
 );
 *req = \&request;
 
 has response => (
     is      => "rw",
-    default => sub { HTTP::Engine::Response->new },
+    lazy    => 1,
+    default => sub {
+        my $self = shift;
+        $self->request->can('new_response')
+            ? $self->request->new_response(200)
+            : HTTP::Engine::Response->new;
+    },
 );
 *res = \&response;
 
@@ -134,15 +139,8 @@ has request_for_dispatcher => (
     lazy    => 1,
     default => sub {
         my $self = shift;
-        my $req  = $self->request;
-        my $path = ref($req->uri) ? $req->uri->path : $ENV{PATH_INFO};
-        my $location = $req->location || '/';
-        $path =~ s{^$location}{};
-
-        Acore::WAF::Util::RequestForDispatcher->new({
-            method => $req->method,
-            uri    => $path,
-        });
+        Acore::WAF::Util::RequestForDispatcher
+                ->new_from_request( $self->request );
     },
 );
 
@@ -307,8 +305,7 @@ sub handle_request {
     $self->debug( $ENV{DEBUG} || $config->{debug} || 0 )
         && $self->_wrap_methods_for_debug();
 
-    $self->log->level( $config->{log}->{level} )
-        if defined $config->{log}->{level};
+    $self->log->configure( $config->{log} );
 
     $config->{include_path} ||= [];
 
@@ -473,6 +470,7 @@ sub _dispatch {
     my $rule = $dispatcher->match( $self->request_for_dispatcher );
     $self->error(
         404 => "dispatch rule is not found for " . $self->req->uri
+             . " path: " . $self->request_for_dispatcher->uri
     ) unless $rule;
 
     my $action = $rule->{action};
@@ -727,6 +725,18 @@ sub view {
 sub controller {
     my $self = shift;
     $self->_component("Controller", @_);
+}
+
+sub psgi_application {
+    my ($obj, $config) = @_;
+    require Plack::Request;
+    sub {
+        my $env = shift;
+        my $app = ref $obj ? $obj : $obj->new;
+        my $req = Plack::Request->new($env);
+        $app->handle_request( $config, $req );
+        $app->response->finalize;
+    };
 }
 
 sub login {
@@ -1210,6 +1220,14 @@ Plugin::Session required.
 =item logout
 
 Log out user from session.
+
+=item psgi_application
+
+ # app.psgi
+ use App;
+ App->psgi_application($config);
+
+Returns PSGI application CODE ref.
 
 =back
 

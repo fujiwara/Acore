@@ -5,15 +5,15 @@ use Test::Base;
 use HTTP::Request;
 use Data::Dumper;
 use Clone qw/ clone /;
+use t::WAFTest::Engine;
 
-plan tests => ( 3 + 1 * blocks );
+plan tests => ( 2 + 1 * blocks );
 
 filters {
     response => [qw/chomp convert_charset/],
     method   => [qw/chomp/],
 };
 
-use_ok("HTTP::Engine");
 use_ok("Acore::WAF");
 use_ok("t::WAFTestTT");
 
@@ -21,48 +21,13 @@ my $base_config = {
     root => "t",
     tt   => {},
 };
+my $ctx = {};
 
 run {
     my $block  = shift;
     my $config = clone $base_config;
-
-    my $method = $block->method || "GET";
-    my $req = HTTP::Request->new( $method => $block->uri );
-    $req->protocol('HTTP/1.0');
-    $req->header(
-        "Content-Length" => 0,
-        "Content-Type"   => "text/plain",
-    );
-
-    my @res_args = $block->preprocess ? eval $block->preprocess : ();
-    die $@ if $@;
-
-    my $engine = HTTP::Engine->new(
-        interface => {
-            module => 'Test',
-            request_handler => sub {
-                my $app = t::WAFTestTT->new;
-                $app->handle_request($config, @_);
-            },
-        },
-    );
-    my $response = $engine->run($req);
-    my $data = $response->headers->as_string."\n".$response->content;
-    $data =~ s/[\r\n]+\z//;
-
-    is $data, sprintf($block->response, @res_args), $block->name;
-
-    eval $block->postprocess if $block->postprocess;
-    die $@ if $@;
+    run_engine_test($config, $block, $ctx, "t::WAFTestTT");
 };
-
-sub convert_charset {
-    my $str = shift;
-    if ( $str =~ /Shift_JIS/i ) {
-        Encode::from_to($str, 'utf-8', 'cp932');
-    }
-    $str;
-}
 
 __END__
 

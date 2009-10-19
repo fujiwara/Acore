@@ -65,6 +65,29 @@ sub adjust_request_fcgi {
 
     has uri    => ( is => "rw" );
     has method => ( is => "rw" );
+
+    sub new_from_request {
+        my $class = shift;
+        my $req   = shift;
+
+        my ($location, $path);
+        if ( $req->can('env') ) {
+            # for Plack::Request
+            $path     = $req->env->{PATH_INFO};
+            $location = $req->env->{SCRIPT_NAME};
+        }
+        else {
+            # for H::E::Request
+            $path = ref($req->uri) ? $req->uri->path : $ENV{PATH_INFO};
+            $location = $req->location || "/";
+            $path     =~ s{^$location}{};
+        }
+
+        $class->new({
+            method => $req->method,
+            uri    => $path,
+        });
+    }
 }
 
 1;

@@ -12,19 +12,17 @@ use Acore;
 use DBI;
 use Clone qw/ clone /;
 use Path::Class qw/ file dir /;
+use t::WAFTest::Engine;
 
-plan tests => ( 3 + 4 + 1 * blocks );
+plan tests => ( 2 + 4 + 1 * blocks );
 
 filters {
     response => [qw/chomp convert_charset/],
     method   => [qw/chomp/],
 };
 
-use_ok("HTTP::Engine");
 use_ok("Acore::WAF");
 use_ok("t::WAFTest");
-
-our $SessionId;
 
 my $base_config = {
     root => "t",
@@ -44,62 +42,12 @@ my $base_config = {
     },
 };
 
+my $ctx = {};
 run {
     my $block  = shift;
     my $config = clone $base_config;
-
-    my $method = $block->method || "GET";
-    my $req = HTTP::Request->new( $method => $block->uri );
-    $req->protocol('HTTP/1.0');
-    $req->content( $block->body ) if $block->body;
-    $req->header(
-        "Content-Length" => $block->body ? length($block->body) : 0,
-        "Content-Type"   => "text/plain",
-    );
-    $req->header(
-        "Cookie" => "http_session_sid=$SessionId"
-    ) if $SessionId;
-
-    my @res_args = $block->preprocess ? eval $block->preprocess : ();
-    die $@ if $@;
-
-    my $engine = HTTP::Engine->new(
-        interface => {
-            module => 'Test',
-            request_handler => sub {
-                my $app = t::WAFTest->new;
-                $app->handle_request($config, @_);
-            },
-        },
-    );
-    my $response = $engine->run($req);
-    my $data = $response->headers->as_string."\n".$response->content;
-    $data =~ s/[\r\n]+\z//;
-    $data = handle_session($data);
-
-    is $data => $block->raw ? $block->response
-                            : sprintf($block->response, @res_args),
-       $block->name;
-
-    eval $block->postprocess if $block->postprocess;
-    die $@ if $@;
+    run_engine_test($config, $block, $ctx);
 };
-
-sub convert_charset {
-    my $str = shift;
-    if ( $str =~ /Shift_JIS/i ) {
-        Encode::from_to($str, 'utf-8', 'cp932');
-    }
-    $str;
-}
-
-sub handle_session {
-    my $str = shift;
-    $str =~ s{Set-Cookie: http_session_sid=(.+?);}
-             {Set-Cookie: http_session_sid=SESSIONID;};
-    $SessionId = $1;
-    $str;
-}
 
 sub create_adoc {
     my $config = shift;
@@ -204,6 +152,7 @@ Not Found
 === static ok
 --- preprocess
 {
+    use Path::Class qw/ file /;
     mkdir "t/static";
     my $fh = file("t/static/test.txt")->openw;
     $fh->print("0123456789\nabcdefg");
@@ -225,6 +174,7 @@ abcdefg
 === static forbidden
 --- preprocess
 {
+    use Path::Class qw/ file /;
     my $fh = file("t/static/hide.txt")->openw;
     $fh->print("0123456789\nabcdefg");
     chmod 0000, "t/static/hide.txt";
@@ -244,6 +194,7 @@ Forbidden
 === static not modified
 --- preprocess
 {
+    use Path::Class qw/ file /;
     my $fh = file("t/static/test2.txt")->openw;
     $fh->print("0123456789\nabcdefg");
     $req->header("If-Modified-Since"
@@ -261,6 +212,7 @@ Status: 304
 === static no extention
 --- preprocess
 {
+    use Path::Class qw/ file /;
     my $fh = file("t/static/noext")->openw;
     $fh->print("0123456789");
 }
@@ -328,6 +280,7 @@ before detach
 === favicon
 --- preprocess
 {
+    use Path::Class qw/ file /;
     my $fh = file("t/static/favicon.ico")->openw;
     $fh->print("AAA");
 }
@@ -406,7 +359,7 @@ sample plugin
 
 === acore document
 --- preprocess
-my $doc = create_adoc($config);
+my $doc = main::create_adoc($config);
 (HTTP::Date::time2str($doc->updated_on->epoch));
 --- uri
 http://localhost/adoc/foo/bar
@@ -576,7 +529,7 @@ ng
 
 === login_ok
 --- preprocess
-create_user($config);
+main::create_user($config);
 --- uri
 http://localhost/act/login?name=root&password=toor
 --- response

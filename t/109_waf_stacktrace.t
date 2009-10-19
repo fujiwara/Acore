@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 use Test::More tests => 4;
-
+use t::WAFTest::Engine;
 use HTTP::Request;
 use_ok "HTTP::Engine";
 use_ok "t::WAFTest";
@@ -11,7 +11,7 @@ use_ok "t::WAFTest";
 my $req = HTTP::Request->new( GET => 'http://localhost/act/error' );
 $req->protocol('HTTP/1.0');
 
-my $engine = HTTP::Engine->new(
+my $engine = create_engine->new(
     interface => {
         module => 'Test',
         request_handler => sub {

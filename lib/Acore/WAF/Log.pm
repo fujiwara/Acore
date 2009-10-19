@@ -46,6 +46,15 @@ has file => (
 __PACKAGE__->meta->make_immutable;
 no Any::Moose;
 
+sub configure {
+    my $self   = shift;
+    my $config = shift;
+    for my $key ( keys %$config ) {
+        $self->$key( $config->{$key} ) if defined $config->{$key};
+    }
+    $self;
+}
+
 for my $level ( keys %$Levels ) {
     no strict "refs";
     my $level_num = $Levels->{$level};
@@ -101,6 +110,8 @@ Acore::WAF::Log - log module
   $log->error('message %s %d', "string", 12345); # format by sprintf
 
   $log->file('/path/to/log_file'); # output log to file.
+
+  $log->configure({ level => "error", timestamp => 0 });
 
 =head1 DESCRIPTION
 
@@ -160,6 +171,16 @@ Flush buffer to STDERR or file.
 Filename to output log on flush.
 
 Default: STDERR
+
+=item configure
+
+ $log->configure({
+    timestamp => 0,
+    file      => "/path/to/error.log",
+    caller    => 1,
+ });
+
+Set avobe methods by hash ref.
 
 =back
 

@@ -5,8 +5,9 @@ use Test::Base;
 use HTTP::Request;
 use Data::Dumper;
 use Clone qw/ clone /;
+use t::WAFTest::Engine;
 
-plan tests => 10;
+plan tests => 9;
 
 filters {
     response => [qw/chomp/],
@@ -14,7 +15,6 @@ filters {
     method   => [qw/chomp/],
 };
 
-use_ok("HTTP::Engine");
 use_ok("Acore::WAF");
 use_ok("t::WAFTest");
 
@@ -34,28 +34,11 @@ my $base_config = {
 };
 t::WAFTest->setup(qw/ Session AntiCSRF /);
 
-our $Client = {};
-
+our $ctx = {};
 run {
     my $block  = shift;
     my $config = clone $base_config;
-    my $method = $block->method || 'GET';
-    my $req = HTTP::Request->new( $method => $block->uri );
-    $req->protocol('HTTP/1.0');
-
-    eval $block->preprocess if $block->preprocess;
-
-    my $engine = HTTP::Engine->new(
-        interface => {
-            module => 'Test',
-            request_handler => sub {
-                my $app = t::WAFTest->new;
-                $app->handle_request($config, @_);
-            },
-        },
-    );
-    my $response = $engine->run($req);
-    eval $block->handle_response or die $!
+    run_engine_test($config, $block, $ctx);
 };
 
 __END__
@@ -67,10 +50,10 @@ http://localhost/act/anti_csrf
 {
     ok $response->content =~ qr{name="token" value="(.+)"};
     ok $1, "token $1";
-    $Client->{token} = $1;
+    $ctx->{token} = $1;
     ok $response->header('Set-Cookie') =~ qr{sid=(.+?);};
     ok $1, "session_id $1";
-    $Client->{session_id} = $1;
+    $ctx->{session_id} = $1;
 }
 
 === post_ok
@@ -80,9 +63,9 @@ POST
 http://localhost/act/anti_csrf
 --- preprocess
 {
-    my $body = "token=" . $Client->{token};
+    my $body = "token=" . $ctx->{token};
     $req->content($body);
-    $req->header("Cookie" => "sid=" . $Client->{session_id} . ";");
+    $req->header("Cookie" => "sid=" . $ctx->{session_id} . ";");
     $req->content_length( length $body );
     $req->content_type('application/x-www-form-urlencoded');
 }
@@ -98,9 +81,9 @@ POST
 http://localhost/act/anti_csrf
 --- preprocess
 {
-    my $body = "token=" . $Client->{token} . "XXX";
+    my $body = "token=" . $ctx->{token} . "XXX";
     $req->content($body);
-    $req->header("Cookie" => "sid=" . $Client->{session_id} . ";");
+    $req->header("Cookie" => "sid=" . $ctx->{session_id} . ";");
     $req->content_length( length $body );
     $req->content_type('application/x-www-form-urlencoded');
 }

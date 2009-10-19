@@ -5,8 +5,9 @@ use Test::Base;
 use HTTP::Request;
 use Data::Dumper;
 use Clone qw/ clone /;
+use t::WAFTest::Engine;
 
-plan tests => 13;
+plan tests => 12;
 
 filters {
     response => [qw/chomp/],
@@ -14,7 +15,6 @@ filters {
     method   => [qw/chomp/],
 };
 
-use_ok("HTTP::Engine");
 use_ok("Acore::WAF");
 use_ok("t::WAFTest");
 
@@ -34,28 +34,12 @@ my $base_config = {
 };
 t::WAFTest->setup(qw/ Session /);
 
-our $Client = {};
-
+my $Engine = create_engine;
+my $ctx    = {};
 run {
     my $block  = shift;
     my $config = clone $base_config;
-    my $method = $block->method || 'GET';
-    my $req = HTTP::Request->new( $method => $block->uri );
-    $req->protocol('HTTP/1.0');
-
-    eval $block->preprocess if $block->preprocess;
-
-    my $engine = HTTP::Engine->new(
-        interface => {
-            module => 'Test',
-            request_handler => sub {
-                my $app = t::WAFTest->new;
-                $app->handle_request($config, @_);
-            },
-        },
-    );
-    my $response = $engine->run($req);
-    eval $block->handle_response or die $!
+    run_engine_test($config, $block, $ctx);
 };
 
 __END__

@@ -2,6 +2,13 @@ package t::WAFTest;
 
 use strict;
 use warnings;
+use Exporter 'import';
+use t::WAFTest::Engine;
+our @EXPORT = qw/ create_engine
+                  create_request
+                  res_from_psgi
+                  res_to_psgi /;
+
 use Any::Moose;
 extends 'Acore::WAF';
 
@@ -9,7 +16,6 @@ override _build_log => sub {
     my $self = shift;
     my $log = Acore::WAF::Log->new({ file => "t/tmp/error_log" });
 };
-
 
 __PACKAGE__->meta->make_immutable;
 no Any::Moose;

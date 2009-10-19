@@ -37,6 +37,7 @@ sub run {
     }
     for my $file (qw/ script_server_pl script_index_cgi
                       script_fastcgi_pl
+                      script_psgi
                       makefile_pl
                       lib_app_pm config_yaml
                       lib_app_modperl_pm
@@ -74,6 +75,33 @@ sub usage {
    --help: show this usage.
     _END_OF_USAGE_
 
+}
+
+sub script_psgi {
+    return ("script/${AppName}.psgi" => <<'    _END_OF_FILE_'
+#!/usr/bin/perl
+# -*- mode:perl -*-
+use strict;
+use warnings;
+use FindBin;
+use lib "$FindBin::Bin/../lib";
+use <?= raw app_name() ?>;
+use Acore::WAF::ConfigLoader;
+
+my $config = Acore::WAF::ConfigLoader->new->load(
+    $ENV{'<?= raw uc app_name() ?>_CONFIG_FILE'} || "config/<?= raw app_name() ?>.yaml",
+    $ENV{'<?= raw uc app_name() ?>_CONFIG_LOCAL'},
+);
+<?= raw app_name ?>->psgi_application($config);
+
+__END__
+
+=head1 Run on Plack
+
+  $ plackup --app script/<?= raw app_name() ?>.psgi
+
+    _END_OF_FILE_
+    , undef, oct(644));
 }
 
 sub script_server_pl {

@@ -15,6 +15,7 @@ around _dispatch => sub {
 
     my $uri  = $c->request_for_dispatcher->uri;
     my $path = ref($uri) ? $uri->path : $uri;
+    $path =~ s{^/}{};
 
     my $config = $c->config->{page_cache} || $c->config->{"Plugin::PageCache"};
     my $regexp = $config->{path_regexp};

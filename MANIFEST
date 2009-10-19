@@ -1296,6 +1296,7 @@ t/WAFTest.pm
 t/WAFTest/Controller.pm
 t/WAFTest/Controller/AnyLocation.pm
 t/WAFTest/Controller/Auto.pm
+t/WAFTest/Engine.pm
 t/WAFTest/Model/Bar.pm
 t/WAFTest/Model/DBIC.pm
 t/WAFTest/Model/Foo.pm

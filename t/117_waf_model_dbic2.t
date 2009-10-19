@@ -3,6 +3,7 @@ use strict;
 use Test::More;
 use HTTP::Engine::Test::Request;
 use Scalar::Util qw/ blessed /;
+use t::WAFTest::Engine;
 
 BEGIN {
     eval { use DBIx::Class::Schema::Loader };
@@ -18,7 +19,7 @@ my $dbh = do "t/connect_db.pm";
 $dbh->do("CREATE TABLE foo (id integer primary key, foo text)");
 
 my $c = t::WAFTest->new;
-my $req = HTTP::Engine::Test::Request->new(
+my $req = create_request(
     uri    => 'http://example.com/',
     method => "GET",
 );
