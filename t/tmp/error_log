@@ -1,0 +1,165 @@
+[Sat Feb 14 08:31:30 2009] [error] dispatch action (t::WAFTest::Controller::ng or t::WAFTest::Controller::ng_GET) is not found. for http://localhost/act/ng at /home/fujiwara/devel/Acore/blib/lib/Acore/WAF.pm line 496 
+[Sat Feb 14 08:31:30 2009] [error] dispatch rule is not found for http://localhost/ng path: ng at /home/fujiwara/devel/Acore/blib/lib/Acore/WAF.pm line 471 
+[Sat Feb 14 08:31:30 2009] [error] t/static/not_found.txt is not exists. No such file or directory at /home/fujiwara/devel/Acore/blib/lib/Acore/WAF.pm line 600 
+[Sat Feb 14 08:31:30 2009] [error] can't read file t/static/hide.txt : Inappropriate ioctl for device at /home/fujiwara/devel/Acore/blib/lib/Acore/WAF.pm line 571 
+[Sat Feb 14 08:31:30 2009] [error] Can't serve above t/static at /home/fujiwara/devel/Acore/blib/lib/Acore/WAF.pm line 557 
+[Sat Feb 14 08:31:30 2009] [error] Died at t/WAFTest/Controller.pm line 28.
+ 
+[Sat Feb 14 08:31:30 2009] [info] forward 
+[Sat Feb 14 08:31:30 2009] [info] forwarded 
+[Sat Feb 14 08:31:30 2009] [info] forward 
+[Sat Feb 14 08:31:30 2009] [error] Can't locate Acore/Document/Test.pm in @INC (@INC contains: /home/fujiwara/devel/Acore/blib/arch /home/fujiwara/devel/Acore/blib/lib /etc/perl /usr/local/lib/perl/5.10.0 /usr/local/share/perl/5.10.0 /usr/lib/perl5 /usr/share/perl5 /usr/lib/perl/5.10 /usr/share/perl/5.10 /usr/local/lib/site_perl .) at /home/fujiwara/devel/Acore/blib/lib/Acore/Document.pm line 121.
+ 
+[Sat Feb 14 08:31:30 2009] [error] Can't call method "isa" without a package or object reference at /usr/local/share/perl/5.10.0/DateTime/TimeZone.pm line 455.
+ 
+[Sat Feb 14 08:31:30 2009] [error] Can't call method "isa" without a package or object reference at /usr/local/share/perl/5.10.0/DateTime/TimeZone.pm line 494.
+ 
+[Sat Feb 14 08:31:30 2009] [error] Not found acore document path: /foo/baz at /home/fujiwara/devel/Acore/blib/lib/Acore/WAF.pm line 611 
+[Sat Feb 14 08:31:30 2009] [error] Can't locate Acore/Role/Reader.pm in @INC (@INC contains: /home/fujiwara/devel/Acore/blib/arch /home/fujiwara/devel/Acore/blib/lib /etc/perl /usr/local/lib/perl/5.10.0 /usr/local/share/perl/5.10.0 /usr/lib/perl5 /usr/share/perl5 /usr/lib/perl/5.10 /usr/share/perl/5.10 /usr/local/lib/site_perl .) at /home/fujiwara/devel/Acore/blib/lib/Acore/User.pm line 28.
+ 
+[Sat Feb 14 08:31:30 2009] [info] login: name=root succeeded 
+[Sat Feb 14 08:31:30 2009] [error] Can't locate Acore/Role/Reader.pm in @INC (@INC contains: /home/fujiwara/devel/Acore/blib/arch /home/fujiwara/devel/Acore/blib/lib /etc/perl /usr/local/lib/perl/5.10.0 /usr/local/share/perl/5.10.0 /usr/lib/perl5 /usr/share/perl5 /usr/lib/perl/5.10 /usr/share/perl/5.10 /usr/local/lib/site_perl .) at /home/fujiwara/devel/Acore/blib/lib/Acore/User.pm line 28.
+ 
+[Sat Feb 14 08:31:30 2009] [info] login: name=root failed 
+[Sat Feb 14 08:31:30 2009] [error] dispatch action _private is private. at /home/fujiwara/devel/Acore/blib/lib/Acore/WAF.pm line 477 
+[Sat Feb 14 08:31:30 2009] [error] Can't call method "isa" without a package or object reference at /usr/local/share/perl/5.10.0/DateTime/TimeZone.pm line 455.
+ 
+[Sat Feb 14 08:31:30 2009] [error] Can't call method "isa" without a package or object reference at /usr/local/share/perl/5.10.0/DateTime/TimeZone.pm line 494.
+ 
+[Sat Feb 14 08:31:30 2009] [error] Can't call method "isa" without a package or object reference at /usr/local/share/perl/5.10.0/DateTime/TimeZone.pm line 455.
+ 
+[Sat Feb 14 08:31:30 2009] [error] Can't call method "isa" without a package or object reference at /usr/local/share/perl/5.10.0/DateTime/TimeZone.pm line 494.
+ 
+[Sat Feb 14 08:31:30 2009] [error] Document not found. at /home/fujiwara/devel/Acore/blib/lib/Acore/WAF/Controller/REST.pm line 16 
+[Sat Feb 14 08:31:30 2009] [error] Can't call method "isa" without a package or object reference at /usr/local/share/perl/5.10.0/DateTime/TimeZone.pm line 455.
+ 
+[Sat Feb 14 08:31:30 2009] [error] Can't call method "isa" without a package or object reference at /usr/local/share/perl/5.10.0/DateTime/TimeZone.pm line 494.
+ 
+[Sat Feb 14 08:31:30 2009] [error] Can't call method "isa" without a package or object reference at /usr/local/share/perl/5.10.0/DateTime/TimeZone.pm line 455.
+ 
+[Sat Feb 14 08:31:30 2009] [error] Can't call method "isa" without a package or object reference at /usr/local/share/perl/5.10.0/DateTime/TimeZone.pm line 494.
+ 
+[Sat Feb 14 08:31:30 2009] [error] Document not found. at /home/fujiwara/devel/Acore/blib/lib/Acore/WAF/Controller/REST.pm line 16 
+[Sat Feb 14 08:31:30 2009] [error] Can't decode json.  at /home/fujiwara/devel/Acore/blib/lib/Acore/WAF/Controller/REST.pm line 27 
+[Sat Feb 14 08:31:30 2009] [error] could not find template file: sites/xxx.mt
+ 
+[Sat Feb 14 08:31:30 2009] [error] could not find template file: sites/xxx.mt
+ at /home/fujiwara/devel/Acore/blib/lib/Acore/WAF/Controller/Sites.pm line 36 
+[Sat Feb 14 08:31:30 2009] [error] file error - sites/xxx.tt: not found 
+[Sat Feb 14 08:31:30 2009] [error] file error - sites/xxx.tt: not found 
+[Sat Feb 14 08:31:30 2009] [error] file error - sites/xxx.tt: not found at /home/fujiwara/devel/Acore/blib/lib/Acore/WAF/Controller/Sites.pm line 36 
+[Sat Feb 14 08:31:30 2009] [info] Sites auto OK 
+[Sat Feb 14 08:31:30 2009] [info] Sites auto OK 
+[Sat Feb 14 08:31:30 2009] [info] Sites auto OK 
+[Sat Feb 14 08:31:30 2009] [error] dispatch rule is not found for http://localhost/not_found path: not_found at /home/fujiwara/devel/Acore/blib/lib/Acore/WAF.pm line 471 
+[Sat Feb 14 08:31:30 2009] [error] dispatch rule is not found for http://localhost/rd/ path: rd/ at /home/fujiwara/devel/Acore/blib/lib/Acore/WAF.pm line 471 
+[Sat Feb 14 08:31:30 2009] [error] dispatch action (t::WAFTest::Controller::ng or t::WAFTest::Controller::ng_GET) is not found. for http://localhost/act/ng at /usr/local/share/perl/5.10.0/Acore/WAF.pm line 496 
+[Sat Feb 14 08:31:30 2009] [error] dispatch rule is not found for http://localhost/ng path: ng at /usr/local/share/perl/5.10.0/Acore/WAF.pm line 471 
+[Sat Feb 14 08:31:30 2009] [error] t/static/not_found.txt is not exists. No such file or directory at /usr/local/share/perl/5.10.0/Acore/WAF.pm line 600 
+[Sat Feb 14 08:31:30 2009] [error] can't read file t/static/hide.txt : Inappropriate ioctl for device at /usr/local/share/perl/5.10.0/Acore/WAF.pm line 571 
+[Sat Feb 14 08:31:30 2009] [error] Can't serve above t/static at /usr/local/share/perl/5.10.0/Acore/WAF.pm line 557 
+[Sat Feb 14 08:31:30 2009] [error] Died at t/WAFTest/Controller.pm line 28.
+ 
+[Sat Feb 14 08:31:30 2009] [info] forward 
+[Sat Feb 14 08:31:30 2009] [info] forwarded 
+[Sat Feb 14 08:31:30 2009] [info] forward 
+[Sat Feb 14 08:31:30 2009] [error] Can't locate Acore/Document/Test.pm in @INC (@INC contains: /etc/perl /usr/local/lib/perl/5.10.0 /usr/local/share/perl/5.10.0 /usr/lib/perl5 /usr/share/perl5 /usr/lib/perl/5.10 /usr/share/perl/5.10 /usr/local/lib/site_perl .) at /usr/local/share/perl/5.10.0/Acore/Document.pm line 121.
+ 
+[Sat Feb 14 08:31:30 2009] [error] Can't call method "isa" without a package or object reference at /usr/local/share/perl/5.10.0/DateTime/TimeZone.pm line 455.
+ 
+[Sat Feb 14 08:31:30 2009] [error] Can't call method "isa" without a package or object reference at /usr/local/share/perl/5.10.0/DateTime/TimeZone.pm line 494.
+ 
+[Sat Feb 14 08:31:30 2009] [error] Not found acore document path: /foo/baz at /usr/local/share/perl/5.10.0/Acore/WAF.pm line 611 
+[Sat Feb 14 08:31:30 2009] [error] Can't locate Acore/Role/Reader.pm in @INC (@INC contains: /etc/perl /usr/local/lib/perl/5.10.0 /usr/local/share/perl/5.10.0 /usr/lib/perl5 /usr/share/perl5 /usr/lib/perl/5.10 /usr/share/perl/5.10 /usr/local/lib/site_perl .) at /usr/local/share/perl/5.10.0/Acore/User.pm line 28.
+ 
+[Sat Feb 14 08:31:30 2009] [info] login: name=root succeeded 
+[Sat Feb 14 08:31:30 2009] [error] Can't locate Acore/Role/Reader.pm in @INC (@INC contains: /etc/perl /usr/local/lib/perl/5.10.0 /usr/local/share/perl/5.10.0 /usr/lib/perl5 /usr/share/perl5 /usr/lib/perl/5.10 /usr/share/perl/5.10 /usr/local/lib/site_perl .) at /usr/local/share/perl/5.10.0/Acore/User.pm line 28.
+ 
+[Sat Feb 14 08:31:30 2009] [info] login: name=root failed 
+[Sat Feb 14 08:31:30 2009] [error] dispatch action _private is private. at /usr/local/share/perl/5.10.0/Acore/WAF.pm line 477 
+[Sat Feb 14 08:31:30 2009] [error] Can't call method "isa" without a package or object reference at /usr/local/share/perl/5.10.0/DateTime/TimeZone.pm line 455.
+ 
+[Sat Feb 14 08:31:30 2009] [error] Can't call method "isa" without a package or object reference at /usr/local/share/perl/5.10.0/DateTime/TimeZone.pm line 494.
+ 
+[Sat Feb 14 08:31:30 2009] [error] Can't call method "isa" without a package or object reference at /usr/local/share/perl/5.10.0/DateTime/TimeZone.pm line 455.
+ 
+[Sat Feb 14 08:31:30 2009] [error] Can't call method "isa" without a package or object reference at /usr/local/share/perl/5.10.0/DateTime/TimeZone.pm line 494.
+ 
+[Sat Feb 14 08:31:30 2009] [error] Document not found. at /usr/local/share/perl/5.10.0/Acore/WAF/Controller/REST.pm line 16 
+[Sat Feb 14 08:31:30 2009] [error] Can't call method "isa" without a package or object reference at /usr/local/share/perl/5.10.0/DateTime/TimeZone.pm line 455.
+ 
+[Sat Feb 14 08:31:30 2009] [error] Can't call method "isa" without a package or object reference at /usr/local/share/perl/5.10.0/DateTime/TimeZone.pm line 494.
+ 
+[Sat Feb 14 08:31:30 2009] [error] Can't call method "isa" without a package or object reference at /usr/local/share/perl/5.10.0/DateTime/TimeZone.pm line 455.
+ 
+[Sat Feb 14 08:31:30 2009] [error] Can't call method "isa" without a package or object reference at /usr/local/share/perl/5.10.0/DateTime/TimeZone.pm line 494.
+ 
+[Sat Feb 14 08:31:30 2009] [error] Document not found. at /usr/local/share/perl/5.10.0/Acore/WAF/Controller/REST.pm line 16 
+[Sat Feb 14 08:31:30 2009] [error] Can't decode json.  at /usr/local/share/perl/5.10.0/Acore/WAF/Controller/REST.pm line 27 
+[Sat Feb 14 08:31:30 2009] [error] could not find template file: sites/xxx.mt
+ 
+[Sat Feb 14 08:31:30 2009] [error] could not find template file: sites/xxx.mt
+ at /usr/local/share/perl/5.10.0/Acore/WAF/Controller/Sites.pm line 36 
+[Sat Feb 14 08:31:30 2009] [error] file error - sites/xxx.tt: not found 
+[Sat Feb 14 08:31:30 2009] [error] file error - sites/xxx.tt: not found 
+[Sat Feb 14 08:31:30 2009] [error] file error - sites/xxx.tt: not found at /usr/local/share/perl/5.10.0/Acore/WAF/Controller/Sites.pm line 36 
+[Sat Feb 14 08:31:30 2009] [info] Sites auto OK 
+[Sat Feb 14 08:31:30 2009] [info] Sites auto OK 
+[Sat Feb 14 08:31:30 2009] [info] Sites auto OK 
+[Sat Feb 14 08:31:30 2009] [error] dispatch rule is not found for http://localhost/not_found path: not_found at /usr/local/share/perl/5.10.0/Acore/WAF.pm line 471 
+[Sat Feb 14 08:31:30 2009] [error] dispatch rule is not found for http://localhost/rd/ path: rd/ at /usr/local/share/perl/5.10.0/Acore/WAF.pm line 471 
+[Sat Feb 14 08:31:30 2009] [error] dispatch action (t::WAFTest::Controller::ng or t::WAFTest::Controller::ng_GET) is not found. for http://localhost/act/ng at /usr/local/share/perl/5.10.0/Acore/WAF.pm line 496 
+[Sat Feb 14 08:31:30 2009] [error] dispatch rule is not found for http://localhost/ng path: ng at /usr/local/share/perl/5.10.0/Acore/WAF.pm line 471 
+[Sat Feb 14 08:31:30 2009] [error] t/static/not_found.txt is not exists. No such file or directory at /usr/local/share/perl/5.10.0/Acore/WAF.pm line 600 
+[Sat Feb 14 08:31:30 2009] [error] can't read file t/static/hide.txt : Inappropriate ioctl for device at /usr/local/share/perl/5.10.0/Acore/WAF.pm line 571 
+[Sat Feb 14 08:31:30 2009] [error] Can't serve above t/static at /usr/local/share/perl/5.10.0/Acore/WAF.pm line 557 
+[Sat Feb 14 08:31:30 2009] [error] Died at t/WAFTest/Controller.pm line 28.
+ 
+[Sat Feb 14 08:31:30 2009] [info] forward 
+[Sat Feb 14 08:31:30 2009] [info] forwarded 
+[Sat Feb 14 08:31:30 2009] [info] forward 
+[Sat Feb 14 08:31:30 2009] [error] Can't locate Acore/Document/Test.pm in @INC (@INC contains: /etc/perl /usr/local/lib/perl/5.10.0 /usr/local/share/perl/5.10.0 /usr/lib/perl5 /usr/share/perl5 /usr/lib/perl/5.10 /usr/share/perl/5.10 /usr/local/lib/site_perl .) at /usr/local/share/perl/5.10.0/Acore/Document.pm line 121.
+ 
+[Sat Feb 14 08:31:30 2009] [error] Can't call method "isa" without a package or object reference at /usr/local/share/perl/5.10.0/DateTime/TimeZone.pm line 455.
+ 
+[Sat Feb 14 08:31:30 2009] [error] Can't call method "isa" without a package or object reference at /usr/local/share/perl/5.10.0/DateTime/TimeZone.pm line 494.
+ 
+[Sat Feb 14 08:31:30 2009] [error] Not found acore document path: /foo/baz at /usr/local/share/perl/5.10.0/Acore/WAF.pm line 611 
+[Sat Feb 14 08:31:30 2009] [error] Can't locate Acore/Role/Reader.pm in @INC (@INC contains: /etc/perl /usr/local/lib/perl/5.10.0 /usr/local/share/perl/5.10.0 /usr/lib/perl5 /usr/share/perl5 /usr/lib/perl/5.10 /usr/share/perl/5.10 /usr/local/lib/site_perl .) at /usr/local/share/perl/5.10.0/Acore/User.pm line 28.
+ 
+[Sat Feb 14 08:31:30 2009] [info] login: name=root succeeded 
+[Sat Feb 14 08:31:30 2009] [error] Can't locate Acore/Role/Reader.pm in @INC (@INC contains: /etc/perl /usr/local/lib/perl/5.10.0 /usr/local/share/perl/5.10.0 /usr/lib/perl5 /usr/share/perl5 /usr/lib/perl/5.10 /usr/share/perl/5.10 /usr/local/lib/site_perl .) at /usr/local/share/perl/5.10.0/Acore/User.pm line 28.
+ 
+[Sat Feb 14 08:31:30 2009] [info] login: name=root failed 
+[Sat Feb 14 08:31:30 2009] [error] dispatch action _private is private. at /usr/local/share/perl/5.10.0/Acore/WAF.pm line 477 
+[Sat Feb 14 08:31:30 2009] [error] Can't call method "isa" without a package or object reference at /usr/local/share/perl/5.10.0/DateTime/TimeZone.pm line 455.
+ 
+[Sat Feb 14 08:31:30 2009] [error] Can't call method "isa" without a package or object reference at /usr/local/share/perl/5.10.0/DateTime/TimeZone.pm line 494.
+ 
+[Sat Feb 14 08:31:30 2009] [error] Can't call method "isa" without a package or object reference at /usr/local/share/perl/5.10.0/DateTime/TimeZone.pm line 455.
+ 
+[Sat Feb 14 08:31:30 2009] [error] Can't call method "isa" without a package or object reference at /usr/local/share/perl/5.10.0/DateTime/TimeZone.pm line 494.
+ 
+[Sat Feb 14 08:31:30 2009] [error] Document not found. at /usr/local/share/perl/5.10.0/Acore/WAF/Controller/REST.pm line 16 
+[Sat Feb 14 08:31:30 2009] [error] Can't call method "isa" without a package or object reference at /usr/local/share/perl/5.10.0/DateTime/TimeZone.pm line 455.
+ 
+[Sat Feb 14 08:31:30 2009] [error] Can't call method "isa" without a package or object reference at /usr/local/share/perl/5.10.0/DateTime/TimeZone.pm line 494.
+ 
+[Sat Feb 14 08:31:30 2009] [error] Can't call method "isa" without a package or object reference at /usr/local/share/perl/5.10.0/DateTime/TimeZone.pm line 455.
+ 
+[Sat Feb 14 08:31:30 2009] [error] Can't call method "isa" without a package or object reference at /usr/local/share/perl/5.10.0/DateTime/TimeZone.pm line 494.
+ 
+[Sat Feb 14 08:31:30 2009] [error] Document not found. at /usr/local/share/perl/5.10.0/Acore/WAF/Controller/REST.pm line 16 
+[Sat Feb 14 08:31:30 2009] [error] Can't decode json.  at /usr/local/share/perl/5.10.0/Acore/WAF/Controller/REST.pm line 27 
+[Sat Feb 14 08:31:30 2009] [error] could not find template file: sites/xxx.mt
+ 
+[Sat Feb 14 08:31:30 2009] [error] could not find template file: sites/xxx.mt
+ at /usr/local/share/perl/5.10.0/Acore/WAF/Controller/Sites.pm line 36 
+[Sat Feb 14 08:31:30 2009] [error] file error - sites/xxx.tt: not found 
+[Sat Feb 14 08:31:30 2009] [error] file error - sites/xxx.tt: not found 
+[Sat Feb 14 08:31:30 2009] [error] file error - sites/xxx.tt: not found at /usr/local/share/perl/5.10.0/Acore/WAF/Controller/Sites.pm line 36 
+[Sat Feb 14 08:31:30 2009] [info] Sites auto OK 
+[Sat Feb 14 08:31:30 2009] [info] Sites auto OK 
+[Sat Feb 14 08:31:30 2009] [info] Sites auto OK 
+[Sat Feb 14 08:31:30 2009] [error] dispatch rule is not found for http://localhost/not_found path: not_found at /usr/local/share/perl/5.10.0/Acore/WAF.pm line 471 
+[Sat Feb 14 08:31:30 2009] [error] dispatch rule is not found for http://localhost/rd/ path: rd/ at /usr/local/share/perl/5.10.0/Acore/WAF.pm line 471 
