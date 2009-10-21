@@ -13,23 +13,24 @@ BEGIN {
         *Load = \&YAML::XS::Load;
         *DumpFile = \&YAML::XS::DumpFile;
         *LoadFile = \&YAML::XS::LoadFile;
-        $Class = "YAML::XS";
+        return $Class = "YAML::XS";
     }
-    elsif ( eval "use YAML::Tiny" ) { ## no critic
+
+    eval "use YAML::Tiny"; ## no critic;
+    if (!$@) {
         *Dump = \&YAML::Tiny::Dump;
         *Load = \&YAML::Tiny::Load;
         *DumpFile = \&YAML::Tiny::DumpFile;
         *LoadFile = \&YAML::Tiny::LoadFile;
-        $Class = "YAML::Tiny";
+        return $Class = "YAML::Tiny";
     }
-    else {
-        require YAML;
-        *Dump = \&YAML::Dump;
-        *Load = \&YAML::Load;
-        *DumpFile = \&YAML::DumpFile;
-        *LoadFile = \&YAML::LoadFile;
-        $Class = "YAML";
-    }
+
+    require YAML;
+    *Dump = \&YAML::Dump;
+    *Load = \&YAML::Load;
+    *DumpFile = \&YAML::DumpFile;
+    *LoadFile = \&YAML::LoadFile;
+    $Class = "YAML";
 };
 
 sub class { $Class }
