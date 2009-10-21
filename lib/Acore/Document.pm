@@ -225,7 +225,6 @@ sub html_form_to_update {
 <fieldset>
   <legend>Content</legend>
 <?
-   require YAML;
    my $obj = $doc->to_object;
    delete $obj->{$_} for qw/ id _id _class content_type path updated_on created_on /;
 ?>
@@ -236,7 +235,7 @@ sub html_form_to_update {
     </p>
 ? }
     <label for="content">YAML</label>
-      <textarea name="content" cols="60" rows="20"><?= YAML::Dump($obj) ?></textarea>
+      <textarea name="content" cols="60" rows="20"><?= Dump($obj) ?></textarea>
   </div>
 </fieldset>
 };
@@ -246,7 +245,7 @@ sub html_form_to_update {
 sub validate_to_update {
     my ($self, $c) = @_;
 
-    require YAML;
+    require Acore::YAML;
     my $obj  = eval { YAML::Load( $c->req->param('content') . "\r\n" ) };
     if ($@ || !$obj) {
         $c->log->error("invalid YAML. $@");
@@ -265,7 +264,7 @@ sub validate_to_update {
 sub validate_to_create {
     my ($class, $c) = @_;
 
-    require YAML;
+    require Acore::YAML;
     my $obj  = eval { YAML::Load( $c->req->param('content') . "\r\n" ) };
     if ($@ || !$obj) {
         $c->log->error("invalid YAML. $@");

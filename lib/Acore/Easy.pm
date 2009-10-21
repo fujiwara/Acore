@@ -8,7 +8,7 @@ use Acore::WAF::Log;
 use Acore::DateTime;
 use DBI;
 use Exporter "import";
-use YAML::XS ();
+use Acore::YAML ();
 use Class::Inspector;
 our $Acore;
 our $Config;
@@ -74,7 +74,7 @@ sub acore {
 }
 
 sub Dump {
-    print YAML::XS::Dump(@_);
+    print Acore::YAML::Dump(@_);
 }
 
 1;

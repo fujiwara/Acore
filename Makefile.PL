@@ -37,6 +37,7 @@ requires 'Data::Visitor';
 requires 'String::CamelCase';
 requires 'HTTP::MobileAgent' => 0.27;
 requires 'Encode::JP::Mobile' => 0.26;
+requires 'YAML::Tiny';
 
 test_requires 'Test::Base';
 test_requires 'Text::Diff';

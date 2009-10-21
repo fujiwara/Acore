@@ -372,7 +372,6 @@ sub document_list_GET {
     $c->stash->{page}   = $page;
 
     if ( $c->req->param('download') ) {
-        require YAML;
         $c->render("$Location/document_list_download.mt");
         $c->res->content_type('application/x-yaml; charset=utf-8');
     }

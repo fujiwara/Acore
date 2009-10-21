@@ -3,18 +3,11 @@ package Acore::DocumentLoader;
 use strict;
 use warnings;
 use Any::Moose;
+use Acore::YAML;
 use UNIVERSAL::require;
 use Carp;
 
 my $Separator = "---";
-my $Use_xs;
-eval {
-    require YAML::XS;
-    $Use_xs = 1;
-};
-if ($@) {
-    require YAML;
-}
 
 has acore => (
     is  => "rw",
@@ -91,7 +84,7 @@ sub _load_from_stream {
     my @docs;
  LINE:
     while ( my $line = <$handle> ) {
-        utf8::decode($line) if !$Use_xs && utf8::is_utf8($line);
+        utf8::decode($line);
         $count++;
         if ( $line =~ /^$Separator$/ && $buffer ) {
             push @docs, $self->_load_object($buffer, $count);
@@ -128,9 +121,7 @@ sub _load_from_string {
 sub _load_object {
     my $self   = shift;
     my ($yaml, $count) = @_;
-    my $object = eval {
-        $Use_xs ? YAML::XS::Load($yaml) : YAML::Load($yaml)
-    };
+    my $object = eval { Load($yaml) };
     if ($@) {
         $self->add_error("Can't load from YAML at line $count. $@");
         return;

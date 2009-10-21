@@ -22,8 +22,8 @@ my $base_config = {
 my $config_local = Storable::dclone($base_config);
 $config_local->{dsn}->[3]->{AutoCommit} = 0;
 
-YAML::DumpFile("t/tmp/config.yaml"       => $base_config);
-YAML::DumpFile("t/tmp/config_local.yaml" => $config_local);
+Acore::YAML::DumpFile("t/tmp/config.yaml"       => $base_config);
+Acore::YAML::DumpFile("t/tmp/config_local.yaml" => $config_local);
 
 my $config;
 sub run(&) {
