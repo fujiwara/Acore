@@ -46,7 +46,7 @@ my $ctx = {};
 run {
     my $block  = shift;
     my $config = clone $base_config;
-    run_engine_test($config, $block, $ctx);
+    run_engine_test($config, $block, $ctx, $block->app_class);
 };
 
 sub create_adoc {
@@ -1058,16 +1058,8 @@ Content-Type: text/html; charset=utf-8
 Status: 302
 
 === ovreride finalize
---- preprocess
-{
-    package t::WAFTest;
-    use Any::Moose;
-    override "finalize" => sub {
-        super();
-        my $c = shift;
-        $c->res->header("X-Override-Finalize" => "ok");
-    };
-}
+--- app_class
+t::WAFTest2
 --- uri
 http://localhost/
 --- response
