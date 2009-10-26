@@ -4,14 +4,14 @@ use strict;
 use warnings;
 our $VERSION = '0.01';
 use Any::Moose;
+use Acore::Authentication::Password;
 use UNIVERSAL::require;
 
 has name => (
     is => "rw",
 );
 
-__PACKAGE__->meta->make_immutable;
-no Any::Moose;
+with "Acore::Authentication::Password::Role";
 
 sub init {
     my $self = shift;
@@ -128,6 +128,9 @@ sub attr {
 }
 
 *attribute = \&attr;
+
+__PACKAGE__->meta->make_immutable;
+no Any::Moose;
 
 1;
 __END__
