@@ -169,12 +169,13 @@ sub AUTOLOAD {
 
     return if (!defined $name) || ($name eq 'DESTROY');
 
-    carp("$self has no method $name, AUTLOADed");
+    carp("$self has no method $name, AUTLOADed")
+        unless $AUTOLOADED{$AUTOLOAD}++;
 
-    has $name => ( is => "rw" );
-    $AUTOLOADED{$AUTOLOAD} = 1;
-
-    $self->$name(@_);
+    if (@_) {
+        $self->{$name} = shift;
+    }
+    $self->{$name};
 }
 
 sub update_from_hashref {
