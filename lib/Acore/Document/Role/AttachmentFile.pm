@@ -11,7 +11,6 @@ requires 'attachment_root_dir';
 has attachment_files => (
     is      => "rw",
     isa     => "ArrayRef",
-    coerce  => 1,
     default => sub { [] },
 );
 
