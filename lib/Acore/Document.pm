@@ -102,7 +102,6 @@ sub to_object {
 
     my $obj = clone $self;
     $obj->call_trigger("to_object");
-    delete $obj->{$_} for qw/ __triggers _class_trigger_results /;
 
     require Acore::DateTime;
     $obj->{created_on} = Acore::DateTime->format_datetime( $obj->created_on );
@@ -126,7 +125,6 @@ sub from_object {
     $obj = $obj->{_class}->new($obj);
 
     $obj->call_trigger("from_object");
-    delete $obj->{$_} for qw/ __triggers _class_trigger_results /;
     $obj;
 }
 
