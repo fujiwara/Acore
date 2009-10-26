@@ -27,7 +27,7 @@ can_ok $app, qw/ setup path_to handle_request _dispatch dispatch_static
                  psgi_application
                /;
 SKIP: {
-    skip "no Plack installed", 2 unless "Plack::Reqeust"->require;
+    skip "Plack::Request is not installed", 2 unless "Plack::Reqeust"->require;
 
     is ref $app->psgi_application({}) => "CODE", "psgi_application is CODE ref";
     is ref t::WAFTest->psgi_application({}) => "CODE", "psgi_application is CODE ref";
