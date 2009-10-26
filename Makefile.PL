@@ -53,4 +53,21 @@ install_script 'acore_setupdb.pl';
 install_script 'acore_setupwaf.pl';
 install_script 'acoresh';
 
+if (author_context) {
+    for my $pair ([ TEST_PSGI => 1 ], [ ANY_MOOSE => "Moose" ]) {
+        my $env   = $pair->[0];
+        my $value = $pair->[1];
+
+        my $test = qq{$env=$value }
+                 . q{$(FULLPERLRUN) -MExtUtils::Command::MM -e}
+                 . q{"test_harness($(TEST_VERBOSE), '$(INST_LIB)', '$(INST_ARCHLIB)')"}
+                 . q{ $(TEST_FILES)} . "\n";
+
+        my $name = lc "${env}_${value}";
+        postamble qq{test_dynamic :: test_${name}\n\n}
+                . qq{test_${name} :: pure_all\n}
+                . qq{\t} . $test;
+    }
+}
+
 WriteAll;
