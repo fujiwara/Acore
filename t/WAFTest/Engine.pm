@@ -79,7 +79,6 @@ sub run_engine_test {
     my ($config, $block, $ctx, $app_class) = @_;
     $ctx       ||= {};
     $app_class ||= "t::WAFTest";
-    chomp $app_class;
     $app_class->require;
 
     sleep( $block->wait || 0 );

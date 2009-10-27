@@ -17,8 +17,9 @@ use t::WAFTest::Engine;
 plan tests => ( 2 + 4 + 1 * blocks );
 
 filters {
-    response => [qw/chomp convert_charset/],
-    method   => [qw/chomp/],
+    response  => [qw/chomp convert_charset/],
+    method    => [qw/chomp/],
+    app_class => [qw/chomp/],
 };
 
 use_ok("Acore::WAF");
