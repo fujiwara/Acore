@@ -8,8 +8,6 @@ use HTTP::Response;
 
 our @EXPORT = qw/ create_engine
                   create_request
-                  res_from_psgi
-                  res_to_psgi
                   run_engine_test
                   convert_charset
                 /;
@@ -20,10 +18,6 @@ sub res_from_psgi {
     $res->header( "Content-Length" => length($res->content) )
         if $res->code != 304;
     $res;
-}
-
-sub req_to_psgi {
-    HTTP::Message::PSGI::req_to_psgi(@_);
 }
 
 sub new {

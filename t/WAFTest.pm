@@ -6,9 +6,7 @@ use Exporter 'import';
 use t::WAFTest::Engine;
 our @EXPORT = qw/ create_engine
                   create_request
-                  res_from_psgi
-                  res_to_psgi /;
-
+                /;
 use Any::Moose;
 extends 'Acore::WAF';
 
