@@ -132,7 +132,7 @@ Acore::DateTime->now().
 
 shortcut to
 
- print YAML::Dump(@_);
+ print Acore::YAML::Dump(@_);
 
 =item all public methods in Acore
 
