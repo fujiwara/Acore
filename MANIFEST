@@ -1,3 +1,4 @@
+.gitignore
 assets/admin_console/static/css/bgimg.css
 assets/admin_console/static/css/content.css
 assets/admin_console/static/css/form/bgimg.css
@@ -1212,6 +1213,7 @@ lib/Acore/WAF/Render.pm
 lib/Acore/WAF/Util.pm
 lib/Acore/WAF/View.pm
 lib/Acore/WAF/View/JSON.pm
+lib/Acore/YAML.pm
 lib/AcoreX/Inquiry.pm
 lib/AcoreX/Inquiry/Controller/Root.pm
 Makefile.PL
@@ -1268,6 +1270,7 @@ t/21_document_attachment_file.t
 t/22_easy.t
 t/23_easy_methods.t
 t/24_user_class.t
+t/25_yaml.t
 t/999_cleanup.t
 t/Cache.pm
 t/connect_db.pm
@@ -1291,7 +1294,7 @@ t/templates/sites/page.mt
 t/templates/sites/page/foo/bar.mt
 t/templates/test.mt
 t/templates/test.tt
-t/tmp/dummy
+t/tmp/.gitignore
 t/WAFTest.pm
 t/WAFTest/Controller.pm
 t/WAFTest/Controller/AnyLocation.pm
