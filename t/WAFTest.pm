@@ -15,6 +15,12 @@ override _build_log => sub {
     my $log = Acore::WAF::Log->new({ file => "t/tmp/error_log" });
 };
 
+override setup => sub {
+    local *STDERR;
+    open *STDERR, ">>", "t/tmp/error_log";
+    super();
+};
+
 __PACKAGE__->meta->make_immutable;
 no Any::Moose;
 
