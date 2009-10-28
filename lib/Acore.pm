@@ -2,7 +2,7 @@ package Acore;
 
 use strict;
 use warnings;
-use v5.8.1;
+use 5.008_001;
 our $VERSION = sprintf '0.%05d', ('$Revision$' =~ /(\d+)/ && $1);
 use Acore::Storage;
 use Acore::User;
