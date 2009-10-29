@@ -1,3 +1,12 @@
 #!/bin/sh
 
-CONFIG="$1" CONFIG_LOCAL="$2" perl -MAcore::Easy -de0
+CONFIG="$1"
+CONFIG_LOCAL="$2"
+PERLSH=`which perlsh`
+echo "PERLSH=$PERLSH"
+if [ "$PERLSH" = "" ]
+then
+    CONFIG="$1" CONFIG_LOCAL="$2" perl -MAcore::Easy -de0
+else
+    CONFIG="$1" CONFIG_LOCAL="$2" perl -MAcore::Easy -e "*x = *Data::Dumper::Dumper; sub quit { exit }; require '$PERLSH'";
+fi
