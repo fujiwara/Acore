@@ -16,7 +16,7 @@
             <h2 class="icon"><div class="app_kuser"><a href="<?= $c->uri_for("/@{[ location ]}/user_list") ?>">ユーザの管理</a></div></h2>
           </div>
           <div class="form-container">
-              <form action="<?= $c->uri_for("/@{[ location ]}/user_create_form") ?>" method="post" id="user-form">
+              <form action="<?= $c->uri_for("/@{[ location ]}/user_create_form") ?>" method="post" id="user-form" autocomplete="off">
 ?      if ($c->form->has_error) {
               <p class="error">
                 エラーがあります
