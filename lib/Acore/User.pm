@@ -23,10 +23,6 @@ sub init {
         $class->use
             or die "Can't use $class: $@";
     }
-    for ( $self->roles ) {
-        my $class = _role_class($_);
-        $class->require;
-    }
 
     $self;
 }
