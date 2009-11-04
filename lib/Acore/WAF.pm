@@ -450,6 +450,8 @@ sub finalize {
     my $self = shift;
 
     my $res  = $self->response;
+    return 1 unless blessed $res;
+
     my ($c_type, $charset) = $res->content_type;
     $c_type  ||= "text/html";
     $charset ||= "";
@@ -735,7 +737,12 @@ sub psgi_application {
         my $app = ref $obj ? $obj : $obj->new;
         my $req = Plack::Request->new($env);
         $app->handle_request( $config, $req );
-        $app->response->finalize;
+        if ( ref $app->response eq 'ARRAY' ) {
+            return $app->response;    # native PSGI response
+        }
+        else {
+            return $app->response->finalize;
+        }
     };
 }
 
@@ -958,17 +965,21 @@ Config hashref.
 
 =item request
 
-HTTP::Engine::Request object.
+HTTP::Engine::Request / Plack::Request object.
 
- $c->request->params->{foo}
- $c->req->params->{foo};
+ $c->request->param("foo");
+ $c->req->param("foo");
+
+If running by PSGI, request is the Plack::Request.
 
 =item response
 
-HTTP::Engine::Response object.
+HTTP::Engine::Response / Plack::Response object.
 
  $c->response->body("body");
  $c->res->body("body");
+
+If running by PSGI, response is Plack::Response or native PSGI response (array ref).
 
 =item acore
 

@@ -278,6 +278,15 @@ sub page_cache_disabled {
     $c->res->body("no-cached");
 }
 
+sub native_psgi_response {
+    my ($self, $c) = @_;
+    $c->response( [
+        200,
+        [ "Content-Type" => "text/plain" ],
+        [ "native_psgi_response" ],
+    ]);
+}
+
 package t::WAFTest::Controller::X;
 
 sub xyz {
