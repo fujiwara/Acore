@@ -450,8 +450,6 @@ sub finalize {
     my $self = shift;
 
     my $res  = $self->response;
-    return 1 unless blessed $res;
-
     my ($c_type, $charset) = $res->content_type;
     $c_type  ||= "text/html";
     $charset ||= "";
@@ -737,12 +735,7 @@ sub psgi_application {
         my $app = ref $obj ? $obj : $obj->new;
         my $req = Plack::Request->new($env);
         $app->handle_request( $config, $req );
-        if ( ref $app->response eq 'ARRAY' ) {
-            return $app->response;    # native PSGI response
-        }
-        else {
-            return $app->response->finalize;
-        }
+        $app->response->finalize;
     };
 }
 
@@ -979,7 +972,11 @@ HTTP::Engine::Response / Plack::Response object.
  $c->response->body("body");
  $c->res->body("body");
 
-If running by PSGI, response is Plack::Response or native PSGI response (array ref).
+If running by PSGI, response is Plack::Response.
+
+=item on_psgi
+
+true if running on PSGI servers.
 
 =item acore
 
