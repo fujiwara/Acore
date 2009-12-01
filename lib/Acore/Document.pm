@@ -245,7 +245,7 @@ sub validate_to_update {
     my ($self, $c) = @_;
 
     require Acore::YAML;
-    my $obj  = eval { Acore::YAML::Load( $c->req->param('content') . "\r\n" ) };
+    my $obj = eval { Acore::YAML::Load( $c->req->param('content') . "\r\n" ) };
     if ($@ || !$obj) {
         $c->log->error("invalid YAML. $@");
         $c->form->set_error( content => "INVALID_YAML" );

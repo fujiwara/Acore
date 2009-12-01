@@ -9,7 +9,7 @@
               </select> で <input type="text" name="q" size="20" /> を
               <span id="selector-notice"></span>
               <input type="submit" value="表示" />
-              <input type="text" name="limit" size="4" value="<?= $c->stash->{limit} ?>"/>docs/page
+              <input type="text" name="limit" size="4" value="<?= $c->stash->{limit} || '' ?>"/>docs/page
               <input type="checkbox" name="download" value="1" id="download" /><label for="download">Download</label>
               <br/>
               表示する属性

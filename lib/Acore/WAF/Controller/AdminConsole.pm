@@ -438,6 +438,9 @@ sub document_form_POST {
     }
 
     $c->flash->set( document_saved => 1 );
+    if ( $c->req->param('.send') ) {
+        $c->forward( $self, "_document_send", $doc );
+    }
     $c->redirect(
         $c->uri_for(
             "/$Location/document_form",
@@ -1075,6 +1078,59 @@ sub explorer_save_file_POST {
     }
     $c->req->param( body => undef );
     $c->forward( $self => "explorer_file_info_GET" );
+}
+
+sub document_api_POST {
+    my ($self, $c, $args) = @_;
+    require JSON;
+    require Acore::Document;
+
+    my $self_key = $c->config->{admin_console}->{api_key};
+    if (!defined $self_key || $self_key eq "") {
+        $c->error( 406 => "not acceptable" );
+    }
+
+    my $req_key = $c->req->header("api-key");
+    if (!defined $req_key || $req_key ne $self_key ) {
+        $c->error( 400 => "invalid api_key" );
+    }
+
+    my $body = Encode::decode_utf8( $c->request->raw_body );
+    my $json = JSON->new;
+    my $obj  = eval { $json->decode($body) };
+    if ( $@ || !$obj || ref $obj ne "HASH" ) {
+        $c->error( 400 => "Can't decode json. $@" );
+    }
+    my $doc = Acore::Document->from_object($obj);
+    $c->acore->put_document($doc);
+
+    $c->res->body("ok");
+}
+
+sub _document_send {
+    my ($self, $c, $doc) = @_;
+    my $send_to = $c->config->{admin_console}->{send_to} or return;
+    require LWP::UserAgent;
+    require HTTP::Request;
+
+    my $json = Encode::encode_utf8(
+        JSON->new->encode( $doc->to_object )
+    );
+    my $req = HTTP::Request->new( POST => $send_to->{uri} );
+    $req->header( "api-key" => $send_to->{api_key} );
+    $req->content($json);
+
+    my $ua = LWP::UserAgent->new;
+    $ua->timeout(10);
+    $ua->env_proxy;
+    my $res = $ua->request($req);
+
+    if ($res->is_success) {
+        $c->flash->{document_sent} = 1;
+    }
+    else {
+        $c->flash->{document_sent_error} = $res->status_line;
+    }
 }
 
 1;

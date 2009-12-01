@@ -29,6 +29,11 @@
 ?        } elsif ( $c->flash->get('attachment_deleted') ) {
 ?= raw          $c->render_part("@{[ location ]}/notice.mt", '添付ファイルを削除しました');
 ?        }
+?        if ( $c->flash->get('document_sent') ) {
+?= raw          $c->render_part("@{[ location ]}/notice.mt", '正常に送信されました');
+?        } elsif ( my $msg = $c->flash->get('document_sent_error') ) {
+?= raw          $c->render_part("@{[ location ]}/notice.mt", '送信に失敗しました.' . $msg );
+?        }
             <div class="form-container">
 
 ? if (!$doc) {
@@ -105,6 +110,11 @@
                 <div class="buttonrow">
                   <input type="submit" value="更新する" class="button"/>
                   <input type="hidden" name="sid" value="<?= $c->session->session_id ?>"/>
+                  <br/>
+         <? if ( my $send_to = $c->config->{admin_console}->{send_to}) { ?>
+                  <input type="checkbox" id="send-to-checkbox" name=".send" value="1"/>
+                  <?= $send_to->{name} | utf8 ?> に対して Document を送信する
+         <? } ?>
                 </div>
               </form>
 ? }
