@@ -43,6 +43,15 @@ sub uri() {  ## no critic
     };
 }
 
+sub utf8() {
+    joint {
+        my $input = $_[0];
+        $input = Encode::decode_utf8($input)
+            unless utf8::is_utf8($input);
+        $input;
+    };
+}
+
 sub uri_unescape() {  ## no critic
     joint {
         my $input = $_[0];
@@ -146,6 +155,7 @@ In Text::MicroTemplate like TT.
  <?= $html | fillform($c->req) ?>
  <?= $array_ref | sort_by('foo') ?>
  <?= $array_ref | nsort_by('bar') ?>
+ <?= $no_flagged_string | utf8 ?>
 
 =head1 DESCRIPTION
 
@@ -158,6 +168,10 @@ Acore is AnyCMS core module.
 =item raw
 
 Turn off HTML escape by Text::MicroTemplate.
+
+=item ut8
+
+Turn on UTF8 flag if not flagged input.
 
 =item html
 

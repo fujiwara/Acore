@@ -4,6 +4,7 @@ use Test::Base;
 use utf8;
 use Acore::Document;
 use Acore::WAF::Render;
+use Encode qw/ encode_utf8 /;
 
 plan tests => (1 * blocks) ;
 {
@@ -11,6 +12,10 @@ plan tests => (1 * blocks) ;
     sub html {
         package Acore::WAF::Render;
         $_[0] | html
+    }
+    sub utf8 {
+        package Acore::WAF::Render;
+        $_[0] | utf8
     }
     sub uri  {
         package Acore::WAF::Render;
@@ -94,6 +99,18 @@ __END__
 <a href="javascript:foo('a&b')"></a>
 --- expected chomp
 &lt;a href=&quot;javascript:foo(&#39;a&amp;b&#39;)&quot;&gt;&lt;/a&gt;
+
+=== utf8
+--- input chomp utf8
+日本語
+--- expected chomp
+日本語
+
+=== utf8 no flagged
+--- input chomp encode_utf8 utf8
+日本語
+--- expected chomp
+日本語
 
 === uri
 --- input chomp uri
