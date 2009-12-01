@@ -74,7 +74,5 @@ for my $cache ( undef, t::Cache->new() )
             }
         }
     }
-
-    $dbh->commit;
 }
 

@@ -119,7 +119,5 @@ for my $cache ( undef, t::Cache->new({}) )
 
     $gotdoc = $ac->get_document({ id => $mydoc->id, isa => "SomeDocument" });
     ok !$gotdoc, "returns only is SomeDocument";
-
-    $dbh->commit;
 }
 
