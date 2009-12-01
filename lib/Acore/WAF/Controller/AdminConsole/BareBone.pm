@@ -23,8 +23,7 @@ sub _auto {
     $c->forward( $parent => "is_logged_in" );
 
     my $dsn   = $c->config->{barebone}->{dsn} || $c->config->{dsn};
-    my $model = $Model->new;
-    $model->connect_info({
+    my $model = $Model->new({
         dsn             => $dsn->[0],
         username        => $dsn->[1],
         password        => $dsn->[2],
@@ -94,9 +93,40 @@ sub table_select {
     }
     else {
         # html output
-        $c->fillform;
         $c->render("admin_console/barebone/table_info.mt");
+        $c->fillform;
     }
+}
+
+sub table_row {
+    my ($self, $c, $args) = @_;
+
+    $c->forward( $self => "_table_info", $args );
+    my $model = $c->stash->{model};
+    my $query = {};
+    my @pkey  = keys %{ $c->stash->{primary_key_info} };
+    for my $key ( @pkey ) {
+        $c->error(404, "key param '$key' is not defined" )
+            unless defined $c->req->param($key);
+        $query->{$key} = $c->req->param($key);
+    }
+
+    my $result = $model->search(
+        $c->stash->{table},
+        $query,
+        { select => "*", limit => 1, row_class => "DBIx::Skinny::Row" },
+    );
+    my $row = $result->first;
+    $c->error(404, "no row") unless $row;
+
+    my $data = $row->{row_data};
+    for my $col ( keys %{ $row->{row_data} } ) {
+        $data->{$col} = Encode::decode_utf8($data->{$col});
+    }
+
+    require Acore::WAF::View::JSON;
+    my $view = Acore::WAF::View::JSON->new;
+    $c->forward( $view => "process", $row->{row_data} );
 }
 
 sub _table_select_csv {

@@ -67,7 +67,8 @@
               </select>
               LIMIT <input type="text" name="limit" value="100" size="6"/>
               <br/>
-              <input type="checkbox" name="csv" value="1"/>CSV download<br/>
+              <input type="checkbox" name="csv" value="1" id="csv-check"/>
+              <label for="csv-check">CSV download</label><br/>
               <input type="submit" value="select"/>
             </div>
           </form>
