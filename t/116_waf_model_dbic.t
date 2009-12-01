@@ -6,7 +6,7 @@ use Scalar::Util qw/ blessed /;
 use t::WAFTest::Engine;
 
 BEGIN {
-    eval { use DBIx::Class::Schema::Loader };
+    eval "use DBIx::Class::Schema::Loader;";
     plan $@ ? (skip_all => "DBIx::Class::Schema::Loader in not installed") : (tests => 13);
 
     use_ok "Acore";
