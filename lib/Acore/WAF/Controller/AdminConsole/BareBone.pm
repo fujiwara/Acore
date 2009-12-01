@@ -87,8 +87,78 @@ sub table_select {
     my $model  = $c->stash->{model};
     $c->stash->{result} = $model->search_by_sql($stmt, \@bind);
 
-    $c->render("admin_console/barebone/table_info.mt");
-    $c->fillform;
+    if ($c->req->param('csv')) {
+        $c->forward( $self => "_table_select_csv" );
+    }
+    else {
+        # html output
+        $c->fillform;
+        $c->render("admin_console/barebone/table_info.mt");
+    }
+}
+
+sub _table_select_csv {
+    my ($self, $c) = @_;
+
+    my $result   = $c->stash->{result};
+    my @cols     = $c->req->param("cols");
+    my $filename = $c->stash->{table} . ".csv";
+
+    $c->res->header(
+        "Content-Type"        => "text/csv; charset=utf-8",
+        "Content-Disposition" => "attachment; filename=$filename",
+    );
+
+    my $res_handler
+        = Acore::WAF::Controller::AdminConsole::BareBone::CSV
+            ->new(\@cols, $result);
+
+    if ($c->on_psgi) {
+        $c->res->body($res_handler);
+    }
+    else {
+        my $csv = "";
+        while (my $line = $res_handler->getline) {
+            $csv .= $line;
+        }
+        $c->res->body($csv);
+    }
+}
+
+
+package Acore::WAF::Controller::AdminConsole::BareBone::CSV;
+
+sub new {
+    my $class = shift;
+    bless {
+        cols   => $_[0],
+        result => $_[1],
+        count  => 0,
+    }, $class;
+}
+
+sub getline {
+    my $self = shift;
+    my @data;
+    if ( $self->{count}++ == 0 ) {
+        @data = @{ $self->{cols} };
+    }
+    else {
+        my $row = $self->{result}->next;
+        return unless $row;
+        for my $col (@{ $self->{cols} }) {
+            my $col_data = $row->$col();
+            $col_data =~ s{"}{""}g;
+            push @data, $col_data;
+        }
+    }
+    return join(",", map { qq{"$_"} } @data) . "\x0D\x0A";
+}
+
+sub close {
+    my $self = shift;
+    delete $self->{result};
+    1;
 }
 
 1;
