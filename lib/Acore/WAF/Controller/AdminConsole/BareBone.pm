@@ -84,8 +84,10 @@ sub table_select {
     $c->stash->{sql} = $stmt;
     $c->log->debug("sql: $stmt");
 
-    my $model  = $c->stash->{model};
-    $c->stash->{result} = $model->search_by_sql($stmt, \@bind);
+    my $model = $c->stash->{model};
+    my $sth   = $model->dbh->prepare($stmt);
+    $sth->execute(@bind);
+    $c->stash->{result} = $sth;
 
     if ($c->req->param('csv')) {
         $c->forward( $self => "_table_select_csv" );
@@ -144,10 +146,10 @@ sub getline {
         @data = @{ $self->{cols} };
     }
     else {
-        my $row = $self->{result}->next;
+        my $row = $self->{result}->fetchrow_hashref;
         return unless $row;
         for my $col (@{ $self->{cols} }) {
-            my $col_data = $row->$col();
+            my $col_data = $row->{$col};
             $col_data =~ s{"}{""}g;
             push @data, $col_data;
         }

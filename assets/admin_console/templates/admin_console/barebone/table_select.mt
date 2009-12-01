@@ -13,11 +13,11 @@
 ? }
                   <th class="last"></th>
                 </tr>
-? while ( my $row = $c->stash->{result}->next ) {
+? while ( my $row = $c->stash->{result}->fetchrow_hashref ) {
                 <tr>
                   <td></td>
 ?     for my $col (@cols) {
-                  <td><?= Encode::decode_utf8( $row->$col() ) ?></td>
+                  <td><?= Encode::decode_utf8( $row->{$col} ) ?></td>
 ?     }
                   <td></td>
                 </tr>
