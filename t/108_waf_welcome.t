@@ -2,7 +2,7 @@
 
 use strict;
 use warnings;
-use Test::More tests => 4;
+use Test::More;
 use t::WAFTest::Engine;
 use HTTP::Request;
 
