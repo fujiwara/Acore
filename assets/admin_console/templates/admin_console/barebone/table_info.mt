@@ -20,7 +20,7 @@
             </div></h2>
           </div>
           <h3><?= $c->stash->{table} ?></h3>
-          <form action="<?= $c->uri_for("@{[location]}/barebone/table_select/", $c->stash->{table}, { _t => time() } ) ?>" method="get">
+          <form action="<?= $c->uri_for("@{[location]}/barebone/table_select/", $c->stash->{table}, { _t => time() } ) ?>#result" method="get">
             <table class="data">
               <tbody>
                 <tr>

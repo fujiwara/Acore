@@ -23,7 +23,8 @@ sub _auto {
     $c->forward( $parent => "is_logged_in" );
 
     my $dsn   = $c->config->{barebone}->{dsn} || $c->config->{dsn};
-    my $model = $Model->new({
+    my $model = $Model->new;
+    $model->connect_info({
         dsn             => $dsn->[0],
         username        => $dsn->[1],
         password        => $dsn->[2],
@@ -64,16 +65,15 @@ sub table_select {
     my ($self, $c, $args) = @_;
 
     $c->forward( $self => "_table_info", $args );
-    my $table = $c->stash->{table};
 
     require SQL::Abstract;
     my $sql = SQL::Abstract->new;
     my $where = $c->req->param("where");
     my $order = $c->req->param("order_by") || "";
     $order .= " DESC" if $c->req->param("desc");
-    my ($stmt)
+    my ($stmt, @bind)
         = $sql->select(
-            $table,
+            $c->stash->{table},
             [ $c->req->param("cols") ],
             \$where,
             ($order ? \$order : undef),
@@ -84,9 +84,8 @@ sub table_select {
     $c->stash->{sql} = $stmt;
     $c->log->debug("sql: $stmt");
 
-    my $model = $c->stash->{model};
-    $model->attribute->{row_class_map}->{$table} = "DBIx::Skinny::Row";
-    $c->stash->{result} = $model->search_by_sql($stmt);
+    my $model  = $c->stash->{model};
+    $c->stash->{result} = $model->search_by_sql($stmt, \@bind);
 
     $c->render("admin_console/barebone/table_info.mt");
     $c->fillform;
