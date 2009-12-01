@@ -13,14 +13,19 @@
 ? }
                   <th class="last"></th>
                 </tr>
-? while ( my $row = $c->stash->{result}->next ) {
+? my $result = $c->stash->{result};
+? while ( my $row = $result->next ) {
                 <tr>
                   <td></td>
 ?     for my $col (@cols) {
-                  <td><?= Encode::decode_utf8( $row->$col() ) ?></td>
+                  <td><?= Encode::decode_utf8( $row->$col ) ?></td>
 ?     }
                   <td></td>
                 </tr>
 ? }
               </tbody>
             </table>
+            <script type="text/javascript">
+              location.hash = "#result"
+            </script>
+
