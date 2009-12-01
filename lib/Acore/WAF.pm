@@ -144,6 +144,8 @@ has request_for_dispatcher => (
     },
 );
 
+has on_psgi => ( is => "rw" );
+
 sub DESTROY {
     my $self = shift;
     if ( $self->{acore} ) {
@@ -733,6 +735,7 @@ sub psgi_application {
     sub {
         my $env = shift;
         my $app = ref $obj ? $obj : $obj->new;
+        $app->on_psgi(1);
         my $req = Plack::Request->new($env);
         $app->handle_request( $config, $req );
         $app->response->finalize;
