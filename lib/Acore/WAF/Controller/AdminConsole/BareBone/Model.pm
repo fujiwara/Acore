@@ -6,21 +6,22 @@ use warnings;
 sub tables {
     my $self = shift;
 
+    my @tables;
     if ($self->dbd =~ /Pg/) {
         my @tables = $self->dbh->tables( "", "public" );
         for (@tables) {
             s/^public\.//;
             s/"//g;
         }
-        return sort { $a cmp $b } @tables;
     }
     elsif ($self->dbd =~ /::SQLite/) {
         my @tables = grep !/^"sqlite_/, $self->dbh->tables();
         for (@tables) {
             s/"//g;
         }
-        return sort { $a cmp $b } @tables;
     }
+    @tables = sort { $a cmp $b } @tables;
+    return @tables;
 }
 
 sub primary_key_info {
