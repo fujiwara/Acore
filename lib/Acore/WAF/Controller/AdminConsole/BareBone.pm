@@ -17,9 +17,12 @@ __PACKAGE__->meta->make_immutable;
 my $Model = __PACKAGE__ . "::Model";
 sub _auto {
     my ($self, $c, $args) = @_;
-    Acore::WAF::Controller::AdminConsole::_auto(@_);
 
-    my $dsn   = $c->config->{dsn};
+    my $parent = "Acore::WAF::Controller::AdminConsole";
+    $c->forward( $parent => "_auto", $args );
+    $c->forward( $parent => "is_logged_in" );
+
+    my $dsn   = $c->config->{barebone}->{dsn} || $c->config->{dsn};
     my $model = $Model->new;
     $model->connect_info({
         dsn             => $dsn->[0],
@@ -39,7 +42,7 @@ sub table_list {
     $c->render("admin_console/barebone/table_list.mt");
 }
 
-sub table_info {
+sub _table_info {
     my ($self, $c, $args) = @_;
 
     my $name  = $args->{name};
@@ -50,8 +53,42 @@ sub table_info {
     $c->stash->{columns_info} = [ $model->columns_info($name) ];
     $c->stash->{table} = $name;
     $c->stash->{primary_key_info} = $model->primary_key_info($name);
+}
+
+sub table_info {
+    my ($self, $c, $args) = @_;
+    $c->forward( $self => "_table_info", $args );
+    $c->render("admin_console/barebone/table_info.mt");
+}
+
+sub table_select {
+    my ($self, $c, $args) = @_;
+
+    $c->forward( $self => "_table_info", $args );
+
+    require SQL::Abstract;
+    my $sql = SQL::Abstract->new;
+    my $where = $c->req->param("where");
+    my $order = $c->req->param("order_by") || "";
+    $order .= " DESC" if $c->req->param("desc");
+    my ($stmt, @bind)
+        = $sql->select(
+            $c->stash->{table},
+            [ $c->req->param("cols") ],
+            \$where,
+            ($order ? \$order : undef),
+        );
+    $stmt .= sprintf " LIMIT %d", $c->req->param("limit")
+        if $c->req->param("limit");
+
+    $c->stash->{sql} = $stmt;
+    $c->log->debug("sql: $stmt");
+
+    my $model  = $c->stash->{model};
+    $c->stash->{result} = $model->search_by_sql($stmt, \@bind);
 
     $c->render("admin_console/barebone/table_info.mt");
+    $c->fillform;
 }
 
 1;

@@ -20,7 +20,7 @@
             </div></h2>
           </div>
           <h3><?= $c->stash->{table} ?></h3>
-          <form>
+          <form action="<?= $c->uri_for("@{[location]}/barebone/table_select/", $c->stash->{table} ) ?>#result" method="get">
             <table class="data">
               <tbody>
                 <tr>
@@ -37,7 +37,7 @@
 ? for my $col (@{ $c->stash->{columns_info} }) {
                 <tr>
                   <td>
-                    <input type="checkbox" name="cols" value="<?= $col->{COLUMN_NAME} ?>"/>
+                    <input type="checkbox" name="cols" value="<?= $col->{COLUMN_NAME} ?>" checked="checked"/>
                   </td>
                   <td><?= $pkey->{ $col->{COLUMN_NAME} } ? "*" : "" ?></td>
                   <td><?= $col->{COLUMN_NAME} ?></td>
@@ -49,7 +49,31 @@
 ? }
               </tbody>
             </table>
+            <div>
+<!--              DISTINCT <input type="checkbox" name="distinct" value="1"/>
+              ON (<input type="text" name="distinct_on" value="" size="10"/>)<br/>
+-->
+              WHERE <input type="text" name="where" size="30"/>
+              ORDER BY
+              <select name="order_by">
+                <option value=""></option>
+? for my $col (@{ $c->stash->{columns_info} }) {
+                <option value="<?= $col->{COLUMN_NAME} ?>"><?= $col->{COLUMN_NAME} ?></option>
+? }
+              </select>
+              <select name="desc">
+                <option value=""></option>
+                <option value="1">DESC</option>
+              </select>
+              LIMIT <input type="text" name="limit" value="100" size="6"/>
+              <br/>
+              <input type="submit" value="select"/>
+            </div>
           </form>
+
+? if ($c->stash->{result}) {
+?=    $c->render_part("@{[location]}/barebone/table_select.mt") | raw
+? }
         </div>
         <div id="gamma">
           <div id="gamma-inner">

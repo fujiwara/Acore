@@ -43,6 +43,10 @@
                 <a class="action_view_tree" href="<?= $c->uri_for("/@{[ location ]}/explorer") ?>">ファイルエクスプローラー</a>
               </div>
 
+              <div class="item">
+                <a class="app_database" href="<?= $c->uri_for("/@{[ location ]}/barebone/table_list/all") ?>">BareBone</a>
+              </div>
+
 <? } ?>
               <!-- /menu -->
             </div>
