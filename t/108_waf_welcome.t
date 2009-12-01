@@ -5,8 +5,13 @@ use warnings;
 use Test::More tests => 4;
 use t::WAFTest::Engine;
 use HTTP::Request;
-use_ok "HTTP::Engine";
-use_ok "t::WAFTest";
+
+BEGIN {
+    eval "use Modile::CoreList;";
+    plan $@ ? (skip_all => "Module::CoreList is not installed") : (tests => 4);
+    use_ok "HTTP::Engine";
+    use_ok "t::WAFTest";
+};
 
 my $req = HTTP::Request->new( GET => 'http://localhost/act/welcome' );
 $req->protocol('HTTP/1.0');
