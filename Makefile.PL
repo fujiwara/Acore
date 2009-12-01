@@ -8,6 +8,11 @@ if (-e ".svn" && -d _) {
     version sprintf "0.%05d", $rev;
     warn "set version from svn revision $rev\n";
 }
+elsif (-e ".git" && -d _) {
+    my $rev = (qx{git log -1} =~ /commit (\w{8})/ && $1);
+    version $rev;
+    warn "set version from git commit $rev\n";
+}
 
 build_requires 'Module::Install' => 0.77;
 requires 'Any::Moose';
@@ -28,7 +33,6 @@ requires 'HTML::StickyQuery';
 requires 'MIME::Base64';
 requires 'Path::Class';
 requires 'Text::MicroTemplate' => 0.07;
-requires 'Want';
 requires 'Sub::Pipe';
 requires 'Data::Path';
 requires 'HTML::FillInForm';
