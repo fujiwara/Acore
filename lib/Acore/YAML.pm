@@ -30,9 +30,7 @@ BEGIN {
 sub class { $Class }
 
 sub _Dump {
-    Encode::decode_utf8(
-        YAML::XS::Dump( map { $Dve->encode_utf8($_) } @_ )
-    );
+    Encode::decode_utf8( YAML::XS::Dump(@_) );
 }
 
 sub _Load {
