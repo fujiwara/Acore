@@ -1,0 +1,9 @@
+? my $c = shift;
+<table>
+<? for my $table (@{ $c->stash->{tables} }) ?>
+  <tr>
+    <td><?= $table ?></td>
+  </tr>
+<? } ?>
+</table>
+
