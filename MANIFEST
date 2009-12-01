@@ -1110,6 +1110,10 @@ assets/admin_console/static/js/jquery-1.3.2.min.js
 assets/admin_console/static/js/jquery-ui-1.7.2.custom.min.js
 assets/admin_console/static/js/jquery.easing.1.3.js
 assets/admin_console/static/js/jqueryFileTree.js
+assets/admin_console/templates/admin_console/barebone/table_edit.mt
+assets/admin_console/templates/admin_console/barebone/table_info.mt
+assets/admin_console/templates/admin_console/barebone/table_list.mt
+assets/admin_console/templates/admin_console/barebone/table_select.mt
 assets/admin_console/templates/admin_console/container.mt
 assets/admin_console/templates/admin_console/container_close.mt
 assets/admin_console/templates/admin_console/convert_all.mt
@@ -1162,6 +1166,7 @@ inc/Module/Install/Metadata.pm
 inc/Module/Install/Scripts.pm
 inc/Module/Install/TestBase.pm
 inc/Module/Install/Win32.pm
+inc/Module/Install/With.pm
 inc/Module/Install/WriteAll.pm
 inc/Spiffy.pm
 inc/Test/Base.pm
@@ -1190,6 +1195,9 @@ lib/Acore/User.pm
 lib/Acore/WAF.pm
 lib/Acore/WAF/ConfigLoader.pm
 lib/Acore/WAF/Controller/AdminConsole.pm
+lib/Acore/WAF/Controller/AdminConsole/BareBone.pm
+lib/Acore/WAF/Controller/AdminConsole/BareBone/Model.pm
+lib/Acore/WAF/Controller/AdminConsole/BareBone/Model/Schema.pm
 lib/Acore/WAF/Controller/Feed2Js.pm
 lib/Acore/WAF/Controller/Redirector.pm
 lib/Acore/WAF/Controller/REST.pm
@@ -1304,5 +1312,6 @@ t/WAFTest/Model/Bar.pm
 t/WAFTest/Model/DBIC.pm
 t/WAFTest/Model/Foo.pm
 t/WAFTest/View/JSON.pm
+t/WAFTest2.pm
 t/WAFTestTT.pm
 t/WAFTestTT/Controller.pm
