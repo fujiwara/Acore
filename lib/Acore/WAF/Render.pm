@@ -43,7 +43,7 @@ sub uri() {  ## no critic
     };
 }
 
-sub utf8() {
+sub utf8() { ## no critic
     joint {
         my $input = $_[0];
         $input = Encode::decode_utf8($input)
