@@ -15,7 +15,7 @@
         </div>
         <div id="beta">
           <div id="beta-inner">
-            <h2 class="icon"><div class="app_kuser">BareBone テーブル
+            <h2 class="icon"><div class="app_database">BareBone テーブル
                 <a href="<?= $c->uri_for("/@{[location]}/barebone/table_list/all") ?>">一覧</a>
             </div></h2>
           </div>

@@ -15,7 +15,7 @@
         </div>
         <div id="beta">
           <div id="beta-inner">
-            <h2 class="icon"><div class="app_kuser">BareBone テーブル一覧</div></h2>
+            <h2 class="icon"><div class="app_database">BareBone テーブル一覧</div></h2>
           </div>
           <div class="data">
 ? for my $table ( @{ $c->stash->{tables} } ) {
