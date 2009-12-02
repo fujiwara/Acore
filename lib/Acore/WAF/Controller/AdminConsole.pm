@@ -1084,18 +1084,30 @@ sub document_api_POST {
     my ($self, $c, $args) = @_;
     require JSON;
     require Acore::Document;
+    my $req = $c->request;
 
     my $self_key = $c->config->{admin_console}->{api_key};
     if (!defined $self_key || $self_key eq "") {
         $c->error( 406 => "not acceptable" );
     }
 
-    my $req_key = $c->req->header("api-key");
+    if ( my $ips = $c->config->{admin_console}->{api_allow_ips} ) {
+        require Net::CIDR::Lite;
+        my $cidr = Net::CIDR::Lite->new;
+        $cidr->add($_) for @$ips;
+        unless ( $cidr->find($req->address) ) {
+            $c->error(
+                403 => sprintf("%s is not allowed.", $req->address)
+            );
+        }
+    }
+
+    my $req_key = $req->header("api-key");
     if (!defined $req_key || $req_key ne $self_key ) {
         $c->error( 400 => "invalid api_key" );
     }
 
-    my $body = Encode::decode_utf8( $c->request->raw_body );
+    my $body = Encode::decode_utf8( $req->raw_body );
     my $json = JSON->new;
     my $obj  = eval { $json->decode($body) };
     if ( $@ || !$obj || ref $obj ne "HASH" ) {
@@ -1152,6 +1164,14 @@ __END__
      - Acore::Document
    disable_eval_functions: 0
    css_path: "/static/override.css"
+   api_key: "SECRET KEY for myself"
+   api_allow_ips:
+     - 127.0.0.1/32
+     - 192.168.0.0/24
+   send_to:
+     name: Remote Server
+     uri:  http://remote.example.com/admin_console/document_api
+     api_key: "SECRET KEY for remote"
 
 =over 4
 
@@ -1166,5 +1186,33 @@ default 0
 =item css_path: "/path/to/css"
 
 Additional css path. for $c->uri_for()
+
+=item api_key
+
+API key for document_api. If it not set, document_api is disabled.
+
+=item api_allow_ips
+
+Allowed IP address ranges for document_api.
+
+=item send_to
+
+Remote Acore document_api info.
+
+=over 4
+
+=item name
+
+String for display in admin_console/document_form
+
+=item uri
+
+Remote document_api URI.
+
+=item api_key
+
+Remote Acore API key.
+
+=back
 
 =back
