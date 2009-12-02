@@ -30,9 +30,11 @@
 ?= raw          $c->render_part("@{[ location ]}/notice.mt", '添付ファイルを削除しました');
 ?        }
 ?        if ( $c->flash->get('document_sent') ) {
-?= raw          $c->render_part("@{[ location ]}/notice.mt", '正常に送信されました');
+?               my $name = $c->config->{admin_console}->{send_to}->{name};
+?= raw          $c->render_part("@{[ location ]}/notice.mt", "${name}へ正常に送信されました");
 ?        } elsif ( my $msg = $c->flash->get('document_sent_error') ) {
-?= raw          $c->render_part("@{[ location ]}/notice.mt", '送信に失敗しました.' . $msg );
+?               my $name = $c->config->{admin_console}->{send_to}->{name};
+?= raw          $c->render_part("@{[ location ]}/notice.mt", "${name}への送信に失敗しました <$msg>", "alert" );
 ?        }
             <div class="form-container">
 
