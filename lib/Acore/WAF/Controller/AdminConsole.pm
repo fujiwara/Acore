@@ -415,7 +415,7 @@ sub document_form_POST {
 
     $c->forward( $self => "is_logged_in" );
     my $doc = $c->forward( $self => "_get_document" );
-    my $old_doc = Clone::clone($doc);
+    my $old_doc = Acore::Util::clone($doc);
     $c->stash->{document} = $doc;
 
     $c->form->check(
@@ -961,7 +961,7 @@ sub convert_test_POST {
     my @pair;
 
     for my $doc (@docs) {
-        my $old = Clone::clone($doc);
+        my $old = Acore::Util::clone($doc);
         my $new = eval { $code->($doc) };
         if ($@) {
             return $c->res->body("Error in processing: $@");

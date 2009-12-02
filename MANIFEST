@@ -1192,6 +1192,7 @@ lib/Acore/LoadModules.pm
 lib/Acore/MIME/Types.pm
 lib/Acore/Storage.pm
 lib/Acore/User.pm
+lib/Acore/Util.pm
 lib/Acore/WAF.pm
 lib/Acore/WAF/ConfigLoader.pm
 lib/Acore/WAF/Controller/AdminConsole.pm
@@ -1279,6 +1280,7 @@ t/22_easy.t
 t/23_easy_methods.t
 t/24_user_class.t
 t/25_yaml.t
+t/26_util.t
 t/999_cleanup.t
 t/Cache.pm
 t/connect_db.pm

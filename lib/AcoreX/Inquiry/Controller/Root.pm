@@ -3,7 +3,6 @@ package AcoreX::Inquiry::Controller::Root;
 use strict;
 use warnings;
 use Any::Moose;
-use Clone qw/ clone /;
 our $Location;
 
 with "Acore::WAF::Controller::Role::Locatable";

@@ -2,7 +2,7 @@ package Acore::Document;
 
 use strict;
 use warnings;
-use Clone qw/ clone /;
+use Acore::Util  qw/ clone /;
 use Scalar::Util qw/ blessed /;
 use UNIVERSAL::require;
 use Acore::DateTime;
