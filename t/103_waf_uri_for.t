@@ -56,6 +56,12 @@ http://example.com/foo/%E3%81%82/%E3%81%84/%E3%81%86
 
 ===
 --- code
+$app->uri_for("/foo/あ/", "い", "う")
+--- uri
+http://example.com/foo/%E3%81%82/%E3%81%84/%E3%81%86
+
+===
+--- code
 $app->uri_for('/foo/', { aa => "bb", cc => "dd" });
 --- uri
 http://example.com/foo/?cc=dd&aa=bb
