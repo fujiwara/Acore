@@ -36,11 +36,11 @@
               <input type="button" id="clear-search-button" value="クリア"/>
             </p>
 ? for my $user ( @{ $c->stash->{all_users} } ) {
-            <dl class="users" rel="<?= $user->name ?> <?= CORE::join(" ", $user->roles) ?> <?= CORE::join(" ", map { $user->attr($_) } $user->attributes ) ?>">
+            <dl class="users" rel="<?= $user->name ?> <?= join(" ", $user->roles) ?> <?= join(" ", map { $user->attr($_) } $user->attributes ) ?>">
               <dt class="data-operation"><a href="<?= $c->uri_for("/@{[ location ]}/user_form", { name => $user->name } ) ?>"><?= $user->name ?></a></dt>
               <dd>
                 <p class="property">
-                  <span class="key">Roles:</span><span class="val"><?= CORE::join(", ", $user->roles) ?></span>
+                  <span class="key">Roles:</span><span class="val"><?= join(", ", $user->roles) ?></span>
                   <? for my $attr ( $user->attributes ) { ?>
                     <span class="key"><?= $attr ?>:</span>
                     <span class="val"><?= $user->attr($attr) ?></span>

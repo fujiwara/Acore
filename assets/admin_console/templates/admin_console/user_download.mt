@@ -6,9 +6,9 @@
       $attrs{$_} = 1 for $user->attributes;
   }
   my @attr = map { $quote->($_) } sort keys %attrs;
-?>"name",<?= raw \@attr | join(",") ?>
+?>"name","password",<?= raw join(",", @attr) ?>
 ? for my $user ( @{ $c->stash->{all_users} } ) {
 ?     my @attr = map { $quote->( $user->attr($_) ) } sort keys %attrs;
 ?     my $name = $quote->( $user->name );
-<?= raw $name ?>,<?= raw \@attr | join(",") ?>
+<?= raw $name ?>,<?= raw join(",", @attr) ?>
 ? }

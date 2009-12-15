@@ -34,16 +34,6 @@ plan tests => (1 * blocks) ;
         my ($val, $reg, $rep) = split / +/, $_[0];
         $val | replace($reg, $rep);
     }
-    sub _join {
-        package Acore::WAF::Render;
-        my ($sep, @list) = split / +/, $_[0];
-        [ @list ] | join($sep);
-    }
-    sub _fjoin {
-        package Acore::WAF::Render;
-        my ($sep, @list) = split / +/, $_[0];
-        join($sep, @list);
-    }
     sub js {
         package Acore::WAF::Render;
         $_[0] | js
@@ -155,24 +145,6 @@ B
 C
 --- expected chomp
 A<br/>B<br/>C
-
-=== pipe join
---- input chomp _join
-, A B C
---- expected chomp
-A,B,C
-
-=== pipe join
---- input chomp _join
-+ あ い う
---- expected chomp
-あ+い+う
-
-=== functional join
---- input chomp _fjoin
-, A B C
---- expected chomp
-A,B,C
 
 === js
 --- input chomp js
