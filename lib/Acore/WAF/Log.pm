@@ -69,7 +69,7 @@ for my $level ( keys %$Levels ) {
         $msg = sprintf $msg, @args
             if @args;
         if ($self->{caller}) {
-            my (undef, $filename, $line) = caller;
+            my (undef, $filename, $line) = caller($self->{caller} - 1);
             $self->{buffer} .= "[$level] $msg at $filename line $line\n";
         }
         else {
@@ -158,9 +158,15 @@ Default: 1
 
 =item caller
 
-Flag to add caller info(file, line) in log message.
+Level to caller info(file, line) in log message.
 
 Default: 0
+
+ line 0: sub call { $log->error("msg") }
+      1: $log->caller(1);
+      2: call();   # at line 0
+      3: $log->caller(2);
+      4: call();   # at line 4
 
 =item flush
 

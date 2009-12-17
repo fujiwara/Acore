@@ -1,6 +1,6 @@
 # -*- mode:perl -*-
 use strict;
-use Test::More tests => 39;
+use Test::More tests => 40;
 use Path::Class qw/ file /;
 
 BEGIN {
@@ -32,14 +32,21 @@ BEGIN {
     for my $l (qw/ warning notice info debug / ) {
         ok !$log->$l("$l message");
     }
-
     ok $log->flush;
 
     $log->caller(1);
     $log->error("error message"); my ($file, $line) = (__FILE__, __LINE__);
     like $log->buffer => qr{\Q at $file line $line\E};
-
     $log->flush;
+
+    $log->caller(2);
+    sub call {
+        $log->error("error message");
+    }
+    call(); ($file, $line) = (__FILE__, __LINE__);
+    like $log->buffer => qr{\Q at $file line $line\E};
+    $log->flush;
+
     $log->caller(0);
     $log->timestamp(1);
     $log->error("error message");
