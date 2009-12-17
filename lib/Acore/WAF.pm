@@ -216,6 +216,7 @@ sub _record_time {
             [ Time::HiRes::gettimeofday() ],  # time
             [],                               # children
         ];
+        local $@;
         my $res       = eval { $next->(@_) };
         my $exception = $@;
 
@@ -363,6 +364,7 @@ sub _run_with_handle_exception {
     my $self = shift;
     my $trace;
     my $response;
+    my $last_msg;
     local $SIG{__DIE__} = sub {
         my ($msg) = @_;
         if (ref $msg eq 'Acore::WAF::Exception') {
@@ -376,7 +378,7 @@ sub _run_with_handle_exception {
         else {
             $trace = 1;
         }
-        $self->log->error($msg) if $trace;
+        $last_msg = $msg if $trace;
         die @_;
     };
     do {
@@ -387,6 +389,7 @@ sub _run_with_handle_exception {
         };
     };
     if ($trace) {
+        $self->log->error($last_msg);
         $self->res->body( ref $trace ? $trace->as_html
                                      : HTTP::Status::status_message(500)
         );
@@ -543,7 +546,7 @@ sub error {
 sub detach {
     my ($self, $msg) = @_;
     if ($msg) {
-        $self->log->error($msg);
+        $self->log->info($msg);
     }
     die bless \$msg, 'Acore::WAF::Exception';
 }
