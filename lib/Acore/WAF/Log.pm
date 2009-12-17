@@ -60,6 +60,7 @@ for my $level ( keys %$Levels ) {
     my $level_num = $Levels->{$level};
     *{$level} = sub {
         my ($self, $msg, @args) = @_;
+        return if !defined $msg;
         return if $level_num > $Levels->{ $self->{level} };
         return if $self->{disabled};
 
