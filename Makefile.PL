@@ -34,7 +34,6 @@ requires 'MIME::Base64';
 requires 'Path::Class';
 requires 'Text::MicroTemplate' => 0.07;
 requires 'Sub::Pipe';
-requires 'Data::Path';
 requires 'HTML::FillInForm';
 requires 'Text::SimpleTable';
 requires 'Data::Visitor';

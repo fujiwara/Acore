@@ -1,6 +1,6 @@
 # -*- mode:perl -*-
 use strict;
-use Test::More tests => 48;
+use Test::More tests => 55;
 use Test::Exception;
 use Data::Dumper;
 use Clone qw/ clone /;
@@ -103,4 +103,22 @@ BEGIN {
 
     ok $d->xpath->set("/html/head/title" => "NOTITLE");
     is $d->xpath->get("/html/head/title") => "NOTITLE";
+}
+
+{
+    my $d = Acore::Document->new({});
+    ok $d->set('/xxx' => 'YYY');
+    ok $d->xpath->set("/html/body/list[1]" => "BBB");
+    ok $d->xpath_set("/html/head/title" => "NOTITLE");
+    is_deeply $d->{"xxx"} => "YYY";
+    is_deeply $d->{"html"} => {
+        body => {
+            list => [ undef, "BBB" ],
+        },
+        head => { title=> "NOTITLE" },
+    };
+
+    # alias
+    is $d->get("/html"), $d->xpath_get("/html");
+    is $d->get("/html"), $d->xpath->get("/html");
 }

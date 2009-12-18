@@ -62,25 +62,6 @@ has updated_on => (
     },
 );
 
-has xpath => (
-    is         => "rw",
-    isa        => "Data::Path",
-    lazy_build => 1,
-);
-
-my $xpath_callback = {
-    key_does_not_exist            => sub {},
-    index_does_not_exist          => sub {},
-    retrieve_index_from_non_array => sub {},
-    retrieve_key_from_non_hash    => sub {},
-};
-
-sub _build_xpath {
-    my $self = shift;
-    require Data::Path;
-    Data::Path->new( $self, $xpath_callback );
-}
-
 sub BUILD {
     my ($self, $obj) = @_;
     for my $n ( keys %$obj ) {
@@ -157,7 +138,7 @@ sub param {
     my $self = shift;
     my $name = shift;
 
-    return ( $name =~ /^\// ) ? $self->xpath->get($name)
+    return ( $name =~ /^\// ) ? $self->get($name)
                               : $self->{$name};
 }
 
@@ -276,13 +257,31 @@ sub validate_to_create {
     $class->new($obj);
 }
 
-sub Data::Path::set {
-    my $self  = shift;
-    my $xpath = shift;
-    my $value = shift;
+sub xpath {
+    $_[0];
+}
+
+*xpath_get = \&get;
+*xpath_set = \&set;
+
+sub get {
+    my $self = shift;
+    $self->_xpath_find(0, @_);
+}
+
+sub set {
+    my $self = shift;
+    $self->_xpath_find(1, @_);
+}
+
+sub _xpath_find {
+    my $self   = shift;
+    my $is_set = shift;
+    my $xpath  = shift;
+    my $value  = shift;
 
     my (undef, @nodes) = split /\//, $xpath;
-    my $ref   = $self->{data};
+    my $ref   = $self;
     my $last  = pop @nodes;
     for my $n (@nodes) {
         if ( $n =~ m{\A(\w+)\[(\d+)\]\z} ) {
@@ -295,13 +294,16 @@ sub Data::Path::set {
     }
     if ( $last =~ m{\A(\w+)\[(\d+)\]\z} ) {
         $ref = $ref->{$1} ||= [];
-        $ref = $ref->[$2]   = $value;
+        $is_set ? do { $ref = $ref->[$2] = $value }
+                : return $ref->[$2];
     }
     else {
-        $ref->{$last} = $value;
+        $is_set ? do { $ref->{$last} = $value }
+                : return $ref->{$last};
     }
-    $value;
+    $is_set ? return $value : return;
 }
+
 
 __PACKAGE__->meta->make_immutable;
 no Any::Moose;
@@ -334,9 +336,9 @@ Acore::Document - document base class
         list => [ 1, 2, 3 ],
     }
   });
-  $doc->xpath->get('/foo/bar');     # "baz"
-  $doc->xpath->get('/foo/list[0]'); # 1
-  $doc->xpath->set('/foo/bar' => $value); # $doc->{foo}->{bar} = $value
+  $doc->xpath_get('/foo/bar');     # "baz"
+  $doc->xpath_get('/foo/list[0]'); # 1
+  $doc->xpath_set('/foo/bar' => $value); # $doc->{foo}->{bar} = $value
 
 =head1 DESCRIPTION
 
@@ -360,10 +362,10 @@ Acore::Document is AnyCMS schema less document class.
 
 =item xpath
 
-Data::Path object for xpath like accessing.
+Alias to myself (for backword compatibility).
 
- $doc->xpath->get("/foo/bar");
- $doc->xpath->set("/foo/bar" => $value);
+ $doc->xpath->get("/foo/bar");           # $doc->get("/foo/bar");
+ $doc->xpath->set("/foo/bar" => $value); # $doc->set("/foo/bar" => $value);
 
 =item html_form_to_create
 
@@ -401,6 +403,33 @@ Convert from plain object (hash ref). Called after Acore->get_document().
 
 =item validate_to_update($self, $c)
 
+=item get($xpath), xpath_get($xpath)
+
+Get value which pointed by $xpath.
+
+ $doc = Acore::Document->new({
+     foo => {
+         bar => "baz",
+         boo => ["A", "B", "C"],
+     }
+ });
+ $doc->get("/foo/bar");    # "baz"
+ $doc->get("/foo/boo[0]"); # "A";
+ $doc->get("/foo/boo[1]"); # "B";
+ $doc->get("/foo/boo[2]"); # "C";
+
+=item set($xpath, $value), xpath_set($xpath, $value)
+
+Set value to pointed key by $xpath.
+
+ $doc = Acore::Document->new({});
+ $doc->set("/foo/bar", "baz");
+ $doc->set("/foo/bar/boo[0]", "A");
+ $doc->set("/foo/bar/boo[1]", "B");
+ $doc->set("/foo/bar/boo[2]", "C");
+ 
+ $doc; # { foo => { bar => "baz", boo => ["A", "B", "C"] } }
+
 =back
 
 =head1 AUTHOR
@@ -408,8 +437,6 @@ Convert from plain object (hash ref). Called after Acore->get_document().
 FUJIWARA E<lt>fujiwara@topicmaker.comE<gt>
 
 =head1 SEE ALSO
-
-L<Data::Path>
 
 =head1 LICENSE
 
