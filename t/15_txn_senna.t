@@ -27,8 +27,8 @@ package main;
     $ac->init_senna_index;
     $ac->setup_db;
 
-    $ac->txn_do(sub {
-        diag "begin transaction";
+    {
+        my $txn = $ac->txn;
         ok !$ac->{lock_senna_index};
         $ac->put_document(
             SennaDocument->new({ id => 1, for_search => "foo" })
@@ -37,37 +37,37 @@ package main;
         $ac->put_document(
             SennaDocument->new({ id => 2, for_search => "bar" })
         );
-    });
+        $txn->commit;
+    };
     ok !$ac->{lock_senna_index};
 
     @docs = $ac->fulltext_search_documents({ query => "foo" });
     ok @docs == 1;
     is $docs[0]->id => 1;
 
-    throws_ok( sub {
-        $ac->txn_do(
-            sub {
-                ok !$ac->{lock_senna_index};
-                $ac->put_document(
-                    SennaDocument->new({ id => 3, for_search => "baz" })
-                );
-                my $fh = $ac->{lock_senna_index};
-                ok $fh;
-                $ac->put_document(
-                    SennaDocument->new({ id => 4, for_search => "bar" })
-                );
-                is $ac->{lock_senna_index} => $fh;
-                $ac->put_document(
-                    SennaDocument->new({ id => 1, for_search => "xxx" })
-                );
-                is $ac->{lock_senna_index} => $fh;
-                $ac->put_document(
-                    SennaDocument->new({ id => 1, for_search => "yyy" })
-                );
-                is $ac->{lock_senna_index} => $fh;
-                die "died";
-            });
-    }, qr{died} );
+    throws_ok {
+        my $txn = $ac->txn;
+
+        ok !$ac->{lock_senna_index};
+        $ac->put_document(
+            SennaDocument->new({ id => 3, for_search => "baz" })
+        );
+        my $fh = $ac->{lock_senna_index};
+        ok $fh;
+        $ac->put_document(
+            SennaDocument->new({ id => 4, for_search => "bar" })
+        );
+        is $ac->{lock_senna_index} => $fh;
+        $ac->put_document(
+            SennaDocument->new({ id => 1, for_search => "xxx" })
+        );
+        is $ac->{lock_senna_index} => $fh;
+        $ac->put_document(
+            SennaDocument->new({ id => 1, for_search => "yyy" })
+        );
+        is $ac->{lock_senna_index} => $fh;
+        die "died";
+    } qr{died};
     ok !$ac->{lock_senna_index};
 
     @docs = $ac->fulltext_search_documents({ query => "baz" });

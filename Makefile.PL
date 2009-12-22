@@ -41,6 +41,7 @@ requires 'String::CamelCase';
 requires 'HTTP::MobileAgent' => 0.27;
 requires 'Encode::JP::Mobile' => 0.26;
 requires 'YAML::Tiny';
+requires 'Try::Tiny';
 
 test_requires 'Test::Base';
 test_requires 'Text::Diff';
@@ -49,7 +50,7 @@ test_requires 'Math::BigInt';
 tests 't/*.t';
 author_tests 'xt';
 
-build_requires 'Test::More';
+build_requires 'Test::More' => 0.87_1;
 use_test_base;
 auto_include;
 install_script 'acore_setupdb.pl';

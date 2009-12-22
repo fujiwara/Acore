@@ -7,11 +7,13 @@ our $VERSION = sprintf '0.%05d', ('$Revision$' =~ /(\d+)/ && $1);
 use Acore::Storage;
 use Acore::User;
 use Acore::Document;
+use Acore::Transaction;
 use Carp qw/ croak carp /;
 use utf8;
 use Any::Moose;
 use Encode qw/ encode_utf8 /;
 use Fcntl ':flock';
+use Try::Tiny;
 
 has storage => (
     is      => "rw",
@@ -528,43 +530,61 @@ sub fulltext_search_documents {
     return wantarray ? @docs : \@docs;
 }
 
-sub txn_do {
+sub txn_begin {
     my $self = shift;
-    my $sub  = shift;
 
     $self->dbh->begin_work;
     $self->in_transaction(1);
     $self->transaction_data({ senna => [], });
-    delete $self->{lock_senna_index};
-
-    eval { $sub->() };
-    my $exception = $@;
-    $self->in_transaction(0);
-
-    if ($exception) {
-        $self->dbh->rollback;
-
-        if ( $self->senna_index_path ) {
-            my $index = $self->senna_index;
-            my $data  = $self->transaction_data->{senna};
-            for my $act ( reverse @$data ) {
-                # restore senna index
-                $index->update(
-                    $act->[0],
-                    encode_utf8($act->[1]),
-                    encode_utf8($act->[2]),
-                );
-            }
-        }
-        delete $self->{lock_senna_index};
-        die $exception;
-    }
-    else {
-        delete $self->{lock_senna_index};
-        $self->dbh->commit;
-    }
 }
 
+sub txn_commit {
+    my $self = shift;
+    delete $self->{lock_senna_index};
+    $self->in_transaction(0);
+    $self->dbh->commit;
+}
+
+sub txn_rollback {
+    my $self = shift;
+
+    $self->dbh->rollback;
+    $self->in_transaction(0);
+
+    if ( $self->senna_index_path ) {
+        my $index = $self->senna_index;
+        my $data  = $self->transaction_data->{senna};
+        for my $act ( reverse @$data ) {
+            # restore senna index
+            $index->update(
+                $act->[0],
+                encode_utf8($act->[1]),
+                encode_utf8($act->[2]),
+            );
+        }
+    }
+    delete $self->{lock_senna_index};
+}
+
+sub txn_do {
+    my $self = shift;
+    my $sub  = shift;
+    my $txn  = $self->txn;
+
+    try {
+        $sub->();
+    }
+    catch {
+        $txn->rollback;
+        die $_;
+    };
+    $txn->commit;
+}
+
+sub txn {
+    my $self = shift;
+    return Acore::Transaction->new($self);
+}
 
 1;
 __END__
@@ -600,6 +620,12 @@ Acore - AnyCMS core
       $acore->put_document($doc1);
       $acore->put_document($doc2);
   });
+
+  {
+      $txn = $acore->txn;
+      # in transaction;
+      $txn->commit;
+  }
 
 =head1 DESCRIPTION
 
@@ -741,6 +767,49 @@ Delete the document from storage.
 Cache object which has Cache::Cache like interfaces.
 
  $acore->cache( Cache::Memcached->new({ ... } ) ); # enable cache
+
+=item txn
+
+Return Acore::Transaction object.
+
+ {
+    my $txn = $acore->txn;
+    # begin transcation
+    # ...
+ }  # rollback!
+
+When txn object will be destroyed (and if it's not committed or rollbacked yet), transaction will be rollback automatically.
+
+ {
+    my $txn = $acore->txn;
+    # begin transcation
+    $txn->commit;
+ }  # commited.
+
+=item txn_begin
+
+Begin transaction.
+
+=item txn_commit
+
+Commit transaction.
+
+=item txn_rollback
+
+Rollback transaction.
+
+=item txn_do
+
+Do coderef in transcation scope.
+
+ eval {
+     $acore->txn_do(sub {
+        # do something
+     });
+ };
+ if ( $exception = $@ ) {
+     # rollbacked
+ }
 
 =back
 
