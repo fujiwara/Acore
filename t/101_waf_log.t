@@ -1,6 +1,6 @@
 # -*- mode:perl -*-
 use strict;
-use Test::More tests => 40;
+use Test::More;
 use Path::Class qw/ file /;
 
 BEGIN {
@@ -22,6 +22,7 @@ BEGIN {
     ok $log->can('info');
     ok $log->can('debug');
     ok $log->can('caller');
+    ok $log->can("color");
 
     $log->level('error');
     is $log->level => "error";
@@ -51,13 +52,13 @@ BEGIN {
     $log->timestamp(1);
     $log->error("error message");
     my $t = scalar localtime;
-    like $log->buffer =>qr{^\[$t] \[error\] error message};
+    like $log->buffer => qr{\[$t] \[error\] error message};
 
     $log->flush;
     $log->caller(0);
     $log->timestamp(0);
     $log->error("error message");
-    like $log->buffer =>qr{^\[error\] error message};
+    like $log->buffer => qr{\[error\] error message};
 
     $log->disabled(1);
     is $log->disabled => 1;
@@ -111,3 +112,14 @@ BEGIN {
     is $log->caller    => 1;
 }
 
+for my $color ( 0, 1 ) {
+    my $log = Acore::WAF::Log->new();
+    $log->level("debug");
+    $log->color($color);
+    for my $l (qw/ emerge alert critical error warning notice info debug /) {
+        $log->$l("$l message.");
+    }
+    $log->flush;
+}
+
+done_testing;

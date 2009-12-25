@@ -4,6 +4,18 @@ use warnings;
 use Any::Moose;
 use Carp qw/ carp croak /;
 
+our $Color;
+our $Colors = {
+    debug     => undef,
+    info      => "blue",
+    notice    => "green",
+    warning   => "black on_yellow",
+    error     => "red",
+    critical  => "black on_red",
+    alert     => "white on_red",
+    emerge    => "yellow on_red",
+};
+
 my $Levels = {
     emerge   => 0,
     alert    => 1,
@@ -64,6 +76,8 @@ for my $level ( keys %$Levels ) {
         return if $level_num > $Levels->{ $self->{level} };
         return if $self->{disabled};
 
+        my $color = $Color ? Term::ANSIColor::color($Colors->{$level}) : undef;;
+        $self->{buffer} .= $color if $color;
         $self->{buffer} .= sprintf("[%s] ", scalar localtime(time) )
             if $self->{timestamp};
 
@@ -71,11 +85,14 @@ for my $level ( keys %$Levels ) {
             if @args;
         if ($self->{caller}) {
             my (undef, $filename, $line) = caller($self->{caller} - 1);
-            $self->{buffer} .= "[$level] $msg at $filename line $line\n";
+            $self->{buffer} .= "[$level] $msg at $filename line $line";
         }
         else {
-            $self->{buffer} .= "[$level] $msg \n";
+            $self->{buffer} .= "[$level] $msg";
         }
+        $self->{buffer} .= Term::ANSIColor::color("reset") if $color;
+        $self->{buffer} .= "\n";
+        1;
     };
 }
 
@@ -93,6 +110,20 @@ sub flush {
         warn delete $self->{buffer};
     }
 }
+
+sub color {
+    my $self = shift;
+    if ($_[0]) {
+        $Color ||= do {
+            eval { require Term::ANSIColor };
+            !$@;
+        };
+    }
+    else {
+        $Color = undef;
+    }
+    return $Color;
+};
 
 1;
 
@@ -113,6 +144,8 @@ Acore::WAF::Log - log module
   $log->file('/path/to/log_file'); # output log to file.
 
   $log->configure({ level => "error", timestamp => 0 });
+
+  $log->color(1); # Term::ANSIColor required
 
 =head1 DESCRIPTION
 
@@ -188,6 +221,10 @@ Default: STDERR
  });
 
 Set avobe methods by hash ref.
+
+=item color
+
+ $log->color(1); # colorful message!
 
 =back
 
