@@ -115,6 +115,7 @@ use HTTP::Engine;
 use <?= raw app_name() ?>;
 use Getopt::Std;
 use Acore::WAF::ConfigLoader;
+Acore::WAF::Log->color(1);
 
 my $opts = {};
 getopts("p:c:", $opts);
