@@ -597,7 +597,7 @@ sub serve_static_file {
         require Acore::MIME::Types;
         my $ext = ( $file =~ /\.(\w+)$/ ) ? lc($1) : "";
         $res->header(
-            'Content-Type'  => Acore::MIME::Types->mimeTypeOf($ext) || "text/plain",
+            'Content-Type'  => Acore::MIME::Types->mime_type($ext) || "text/plain",
             'Last-Modified' => HTTP::Date::time2str($mtime)
         );
     }

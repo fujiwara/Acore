@@ -1033,7 +1033,7 @@ sub explorer_file_info_GET {
         size     => -s $file,
         filename => $c->req->param("file"),
         ext      => $ext,
-        type     => Acore::MIME::Types->mimeTypeOf($ext) || "",
+        type     => Acore::MIME::Types->mime_type($ext) || "",
         editable => -w $file,
     };
     if ( $c->req->param('body') && $info->{size} <= 1024 * 1024 ) {

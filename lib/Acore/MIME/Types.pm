@@ -3,14 +3,24 @@ package Acore::MIME::Types;
 use strict;
 use warnings;
 
-my $Info;
+our $MIME_TYPES;
 
-sub mimeTypeOf {
-    my ($class, $ext) = @_;
-    return $Info->{$ext};
+*mimeTypeOf = \&mime_type;
+
+sub mime_type {
+    my ($class, $file) = @_;
+    $file =~ /\.?([a-z]+)$/i or return;
+    $MIME_TYPES->{lc $1};
 }
 
-$Info = {
+sub add_type {
+    my $class = shift;
+    while (my($ext, $type) = splice @_, 0, 2) {
+        $MIME_TYPES->{lc $ext} = $type;
+    }
+}
+
+$MIME_TYPES = {
     '#'         => 'application/x-mathcad',
     '123'       => 'application/vnd.lotus-1-2-3',
     '3g2'       => 'video/3gpp2',

@@ -12,13 +12,18 @@ filters {
     mime => [qw/chomp/],
 };
 
+Acore::MIME::Types->add_type(
+    xxx => "application/x-xxx",
+    yyy => "application/x-yyy",
+);
+
 run {
     my $block  = shift;
     is $block->ext => $block->mime, "test of ". $block->ext;
 };
 
 sub mime_type {
-    Acore::MIME::Types->mimeTypeOf($_[0]);
+    Acore::MIME::Types->mime_type($_[0]);
 }
 
 __END__
@@ -65,6 +70,16 @@ swf
 --- mime
 application/x-shockwave-flash
 
+===
+--- ext
+xxx
+--- mime
+application/x-xxx
 
+===
+--- ext
+yyy
+--- mime
+application/x-yyy
 
 
