@@ -278,6 +278,18 @@ sub page_cache_disabled {
     $c->res->body("no-cached");
 }
 
+sub psgi {
+    my ($self, $c) = @_;
+    my $env = $c->psgi_env;
+    my $body = "";
+    for my $key (sort keys %$env) {
+        $body .= "$key: $env->{$key}\n";
+    }
+    $c->log->info("running on psgi");
+    $c->on_psgi or die;
+    $c->res->body($body);
+}
+
 package t::WAFTest::Controller::X;
 
 sub xyz {

@@ -1,6 +1,6 @@
 # -*- mode:perl -*-
 use strict;
-use Test::More tests => 7;
+use Test::More;
 use HTTP::Engine::Test::Request;
 use t::WAFTest::Engine;
 
@@ -33,3 +33,4 @@ SKIP: {
     is ref t::WAFTest->psgi_application({}) => "CODE", "psgi_application is CODE ref";
 };
 
+done_testing;

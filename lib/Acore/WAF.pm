@@ -144,6 +144,11 @@ has request_for_dispatcher => (
     },
 );
 
+has psgi_env => (
+    is      => "rw",
+    default => sub { +{ } },
+);
+
 has on_psgi => ( is => "rw" );
 
 sub DESTROY {
@@ -308,7 +313,11 @@ sub handle_request {
     $self->debug( $ENV{DEBUG} || $config->{debug} || 0 )
         && $self->_wrap_methods_for_debug();
 
-    $self->log->configure( $config->{log} );
+    my $log = $self->log;
+    $log->configure( $config->{log} );
+    if ( $self->on_psgi && !$log->file ) {
+        $log->file( $self->psgi_env->{"psgi.error"} );
+    }
 
     $config->{include_path} ||= [];
 
@@ -327,7 +336,7 @@ sub handle_request {
 
     $self->_end_debug_log($start_time);
 
-    $self->log->flush;
+    $log->flush;
     $self->finalize();
 
     return $self->response;
@@ -737,9 +746,10 @@ sub psgi_application {
     require Plack::Request;
     sub {
         my $env = shift;
+        my $req = Plack::Request->new($env);
         my $app = ref $obj ? $obj : $obj->new;
         $app->on_psgi(1);
-        my $req = Plack::Request->new($env);
+        $app->psgi_env($env);
         $app->handle_request( $config, $req );
         $app->response->finalize;
     };
