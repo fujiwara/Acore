@@ -13,6 +13,8 @@ extends 'Acore::WAF';
 override _build_log => sub {
     my $self = shift;
     my $log = Acore::WAF::Log->new({ file => "t/tmp/error_log" });
+    $log->level("debug") if $self->debug;
+    $log;
 };
 
 override setup => sub {

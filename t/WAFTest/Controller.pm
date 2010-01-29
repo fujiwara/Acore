@@ -294,6 +294,7 @@ sub forward_main {
     my ($self, $c) = @_;
     $c->log->info("forward_main");
     $c->forward( $self => 'forward_to_1' );
+    $c->res->body("not reached here");
 }
 sub forward_to_1 {
     my ($self, $c) = @_;
@@ -305,12 +306,6 @@ sub forward_to_2 {
     $c->log->info("forward_to_2");
     $c->res->body("error on forward_to_2");
     $c->error( 500 => 'error' );
-
-    $c->forward( $self => "forward_to_3" );
-}
-sub forward_to_3 {
-    my ($self, $c) = @_;
-    $c->res->body("not reached here");
 }
 
 package t::WAFTest::Controller::X;
