@@ -18,6 +18,7 @@ use URI::Escape;
 use Data::Dumper;
 use Acore::WAF::Dispatcher;
 use Scalar::Util qw/ blessed /;
+use Try::Tiny;
 
 our $VERSION = 0.1;
 our $COUNT   = 1;
@@ -210,8 +211,8 @@ sub _build_user {
 sub _record_time {
     my $display_code = shift;
     sub {
-        my $next   = shift;
-        my ($self) = @_;
+        my $next = shift;
+        my ($self, @args) = @_;
         return $next->(@_) unless $self->debug;
 
         my $depth  = scalar @{ $self->stack };
@@ -221,16 +222,19 @@ sub _record_time {
             [ Time::HiRes::gettimeofday() ],  # time
             [],                               # children
         ];
-        local $@;
-        my $res       = eval { $next->(@_) };
-        my $exception = $@;
-
+        my ($res, $exception);
+        try {
+            $res = $next->($self, @args);
+        }
+        catch {
+            $exception = $_;
+        };
         my $mine    = pop @{ $self->stack };
         my $elapsed = Time::HiRes::tv_interval( $mine->[1] );
         $mine->[1]  = sprintf("%fs", $elapsed);
         if ( my $parent = $self->stack->[-1] ) {
             push @{ $parent->[2] }, $mine;
-            die $exception if $exception;
+            die $exception if $exception || !$res;
             return $res;
         }
 
@@ -243,7 +247,7 @@ sub _record_time {
         $self->debug_report->row($pair[$_ * 2], $pair[$_ * 2 + 1])
             for ( 0 .. (@pair / 2) );
 
-        die $exception if $exception;
+        die $exception if $exception || !$res;
 
         return $res;
     };
