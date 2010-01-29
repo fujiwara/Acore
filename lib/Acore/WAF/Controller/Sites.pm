@@ -2,6 +2,7 @@ package Acore::WAF::Controller::Sites;
 use strict;
 use warnings;
 use Scalar::Util qw/ blessed /;
+use Try::Tiny;
 
 sub _do_auto {
     my ($self, $c, $args) = @_;
@@ -25,17 +26,22 @@ sub page {
             or return;
     }
 
-    eval {
+    my $error;
+    try {
         $ext eq 'mt' ? $c->render("sites/$template", $args)
                      : $c->render_tt("sites/$template", $args);
+    }
+    catch {
+        $error = $_;
     };
-    my $error = $@;
+    return unless defined $error;
+
     if ( $error =~ /could not find template file/    # for MT
       or $error =~ /file error - .* not found/    )  # for TT
     {
         $c->error( 404 => $@ );
     }
-    elsif ( blessed $error && $error->isa('CGI::ExceptionManager::Exception') ) {
+    elsif ( ref $error eq "Acore::WAF::Exception" ) {
         $c->detach;
     }
     elsif ($error) {

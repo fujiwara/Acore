@@ -58,9 +58,7 @@ include file
 === broken template
 --- uri
 http://localhost/act/render_broken_tt
---- response
-Content-Length: 21
-Content-Type: text/html; charset=utf-8
-Status: 500
-
-Internal Server Error
+--- handle_response
+{
+    is $response->code => 500;
+}

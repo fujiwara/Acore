@@ -261,12 +261,10 @@ Status: 301
 === server error
 --- uri
 http://localhost/act/error
---- response
-Content-Length: 21
-Content-Type: text/html; charset=utf-8
-Status: 500
-
-Internal Server Error
+--- handle_response
+{
+    is $response->code => 500;
+}
 
 === detach
 --- uri

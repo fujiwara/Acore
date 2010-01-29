@@ -375,33 +375,23 @@ sub _end_debug_log {
 
 sub _run_with_handle_exception {
     my $self = shift;
-    my $trace;
-    my $response;
-    my $last_msg;
-    local $SIG{__DIE__} = sub {
-        my ($msg) = @_;
-        if (ref $msg eq 'Acore::WAF::Exception') {
-            undef $trace;
-        }
-        elsif ($self->debug) {
+
+    try {
+        $self->_dispatch();
+    }
+    catch {
+        my $msg = $_;
+        my $trace;
+        return if ref $msg eq 'Acore::WAF::Exception';
+
+        if ($self->debug) {
             require Devel::StackTrace;
             require Devel::StackTrace::AsHTML;
             $trace = Devel::StackTrace->new;
         }
-        else {
-            $trace = 1;
-        }
-        $last_msg = $msg if $trace;
-        die @_;
-    };
-    try {
-        $self->_dispatch();
-        undef $trace;
-    };
-    if ($trace) {
-        $self->log->error($last_msg);
-        $self->res->body( ref $trace ? $trace->as_html
-                                     : HTTP::Status::status_message(500)
+        $self->log->error($msg);
+        $self->res->body( $trace ? $trace->as_html
+                                 : HTTP::Status::status_message(500)
         );
         $self->res->status(500);
     }
