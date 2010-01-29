@@ -58,7 +58,7 @@ install_script 'acore_setupwaf.pl';
 install_script 'acoresh';
 
 if (author_context) {
-    for my $pair ([ TEST_PSGI => 1 ], [ ANY_MOOSE => "Moose" ]) {
+    for my $pair ([ TEST_PSGI => 1 ], [ ANY_MOOSE => "Moose" ], [ DEBUG => 1 ]) {
         my $env   = $pair->[0];
         my $value = $pair->[1];
 
