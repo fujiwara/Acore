@@ -234,7 +234,7 @@ sub _record_time {
         $mine->[1]  = sprintf("%fs", $elapsed);
         if ( my $parent = $self->stack->[-1] ) {
             push @{ $parent->[2] }, $mine;
-            die $exception if $exception || !$res;
+            die $exception if defined $exception;
             return $res;
         }
 
@@ -247,7 +247,7 @@ sub _record_time {
         $self->debug_report->row($pair[$_ * 2], $pair[$_ * 2 + 1])
             for ( 0 .. (@pair / 2) );
 
-        die $exception if $exception || !$res;
+        die $exception if defined $exception;
 
         return $res;
     };
@@ -394,12 +394,9 @@ sub _run_with_handle_exception {
         $last_msg = $msg if $trace;
         die @_;
     };
-    do {
-        local $@;
-        eval {
-            $self->_dispatch();
-            undef $trace;
-        };
+    try {
+        $self->_dispatch();
+        undef $trace;
     };
     if ($trace) {
         $self->log->error($last_msg);
