@@ -874,7 +874,7 @@ sub upload_document_POST {
         return;
     }
 
-    $upload->fh->seek(0, 0);
+    seek( $upload->fh, 0, 0 );
     eval {
         $c->acore->txn_do(
             sub {
