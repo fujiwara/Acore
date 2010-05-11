@@ -9,7 +9,7 @@ BEGIN {
 };
 Acore::YAML->import();
 my @data = (
-    { foo => [ 1, 2, 3 ], bar => { baz => "foo" } },
+    { foo => [ 1, 2, 3 ], bar => { baz => "あいうえお" } },
     { foo => "日本語" },
 );
 for my $data (@data) {
