@@ -39,17 +39,17 @@ $c->request($req);
 
     my $skinny = $c->model('Skinny');
     isa_ok $skinny->schema => "t::WAFTest::Model::Skinny::Schema";
-    my $foo = $skinny->insert('foo', { foo => 'FOO' });
+    my $foo = $skinny->insert('foo' => { foo => 'FOO' });
     ok $foo;
     is $foo->foo => "FOO";
     my $id = $foo->id;
 
-    my $foo2 = $skinny->single('foo', { id => $id });
+    my $foo2 = $skinny->single('foo' => { id => $id });
     is $foo2->id  => $id;
     is $foo2->foo => "FOO";
     $foo2->update({ foo => "BAR" });
 
-    my $foo3 = $skinny->single('foo', => { id => $id });
+    my $foo3 = $skinny->single('foo' => { id => $id });
     is $foo3->id  => $id;
     is $foo3->foo => "BAR";
 }
@@ -65,7 +65,7 @@ $c->request($req);
     });
 
     my $skinny = $c->model('Skinny');
-    my $foo = $skinny->insert('foo', { foo => 'FOO' });
+    my $foo = $skinny->insert('foo' => { foo => 'FOO' });
     ok $foo;
     is $foo->foo => "FOO";
 }
