@@ -9,5 +9,5 @@ BEGIN {
 
 ok $INC{$_} => "$_ is loaded"
     for qw{ Acore.pm DBIx/CouchLike.pm
-            HTTP/Engine.pm Any/Moose.pm JSON/XS.pm Path/Class.pm
+            HTTP/Engine.pm Any/Moose.pm JSON.pm Path/Class.pm
           };
