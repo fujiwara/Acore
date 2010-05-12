@@ -5,7 +5,7 @@ use HTTP::Engine::Test::Request;
 use utf8;
 use Encode qw/ encode_utf8 /;
 use Math::BigInt;
-use Clone;
+use Storable qw/ dclone /;
 use t::WAFTest::Engine;
 
 plan tests => (3 + 1 * blocks);
@@ -30,7 +30,7 @@ run {
     my $block = shift;
     my $result = eval $block->code;
     die $@ if $@;
-    $app->config( Clone::clone($base_config) );
+    $app->config( dclone($base_config) );
     is $result => $block->uri, encode_utf8( $block->code );
 }
 

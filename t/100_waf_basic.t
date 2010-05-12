@@ -10,7 +10,7 @@ use Data::Dumper;
 use Acore::Document;
 use Acore;
 use DBI;
-use Clone qw/ clone /;
+use Storable qw/ dclone /;
 use Path::Class qw/ file dir /;
 use t::WAFTest::Engine;
 
@@ -46,7 +46,7 @@ my $base_config = {
 my $ctx = {};
 run {
     my $block  = shift;
-    my $config = clone $base_config;
+    my $config = dclone $base_config;
     run_engine_test($config, $block, $ctx, $block->app_class);
 };
 

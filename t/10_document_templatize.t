@@ -3,7 +3,6 @@ use strict;
 use Test::More tests => 28;
 use Test::Exception;
 use Data::Dumper;
-use Clone qw/ clone /;
 
 BEGIN {
     use_ok "Acore";

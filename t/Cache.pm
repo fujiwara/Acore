@@ -3,7 +3,7 @@ package t::Cache;
 use strict;
 use warnings;
 use Any::Moose;
-use Clone qw/ clone /;
+use Storable qw/ dclone /;
 our $Cache   = {};
 our $Expires = {};
 
@@ -12,7 +12,7 @@ sub get {
     if ( defined $Expires->{$key} && $Expires->{$key} < time() ) {
         delete $Cache->{$key};
     }
-    ref $Cache->{$key} ? clone($Cache->{$key}) : $Cache->{$key};
+    ref $Cache->{$key} ? dclone($Cache->{$key}) : $Cache->{$key};
 }
 
 sub set {

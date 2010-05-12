@@ -3,7 +3,7 @@ use strict;
 use Test::More tests => 55;
 use Test::Exception;
 use Data::Dumper;
-use Clone qw/ clone /;
+use Storable qw/ dclone /;
 
 BEGIN {
     use_ok "Acore";
@@ -22,8 +22,8 @@ BEGIN {
     isa_ok $d->updated_on => $Acore::DateTime::DT_class;
     ok $d->as_string;
 
-    my $dt_c = clone($d->created_on);
-    my $dt_u = clone($d->updated_on);
+    my $dt_c = dclone($d->created_on);
+    my $dt_u = dclone($d->updated_on);
 
     ok $d->can('to_object'), "can to_object";
     my $o = $d->to_object;

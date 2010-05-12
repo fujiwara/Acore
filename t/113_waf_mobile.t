@@ -4,7 +4,7 @@ use warnings;
 use Test::Base;
 use HTTP::Request;
 use Data::Dumper;
-use Clone qw/ clone /;
+use Storable qw/ dclone /;
 use t::WAFTest::Engine;
 
 plan tests => 12;
@@ -38,7 +38,7 @@ my $Engine = create_engine;
 my $ctx    = {};
 run {
     my $block  = shift;
-    my $config = clone $base_config;
+    my $config = dclone $base_config;
     run_engine_test($config, $block, $ctx);
 };
 
