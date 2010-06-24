@@ -908,10 +908,9 @@ Acore::WAF - AnyCMS web application framework
  package YourApp::Dispatcher;
  use Acore::WAF::Util qw/:dispatcher/;
  use HTTPx::Dispatcher;
- connect "",                 to controller "Root" => "dispatch_index";
- connect "static/:filename", to class "YourApp" => "dispatch_static";
- connect "favicon.ico",      to class "YourApp" => "dispatch_favicon";
- connect ":action",          to controller "Root";
+ connect "",            to controller "Root" => "dispatch_index";
+ connect "favicon.ico", to class "YourApp" => "dispatch_favicon";
+ connect ":action",     to controller "Root";
 
  package YourApp::Controller::Root;
  use utf8;

@@ -470,21 +470,37 @@ sub document_create_form_GET {
 sub document_create_form_POST {
     my ($self, $c) = @_;
 
+    my $req  = $c->req;
+    my $form = $c->form;
     $c->forward( $self => "is_logged_in" );
 
-    my $class = $c->req->param('_class');
+    my $class = $req->param('_class');
     if ( !$class->require || !$class->isa('Acore::Document') ) {
         $c->log->error($@);
-        $c->form->set_error( _class => "INVALID" );
+        $form->set_error( _class => "INVALID" );
     }
     $c->stash->{_class} = $class;
 
     my $doc = $class->validate_to_create($c);
     if ( !defined $doc->{path} ) {
-        $c->form->check(
+        $form->check(
             path => [qw/ NOT_NULL ASCII /],
         );
-        $doc->path( $c->req->param('path') );
+        $doc->path( $req->param('path') );
+    }
+
+    my $id = $req->param("id");
+    if ( defined $id && $id ne "" ) {
+        if ( $id =~ /\s/ ) {
+            $form->set_error( id => "INCLUDE_WHITE_SPACE" );
+        }
+        my $exists = $c->acore->get_document({ id => $id });
+        if ($exists) {
+            $form->set_error( id => "EXISTS" );
+        }
+        else {
+            $doc->id($id);
+        }
     }
 
     if ( $c->form->has_error || !$doc ) {

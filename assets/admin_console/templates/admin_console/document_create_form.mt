@@ -32,6 +32,11 @@
                 <fieldset>
                   <legend>Meta info</legend>
                   <div>
+                    <label for="id">id</label>
+                    <input size="40" type="text" name="id" value="" id="id-input"/>
+                    <input type="checkbox" id="id-auto"/><label for="id-auto" style="float: none; display: inline;">自動発行</label>
+                  </div>
+                  <div>
                     <label for="path">path</label>
                     <input size="40" type="text" name="path" value=""/>
                   </div>
@@ -74,6 +79,18 @@
         url = url + "?_class=" + $('#document-class').val();
         location.href = url;
       });
+      $('#id-auto').click( function() {
+        if ($(this).attr("checked")) {
+          $('#id-input').attr({disabled: true}).hide();
+        }
+        else {
+          $('#id-input').attr({disabled: false}).show();
+        }
+      })
+? if (!$c->form->has_error) {
+      $('#id-auto').click();
+      $('#id-input').attr({disabled: true}).hide();
+? }
     </script>
 ?= raw $c->render_part("@{[ location ]}/container_close.mt");
 
