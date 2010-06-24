@@ -4,7 +4,6 @@ use FindBin;
 use lib "$FindBin::Bin/../lib";
 use Test::More;
 use Test::Requires qw/ DBIx::Skinny() /;
-use HTTP::Engine::Test::Request;
 use Scalar::Util qw/ blessed /;
 use t::WAFTest::Engine;
 
@@ -12,7 +11,6 @@ BEGIN {
     use_ok "Acore";
     use_ok 'Acore::WAF';
     use_ok 't::WAFTest';
-    use_ok 'HTTP::Engine';
 };
 
 my $dbh = do "t/connect_db.pm";
