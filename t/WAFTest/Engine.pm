@@ -27,12 +27,12 @@ sub new {
 }
 
 sub run {
-    require Plack::Request;
+    require Piglet::Request;
     require HTTP::Message::PSGI;
 
     my $self      = shift;
     my $http_req  = shift;
-    my $plack_req = Plack::Request->new( $http_req->to_psgi );
+    my $plack_req = Piglet::Request->new( $http_req->to_psgi );
     my $plack_res = $self->{interface}->{request_handler}->($plack_req);
     res_from_psgi( $plack_res->finalize );
 }
@@ -47,7 +47,7 @@ sub create_request {
     my %args = @_;
 
     require HTTP::Message::PSGI;
-    require Plack::Request;
+    require Piglet::Request;
     my $method = delete $args{method};
     my $uri    = delete $args{uri};
     my $body   = delete $args{body};
@@ -59,7 +59,7 @@ sub create_request {
     for my $name ( keys %args ) {
         $req->header( $name => $args{$name} );
     }
-    Plack::Request->new( $req->to_psgi );
+    Piglet::Request->new( $req->to_psgi );
 }
 
 sub run_engine_test {

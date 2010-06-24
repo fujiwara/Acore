@@ -1206,7 +1206,6 @@ lib/Acore/WAF/Controller/Role/Locatable.pm
 lib/Acore/WAF/Controller/Sites.pm
 lib/Acore/WAF/Dispatcher.pm
 lib/Acore/WAF/Log.pm
-lib/Acore/WAF/MinimalCGI.pm
 lib/Acore/WAF/Model.pm
 lib/Acore/WAF/Model/DBIC.pm
 lib/Acore/WAF/Plugin/AntiCSRF.pm
@@ -1248,7 +1247,6 @@ t/102_waf.t
 t/103_waf_uri_for.t
 t/104_waf_plugin.t
 t/105_waf_plugin_tt.t
-t/106_minimal_cgi.t
 t/107_waf_config_loader.t
 t/108_waf_welcome.t
 t/109_waf_stacktrace.t

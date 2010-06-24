@@ -730,10 +730,10 @@ sub controller {
 
 sub psgi_application {
     my ($obj, $config) = @_;
-    require Plack::Request;
+    require Piglet::Request;
     sub {
         my $env = shift;
-        my $req = Plack::Request->new($env);
+        my $req = Piglet::Request->new($env);
         my $app = ref $obj ? $obj : $obj->new;
         $app->psgi_env($env);
         $app->handle_request( $config, $req );
@@ -950,7 +950,7 @@ Config hashref.
 
 =item request
 
-Plack::Request object.
+Piglet::Request object.
 
  $c->request->param("foo");
  $c->req->param("foo");

@@ -6,7 +6,7 @@ use t::WAFTest::Engine;
 BEGIN {
     use_ok 'Acore::WAF';
     use_ok 't::WAFTest';
-    use_ok "Plack::Request";
+    use_ok "Piglet::Request";
 };
 
 my $app = t::WAFTest->new;

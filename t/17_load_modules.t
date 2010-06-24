@@ -9,7 +9,7 @@ BEGIN {
 
 ok $INC{$_} => "$_ is loaded"
     for qw{ Acore.pm DBIx/CouchLike.pm
-            Plack/Request.pm Any/Moose.pm JSON/XS.pm Path/Class.pm
+            Piglet/Request.pm Any/Moose.pm JSON/XS.pm Path/Class.pm
           };
 
 done_testing;
