@@ -5,7 +5,6 @@ use warnings;
 use Test::More;
 use t::WAFTest::Engine;
 use HTTP::Request;
-use_ok "HTTP::Engine";
 use_ok "t::WAFTest";
 
 my $req = HTTP::Request->new( GET => 'http://localhost/act/error' );

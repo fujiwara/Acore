@@ -10,7 +10,6 @@ BEGIN {
     use_ok "Acore";
     use_ok 'Acore::WAF';
     use_ok 't::WAFTest';
-    use_ok 'HTTP::Engine';
 };
 
 my $dbh = do "t/connect_db.pm";

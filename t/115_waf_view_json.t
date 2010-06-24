@@ -8,7 +8,6 @@ use t::WAFTest::Engine;
 BEGIN {
     use_ok 'Acore::WAF';
     use_ok 't::WAFTest';
-    use_ok 'HTTP::Engine';
 };
 
 my $c = t::WAFTest->new;

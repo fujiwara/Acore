@@ -9,7 +9,6 @@ use t::WAFTest::Engine;
 BEGIN {
     use_ok 'Acore::WAF';
     use_ok 't::WAFTest';
-    use_ok 'HTTP::Engine';
     use_ok 'Acore::WAF::Controller::Feed2Js';
     no warnings "redefine";
     *Acore::WAF::Controller::Feed2Js::fetch_uri = sub {
