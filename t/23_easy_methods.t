@@ -1,6 +1,6 @@
 # -*- mode:perl -*-
 use strict;
-use Test::More tests => 10;
+use Test::More;
 use Test::Exception;
 use Data::Dumper;
 use utf8;
@@ -47,3 +47,5 @@ can_ok __PACKAGE__, @methods;
 }
 
 unlink "t/tmp/test.sqlite";
+
+done_testing;

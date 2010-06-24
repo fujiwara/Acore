@@ -1,6 +1,6 @@
 # -*- mode:perl -*-
 use strict;
-use Test::More tests => 3;
+use Test::More;
 use Test::Exception;
 use Scalar::Util qw/ refaddr /;
 use utf8;
@@ -15,3 +15,5 @@ eval "use Acore::Util qw/clone/";
     is_deeply $foo => clone($foo), "clone";
     isnt refaddr("$foo"), refaddr( clone($foo) ), "other instance";
 }
+
+done_testing;

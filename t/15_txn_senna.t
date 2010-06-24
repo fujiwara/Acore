@@ -2,12 +2,11 @@
 use strict;
 use Test::More;
 use Test::Exception;
+use Test::Requires qw/ Senna /;
 use Data::Dumper;
 use utf8;
 
 BEGIN {
-    eval "use Senna";
-    plan $@ ? (skip_all => "Senna in not installed") : (tests => 19);
     use_ok 'Acore';
     use_ok 'Acore::Document';
 };
@@ -82,3 +81,4 @@ package main;
     is $docs[0]->id => 1;
 }
 
+done_testing;

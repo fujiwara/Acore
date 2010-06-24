@@ -3,9 +3,8 @@ use strict;
 use warnings;
 use HTTP::Request;
 use Data::Dumper;
-use Test::More tests => 12;
+use Test::More;
 
-use_ok("HTTP::Engine");
 use_ok("Acore::WAF");
 use_ok("t::WAFTest");
 
@@ -27,3 +26,5 @@ for my $class ( undef, "t::MyUser" ) {
 }
 
 ok $INC{"t/MyUser.pm"}, "t::MyUser required";
+
+done_testing;

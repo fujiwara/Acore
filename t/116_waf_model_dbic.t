@@ -1,18 +1,15 @@
 # -*- mode:perl -*-
 use strict;
 use Test::More;
+use Test::Requires qw/ DBIx::Class::Schema::Loader /;
 use HTTP::Engine::Test::Request;
 use Scalar::Util qw/ blessed /;
 use t::WAFTest::Engine;
 
 BEGIN {
-    eval "use DBIx::Class::Schema::Loader;";
-    plan $@ ? (skip_all => "DBIx::Class::Schema::Loader in not installed") : (tests => 13);
-
     use_ok "Acore";
     use_ok 'Acore::WAF';
     use_ok 't::WAFTest';
-    use_ok 'HTTP::Engine';
 };
 
 my $dbh = do "t/connect_db.pm";
@@ -58,3 +55,5 @@ $c->config({
     is $foo4->id  => $id;
     is $foo4->foo => "BAR";
 }
+
+done_testing;

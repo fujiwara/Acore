@@ -2,19 +2,17 @@
 use strict;
 use warnings;
 use Test::Base;
+use Test::More;
 use HTTP::Request;
 use Data::Dumper;
 use Storable qw/ dclone /;
 use t::WAFTest::Engine;
-
-plan tests => ( 3 + 1 * blocks );
 
 filters {
     response => [qw/chomp/],
     uri      => [qw/chomp/],
 };
 
-use_ok("HTTP::Engine");
 use_ok("Acore::WAF");
 use_ok("t::WAFTest");
 
@@ -34,6 +32,8 @@ run {
     my $config = dclone $base_config;
     run_engine_test($config, $block, $ctx);
 };
+
+done_testing;
 
 __END__
 

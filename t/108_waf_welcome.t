@@ -3,13 +3,11 @@
 use strict;
 use warnings;
 use Test::More;
+use Test::Requires qw/ Module::CoreList /;
 use t::WAFTest::Engine;
 use HTTP::Request;
 
 BEGIN {
-    eval "use Modile::CoreList;";
-    plan $@ ? (skip_all => "Module::CoreList is not installed") : (tests => 4);
-    use_ok "HTTP::Engine";
     use_ok "t::WAFTest";
 };
 
@@ -28,3 +26,5 @@ my $engine = $Engine->new(
 my $response = $engine->run($req);
 is $response->code      => 200;
 like $response->content => qr/WAFTest/;
+
+done_testing;

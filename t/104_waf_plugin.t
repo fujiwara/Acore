@@ -2,11 +2,10 @@
 use strict;
 use warnings;
 use Test::Base;
+use Test::More;
 use HTTP::Request;
 use Data::Dumper;
 use t::WAFTest::Engine;
-
-plan tests => (2 + 1 * blocks);
 
 filters {
     response => [qw/chop/],
@@ -21,6 +20,8 @@ run {
     my $block = shift;
     run_engine_test($config, $block, $ctx);
 };
+
+done_testing;
 
 __END__
 

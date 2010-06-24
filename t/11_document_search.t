@@ -1,6 +1,6 @@
 # -*- mode:perl -*-
 use strict;
-use Test::More tests => 9;
+use Test::More;
 use Test::Exception;
 use Data::Dumper;
 use t::Cache;
@@ -37,3 +37,4 @@ BEGIN {
     $dbh->commit;
 }
 
+done_testing;

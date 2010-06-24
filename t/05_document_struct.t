@@ -1,6 +1,6 @@
 # -*- mode:perl -*-
 use strict;
-use Test::More tests => 13;
+use Test::More;
 use Data::Dumper;
 
 BEGIN {
@@ -34,3 +34,4 @@ BEGIN {
     like $d->html_form_to_update => qr{<input type="text"};
 }
 
+done_testing;

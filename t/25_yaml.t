@@ -1,6 +1,6 @@
 # -*- mode:perl -*-
 use strict;
-use Test::More tests => 10;
+use Test::More;
 use Test::Exception;
 use utf8;
 
@@ -25,3 +25,4 @@ for my $data (@data) {
 my $class = Acore::YAML->class;
 ok $class, "loaded class is $class";
 
+done_testing;

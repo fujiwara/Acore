@@ -1,6 +1,6 @@
 # -*- mode:perl -*-
 use strict;
-use Test::More tests => 9;
+use Test::More;
 use HTTP::Engine::Test::Request;
 use Scalar::Util qw/ blessed /;
 use t::WAFTest::Engine;
@@ -32,3 +32,5 @@ $c->config({ include_path => [] });
 
     is $model => $c->model("Bar"), "same instance";
 }
+
+done_testing;

@@ -2,7 +2,7 @@
 
 use strict;
 use warnings;
-use Test::More tests => 4;
+use Test::More;
 use t::WAFTest::Engine;
 use HTTP::Request;
 use_ok "HTTP::Engine";
@@ -26,3 +26,5 @@ my $engine = create_engine->new(
 my $response = $engine->run($req);
 is $response->code      => 500;
 like $response->content => qr{Died at t/WAFTest/Controller\.pm};
+
+done_testing;

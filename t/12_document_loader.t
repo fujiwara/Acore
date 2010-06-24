@@ -1,6 +1,6 @@
 # -*- mode:perl -*-
 use strict;
-use Test::More tests => 32;
+use Test::More;
 use Test::Exception;
 use Data::Dumper;
 use t::Cache;
@@ -123,3 +123,5 @@ list:
 
 END
 }
+
+done_testing;

@@ -1,6 +1,7 @@
 # -*- mode:perl -*-
 use strict;
 use Test::Base;
+use Test::More;
 use HTTP::Engine::Test::Request;
 use utf8;
 use Encode qw/ encode_utf8 /;
@@ -8,16 +9,16 @@ use Math::BigInt;
 use Storable qw/ dclone /;
 use t::WAFTest::Engine;
 
-plan tests => (3 + 1 * blocks);
+BEGIN {
+    use_ok("Acore::WAF");
+    use_ok("t::WAFTest");
+};
 
 filters {
     code => [qw/chop/],
     uri  => [qw/chop/],
 };
 
-use_ok("HTTP::Engine");
-use_ok("Acore::WAF");
-use_ok("t::WAFTest");
 my $app = t::WAFTest->new;
 my $req = create_request(
     uri    => 'http://example.com/aaa/bbb?foo=bar&bar=baz',
@@ -32,7 +33,9 @@ run {
     die $@ if $@;
     $app->config( dclone($base_config) );
     is $result => $block->uri, encode_utf8( $block->code );
-}
+};
+
+done_testing;
 
 __END__
 

@@ -1,6 +1,6 @@
 # -*- mode:perl -*-
 use strict;
-use Test::More tests => 33;
+use Test::More;
 use Test::Exception;
 use Data::Dumper;
 use utf8;
@@ -139,3 +139,5 @@ run {
 unlink "t/tmp/config.yaml";
 unlink "t/tmp/config_local.yaml";
 unlink "t/tmp/test.sqlite";
+
+done_testing;

@@ -2,8 +2,7 @@
 use strict;
 use warnings;
 use Test::Base;
-
-plan tests => (1 + (1 * blocks));
+use Test::More;
 
 use_ok("Acore::MIME::Types");
 
@@ -22,6 +21,7 @@ run {
     is $block->ext => $block->mime, "test of ". $block->ext;
 };
 
+done_testing;
 sub mime_type {
     Acore::MIME::Types->mime_type($_[0]);
 }

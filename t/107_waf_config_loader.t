@@ -1,7 +1,7 @@
 # -*- mode:perl -*-
 use strict;
 use warnings;
-use Test::More tests => 30;
+use Test::More;
 use YAML;
 use Test::Exception;
 use Path::Class qw/ file /;
@@ -106,3 +106,4 @@ YAML::DumpFile(
 unlink "t/tmp/test_config.yaml";
 unlink "t/tmp/test_config_local.yaml";
 
+done_testing;

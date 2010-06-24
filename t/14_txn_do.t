@@ -1,6 +1,6 @@
 # -*- mode:perl -*-
 use strict;
-use Test::More tests => 9;
+use Test::More;
 use Test::Exception;
 use Data::Dumper;
 use utf8;
@@ -43,3 +43,4 @@ BEGIN {
     is $docs[1]->id => 2;
 }
 
+done_testing;

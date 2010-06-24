@@ -2,12 +2,11 @@
 use strict;
 use warnings;
 use Test::Base;
+use Test::More;
 use HTTP::Request;
 use Data::Dumper;
 use Storable qw/ dclone /;
 use t::WAFTest::Engine;
-
-plan tests => 9;
 
 filters {
     response => [qw/chomp/],
@@ -40,6 +39,8 @@ run {
     my $config = dclone $base_config;
     run_engine_test($config, $block, $ctx);
 };
+
+done_testing;
 
 __END__
 

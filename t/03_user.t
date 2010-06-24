@@ -1,6 +1,6 @@
 # -*- mode:perl -*-
 use strict;
-use Test::More tests => 75;
+use Test::More;
 use Test::Exception;
 use Data::Dumper;
 use t::Cache;
@@ -76,3 +76,4 @@ for my $cache ( undef, t::Cache->new() )
     }
 }
 
+done_testing;

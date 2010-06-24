@@ -1,6 +1,6 @@
 # -*- mode:perl -*-
 use strict;
-use Test::More tests => 10;
+use Test::More;
 use Test::Exception;
 use Data::Dumper;
 my $dbh = require t::connect_db;
@@ -38,3 +38,5 @@ BEGIN {
 }
 
 $dbh->commit;
+
+done_testing;

@@ -5,6 +5,7 @@ BEGIN {
 use strict;
 use warnings;
 use Test::Base;
+use Test::More;
 use HTTP::Request;
 use Data::Dumper;
 use Acore::Document;
@@ -13,8 +14,6 @@ use DBI;
 use Storable qw/ dclone /;
 use Path::Class qw/ file dir /;
 use t::WAFTest::Engine;
-
-plan tests => ( 2 + 4 + 1 * blocks );
 
 filters {
     response  => [qw/chomp convert_charset/],
@@ -49,6 +48,9 @@ run {
     my $config = dclone $base_config;
     run_engine_test($config, $block, $ctx, $block->app_class);
 };
+
+done_testing;
+
 
 sub create_adoc {
     my $config = shift;

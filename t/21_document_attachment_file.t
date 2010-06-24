@@ -1,6 +1,6 @@
 # -*- mode:perl -*-
 use strict;
-use Test::More tests => 17;
+use Test::More;
 use Test::Exception;
 use Data::Dumper;
 use utf8;
@@ -62,3 +62,4 @@ BEGIN {
     ok !-e file("t/tmp/12345");
 }
 
+done_testing;

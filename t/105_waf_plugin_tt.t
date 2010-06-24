@@ -2,12 +2,11 @@
 use strict;
 use warnings;
 use Test::Base;
+use Test::More;
 use HTTP::Request;
 use Data::Dumper;
 use Storable qw/ dclone /;
 use t::WAFTest::Engine;
-
-plan tests => ( 2 + 1 * blocks );
 
 filters {
     response => [qw/chomp convert_charset/],
@@ -28,6 +27,8 @@ run {
     my $config = dclone $base_config;
     run_engine_test($config, $block, $ctx, "t::WAFTestTT");
 };
+
+done_testing;
 
 __END__
 

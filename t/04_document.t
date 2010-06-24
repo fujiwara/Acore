@@ -1,6 +1,6 @@
 # -*- mode:perl -*-
 use strict;
-use Test::More tests => 55;
+use Test::More;
 use Test::Exception;
 use Data::Dumper;
 use Storable qw/ dclone /;
@@ -122,3 +122,5 @@ BEGIN {
     is $d->get("/html"), $d->xpath_get("/html");
     is $d->get("/html"), $d->xpath->get("/html");
 }
+
+done_testing;

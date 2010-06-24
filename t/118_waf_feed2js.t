@@ -1,14 +1,12 @@
 # -*- mode:perl -*-
 use strict;
 use Test::More;
+use Test::Requires qw/ XML::Feed /;
 use HTTP::Engine::Test::Request;
 use Scalar::Util qw/ blessed /;
 use t::WAFTest::Engine;
 
 BEGIN {
-    eval "use XML::Feed";
-    plan $@ ? (skip_all => "no XML::Feed") : (tests => 5);
-
     use_ok 'Acore::WAF';
     use_ok 't::WAFTest';
     use_ok 'HTTP::Engine';
@@ -40,3 +38,4 @@ $c->config({ include_path => [] });
     is_deeply from_json($c->res->body) => from_json($json), "decoded json ok";
 }
 
+done_testing;

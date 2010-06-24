@@ -1,6 +1,6 @@
 # -*- mode:perl -*-
 use strict;
-use Test::More tests => 2;
+use Test::More;
 
 BEGIN {
     use_ok 'Acore::WAF::Util';
@@ -8,3 +8,4 @@ BEGIN {
 
 can_ok( "Acore::WAF::Util", qw/ adjust_request_mod_perl adjust_request_fcgi /);
 
+done_testing;

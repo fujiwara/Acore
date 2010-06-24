@@ -1,6 +1,6 @@
 # -*- mode:perl -*-
 use strict;
-use Test::More tests => 7;
+use Test::More;
 use Test::Exception;
 
 BEGIN {
@@ -23,3 +23,4 @@ BEGIN {
     } qr/Can't require/, "user_class can't require";
 }
 
+done_testing;

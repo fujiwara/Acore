@@ -1,6 +1,6 @@
 # -*- mode:perl -*-
 use strict;
-use Test::More tests => 28;
+use Test::More;
 use Test::Exception;
 use Data::Dumper;
 
@@ -75,3 +75,5 @@ BEGIN {
     like $d->html_form_to_create => qr{^\?= raw};
     like $d->html_form_to_update => qr{^\?= raw};
 }
+
+done_testing;

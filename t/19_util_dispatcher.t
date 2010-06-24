@@ -3,7 +3,7 @@ use strict;
 {
     package Foo::Dispatcher;
     use Acore::WAF::Util qw/:dispatcher/;
-    use Test::More tests => 7;
+    use Test::More;
 
     is( controller "Bar"      => "Foo::Controller::Bar" );
     is( controller "Bar::Baz" => "Foo::Controller::Bar::Baz");
@@ -21,4 +21,8 @@ use strict;
 
     $res = to class "App";
     is_deeply( $res => { controller => "App" } );
+
+    done_testing;
 }
+
+

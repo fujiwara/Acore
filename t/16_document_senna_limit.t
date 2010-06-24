@@ -2,13 +2,9 @@
 use strict;
 use Test::More;
 use Test::Exception;
+use Test::Requires qw/ Senna /;
 use Data::Dumper;
 use utf8;
-
-BEGIN {
-    eval "use Senna";
-    plan $@ ? (skip_all => "Senna in not installed") : (tests => 12);
-};
 
 package SennaDocument;
 use Any::Moose;
@@ -55,3 +51,4 @@ BEGIN {
     is_deeply [ map { $_->id } @docs ] => [ reverse (1 .. 2) ];
 }
 
+done_testing;

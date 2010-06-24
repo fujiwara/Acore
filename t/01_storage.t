@@ -1,6 +1,6 @@
 # -*- mode:perl -*-
 use strict;
-use Test::More tests => 7;
+use Test::More;
 
 BEGIN {
     use_ok 'Acore::Storage';
@@ -18,3 +18,4 @@ BEGIN {
     ok unlink $db;
 }
 
+done_testing;

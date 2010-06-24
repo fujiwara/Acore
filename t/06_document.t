@@ -1,6 +1,6 @@
 # -*- mode:perl -*-
 use strict;
-use Test::More tests => 76;
+use Test::More;
 use Test::Exception;
 use Data::Dumper;
 use t::Cache;
@@ -121,3 +121,4 @@ for my $cache ( undef, t::Cache->new({}) )
     ok !$gotdoc, "returns only is SomeDocument";
 }
 
+done_testing;

@@ -1,7 +1,7 @@
 # -*- mode:perl -*-
 use strict;
 use Data::Dumper;
-use Test::More tests => 10;
+use Test::More;
 
 use_ok("Acore::WAF::Plugin::Session");
 
@@ -23,3 +23,5 @@ use_ok("Acore::WAF::Plugin::Session");
     is $flash->get("bar") => "BAR";
     is $flash->finalize => undef;
 }
+
+done_testing;

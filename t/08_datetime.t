@@ -6,10 +6,8 @@ use Data::Dumper;
 our @class;
 BEGIN {
     @class = qw/ DateTime /;
-    my $tests = 29;
     eval { require DateTimeX::Lite; };
     push @class, "DateTimeX::Lite" unless $@;
-    plan tests => $@ ? (2 + $tests) : (2 + $tests * 2);
     use_ok 'Acore::DateTime';
     use_ok 'DateTime';
 };
@@ -88,3 +86,5 @@ $dt_class->require;
 }
 
 }
+
+done_testing;

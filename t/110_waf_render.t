@@ -1,12 +1,12 @@
 # -*- mode:perl -*-
 use strict;
 use Test::Base;
+use Test::More;
 use utf8;
 use Acore::Document;
 use Acore::WAF::Render;
 use Encode qw/ encode_utf8 /;
 
-plan tests => (1 * blocks) ;
 {
     no warnings;
     sub html {
@@ -81,6 +81,8 @@ plan tests => (1 * blocks) ;
 }
 
 run_is input => 'expected';
+
+done_testing;
 
 __END__
 

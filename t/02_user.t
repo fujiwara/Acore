@@ -1,6 +1,6 @@
 # -*- mode:perl -*-
 use strict;
-use Test::More tests => 37;
+use Test::More;
 use Data::Dumper;
 
 BEGIN {
@@ -57,3 +57,5 @@ BEGIN {
     ok !$u->attr("name", "XXX");
     is $u->name => "foo";
 }
+
+done_testing;

@@ -1,6 +1,6 @@
 # -*- mode:perl -*-
 use strict;
-use Test::More tests => 10;
+use Test::More;
 use HTTP::Engine::Test::Request;
 use Scalar::Util qw/ blessed /;
 use t::WAFTest::Engine;
@@ -30,3 +30,5 @@ $c->config({ include_path => [] });
     $c->forward( $view => "process", { foo => 1, bar => "BAR" } );
     is $c->res->body => '{"bar":"BAR","foo":1}';
 }
+
+done_testing;
