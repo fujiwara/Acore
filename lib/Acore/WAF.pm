@@ -730,10 +730,10 @@ sub controller {
 
 sub psgi_application {
     my ($obj, $config) = @_;
-    require Piglet::Request;
+    require Acore::WAF::Request;
     sub {
         my $env = shift;
-        my $req = Piglet::Request->new($env);
+        my $req = Acore::WAF::Request->new($env);
         my $app = ref $obj ? $obj : $obj->new;
         $app->psgi_env($env);
         $app->handle_request( $config, $req );
@@ -950,7 +950,7 @@ Config hashref.
 
 =item request
 
-Piglet::Request object.
+Acore::WAF::Request object.
 
  $c->request->param("foo");
  $c->req->param("foo");

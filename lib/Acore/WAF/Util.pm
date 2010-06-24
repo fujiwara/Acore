@@ -59,7 +59,7 @@ sub adjust_request_fcgi {
         my $req   = shift;
 
         my ($location, $path);
-        # for Piglet::Request
+        # for Acore::WAF::Request
         $path     = $req->env->{PATH_INFO};
         $location = $req->env->{SCRIPT_NAME};
         $class->new({

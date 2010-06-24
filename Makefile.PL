@@ -33,7 +33,6 @@ requires 'HTTPx::Dispatcher';
 requires 'HTML::StickyQuery';
 requires 'MIME::Base64';
 requires 'Path::Class';
-requires 'Piglet::Request';
 requires 'Plack::Builder';
 requires 'Plack::Middleware::Static';
 requires 'Text::MicroTemplate' => 0.07;
