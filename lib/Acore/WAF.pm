@@ -19,6 +19,7 @@ use Data::Dumper;
 use Acore::WAF::Dispatcher;
 use Scalar::Util qw/ blessed /;
 use Try::Tiny;
+use constant on_psgi => 1;
 
 our $VERSION = 0.1;
 our $COUNT   = 1;
@@ -147,8 +148,6 @@ has psgi_env => (
     is      => "rw",
     default => sub { +{ } },
 );
-
-has on_psgi => ( is => "rw" );
 
 sub DESTROY {
     my $self = shift;
@@ -317,9 +316,8 @@ sub handle_request {
 
     my $log = $self->log;
     $log->configure( $config->{log} );
-    if ( $self->on_psgi && !$log->file ) {
-        $log->file( $self->psgi_env->{"psgi.error"} );
-    }
+    $log->file( $self->psgi_env->{"psgi.error"} )
+        unless $log->file;
 
     $config->{include_path} ||= [];
 
@@ -737,7 +735,6 @@ sub psgi_application {
         my $env = shift;
         my $req = Plack::Request->new($env);
         my $app = ref $obj ? $obj : $obj->new;
-        $app->on_psgi(1);
         $app->psgi_env($env);
         $app->handle_request( $config, $req );
         $app->response->finalize;
@@ -965,10 +962,6 @@ Plack::Response object.
 
  $c->response->body("body");
  $c->res->body("body");
-
-=item on_psgi
-
-true if running on PSGI servers.
 
 =item acore
 

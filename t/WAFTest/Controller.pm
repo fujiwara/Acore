@@ -286,7 +286,6 @@ sub psgi {
         $body .= "$key: $env->{$key}\n";
     }
     $c->log->info("running on psgi");
-    $c->on_psgi or die;
     $c->res->body($body);
 }
 

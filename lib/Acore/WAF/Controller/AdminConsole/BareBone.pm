@@ -145,16 +145,7 @@ sub _table_select_csv {
         = Acore::WAF::Controller::AdminConsole::BareBone::CSV
             ->new(\@cols, $result);
 
-    if ($c->on_psgi) {
-        $c->res->body($res_handler);
-    }
-    else {
-        my $csv = "";
-        while (my $line = $res_handler->getline) {
-            $csv .= $line;
-        }
-        $c->res->body($csv);
-    }
+    $c->res->body($res_handler);
 }
 
 
