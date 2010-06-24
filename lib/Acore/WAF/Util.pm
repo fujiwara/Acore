@@ -29,24 +29,6 @@ sub extra($) {                                   ## no critic
     "AcoreX::${type}::Controller::${name}";
 }
 
-sub adjust_request_mod_perl {
-    my ($class, $req) = @_;
-
-    my $location = $req->_connection->{apache_request}->location || '/';
-    $location   .= '/' if $location !~ m{/$};
-
-    $req->uri->base->path_query($location);
-    $req->location($location);
-
-    return $req;
-}
-
-sub adjust_request_fcgi {
-    my ($class, $req) = @_;
-    $req->location( $req->uri->base->path );
-    return $req;
-}
-
 {
     package Acore::WAF::Util::RequestForDispatcher;
     use Any::Moose;

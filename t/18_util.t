@@ -6,6 +6,6 @@ BEGIN {
     use_ok 'Acore::WAF::Util';
 };
 
-can_ok( "Acore::WAF::Util", qw/ adjust_request_mod_perl adjust_request_fcgi /);
+can_ok( "Acore::WAF::Util", qw/ to class bundled controller extra /);
 
 done_testing;
