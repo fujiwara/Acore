@@ -51,23 +51,23 @@ BEGIN {
                        for_search /;
 
     ok $doc = $ac->put_document($doc);
-    @docs = $ac->fulltext_search_documents({ query => "全文検索" });
+    @docs = $ac->fulltext_search_documents({ query => "全文" });
     ok @docs == 1;
     ok $docs[0]->for_search =~ /全文検索/;
 
     $doc->for_search('部分一致検索にヒットしてください');
     ok $ac->put_document($doc);
 
-    @docs = $ac->fulltext_search_documents({ query => "全文検索" });
+    @docs = $ac->fulltext_search_documents({ query => "全文" });
     ok @docs == 0;
 
-    @docs = $ac->fulltext_search_documents({ query => "部分一致" });
+    @docs = $ac->fulltext_search_documents({ query => "部分" });
     ok @docs == 1;
 
     $doc->xpath->set('/for_search' => 'Senna検索にヒットしてください');
     ok $ac->put_document($doc);
 
-    @docs = $ac->fulltext_search_documents({ query => "Senna検索" });
+    @docs = $ac->fulltext_search_documents({ query => "Senna" });
     ok @docs == 1;
 
     @docs = $ac->fulltext_search_documents({ query => "部分一致" });
