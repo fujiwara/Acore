@@ -3,9 +3,12 @@ use strict;
 use warnings;
 use Test::More;
 use Cwd;
+use Path::Class qw/ file /;
+use HTTP::Request::Common;
 
 BEGIN {
     use_ok ("Acore::CLI::SetupWAF");
+    use_ok ("Plack::Test");
 };
 
 chdir "t/tmp" or die "Can't chdir t/tmp";
@@ -23,5 +26,34 @@ ok -f "ForTest/$_", "$_ is file"
             config/ForTest.yaml
             static/favicon.ico static/anycms-logo.png
             t/00_compile.t );
+
+{
+    chdir "ForTest" or die $!;
+    unshift @INC, "lib";
+
+    my $app = do {
+        open my $in, "<", "ForTest.psgi";
+        my $source = join("", grep !/FindBin/, <$in>); # remove FindBin
+        my $code   = eval $source;
+        is $@ => "", ".psgi compile";
+        $code;
+    };
+    isa_ok $app => "CODE";
+
+    test_psgi
+        app    => $app,
+        client => sub {
+            my $cb = shift;
+            my $res = $cb->(GET "http://localhost/");
+            is   $res->code    => 200, "status ok";
+            like $res->content => qr{<title>.*?ForTest.*</title>}, "title ok";
+
+            $res = $cb->(GET  "http://localhost/static/anycms-logo.png");
+            is $res->content => file("static/anycms-logo.png")->slurp,
+                "static content body";
+            is $res->content_type => "image/png",
+                "static content type";
+        };
+}
 
 done_testing;
