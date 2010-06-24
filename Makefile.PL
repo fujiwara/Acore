@@ -18,7 +18,6 @@ build_requires 'Module::Install' => 0.77;
 requires 'Any::Moose';
 requires 'Crypt::SaltedHash';
 requires 'Class::Inspector';
-requires 'Data::Visitor::Encode';
 requires 'DBI';
 requires 'DBIx::CouchLike' => 0.09;
 requires 'DBD::SQLite';
