@@ -17,7 +17,7 @@ ok -d "ForTest/$_", "$_ is dir"
             lib lib/ForTest lib/ForTest/Controller );
 
 ok -f "ForTest/$_", "$_ is file"
-    for qw( script/ForTest.psgi
+    for qw( ForTest.psgi
             Makefile.PL
             lib/ForTest.pm lib/ForTest/Controller/Root.pm
             config/ForTest.yaml

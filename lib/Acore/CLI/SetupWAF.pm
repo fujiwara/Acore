@@ -35,7 +35,7 @@ sub run {
             or die "Can't create dir $name/$dir: $!";
         print "mkdir $name/$dir\n";
     }
-    for my $file (qw/ script_psgi
+    for my $file (qw/ app_psgi
                       makefile_pl
                       lib_app_pm config_yaml
                       lib_app_controller_pm favicon_ico
@@ -74,14 +74,14 @@ sub usage {
 
 }
 
-sub script_psgi {
-    return ("script/${AppName}.psgi" => <<'    _END_OF_FILE_'
+sub app_psgi {
+    return ("${AppName}.psgi" => <<'    _END_OF_FILE_'
 #!/usr/bin/perl
 # -*- mode:perl -*-
 use strict;
 use warnings;
 use FindBin;
-use lib "$FindBin::Bin/../lib";
+use lib "$FindBin::Bin/lib";
 use <?= raw app_name() ?>;
 use Acore::WAF::ConfigLoader;
 use Plack::Builder;
@@ -92,6 +92,11 @@ my $config = Acore::WAF::ConfigLoader->new->load(
 );
 build {
     # enable Plack::Middlewares here
+    enable "Plack::Middleware::Static",
+        path => qr{^/static/}, root => "./";
+    enable "Plack::Middleware::Static",
+        path => qr{^/admin_console/static/}, root => "./";
+
     <?= raw app_name ?>->psgi_application($config);
 };
 
@@ -147,15 +152,12 @@ use Acore::WAF::Util qw/ :dispatcher /;
 use HTTPx::Dispatcher;
 
 connect "", to controller "Root" => "hello_world";
-
-connect "static/:filename", to class "<?= raw app_name() ?>" => "dispatch_static";
-connect "favicon.ico",      to class "<?= raw app_name() ?>" => "dispatch_favicon";
+connect "favicon.ico", to class "<?= raw app_name() ?>" => "dispatch_favicon";
 
 # Admin console
 for (bundled "AdminConsole") {
-    connect "admin_console/",                 to $_ => "index";
-    connect "admin_console/static/:filename", to $_ => "static";
-    connect "admin_console/:action",          to $_;
+    connect "admin_console/",        to $_ => "index";
+    connect "admin_console/:action", to $_;
 }
 
 # Sites
