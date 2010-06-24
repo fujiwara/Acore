@@ -1,7 +1,6 @@
 # -*- mode:perl -*-
 use strict;
 use Test::More;
-use HTTP::Engine::Test::Request;
 use t::WAFTest::Engine;
 
 BEGIN {

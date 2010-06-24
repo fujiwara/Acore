@@ -2,7 +2,6 @@
 use strict;
 use Test::More;
 use Test::Requires qw/ XML::Feed /;
-use HTTP::Engine::Test::Request;
 use Scalar::Util qw/ blessed /;
 use t::WAFTest::Engine;
 

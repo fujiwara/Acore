@@ -2,7 +2,6 @@
 use strict;
 use Test::Base;
 use Test::More;
-use HTTP::Engine::Test::Request;
 use utf8;
 use Encode qw/ encode_utf8 /;
 use Math::BigInt;
