@@ -3,14 +3,12 @@ use strict;
 use FindBin;
 use lib "$FindBin::Bin/../lib";
 use Test::More;
+use Test::Requires qw/ DBIx::Skinny() /;
 use HTTP::Engine::Test::Request;
 use Scalar::Util qw/ blessed /;
 use t::WAFTest::Engine;
 
 BEGIN {
-    eval "require DBIx::Skinny";
-    plan $@ ? (skip_all => "DBIx::Skinny is not installed") : (tests => 13);
-
     use_ok "Acore";
     use_ok 'Acore::WAF';
     use_ok 't::WAFTest';
@@ -70,3 +68,4 @@ $c->request($req);
     is $foo->foo => "FOO";
 }
 
+done_testing;
