@@ -39,7 +39,6 @@ requires 'Text::MicroTemplate' => 0.07;
 requires 'Sub::Pipe';
 requires 'HTML::FillInForm::Lite';
 requires 'Text::SimpleTable';
-requires 'Data::Visitor::Encode';
 requires 'String::CamelCase';
 requires 'HTTP::MobileAgent' => 0.27;
 requires 'Encode::JP::Mobile' => 0.26;

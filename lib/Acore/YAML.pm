@@ -2,19 +2,19 @@ package Acore::YAML;
 
 use strict;
 use warnings;
+use Encode   qw/ encode_utf8 decode_utf8 /;
 use Exporter qw/ import /;
+
 our @EXPORT = qw/ Dump Load DumpFile LoadFile /;
 our $Class;
-our $Dve;
 
 BEGIN {
+
     eval "use YAML::XS()"; ## no critic
     if (!$@) {
-        require Data::Visitor::Encode;
-        $Dve      = Data::Visitor::Encode->new;
         *Dump     = \&_Dump;
         *Load     = \&_Load;
-        *DumpFile = \&_DumpFile;
+        *DumpFile = \&YAML::XS::DumpFile;
         *LoadFile = \&YAML::XS::LoadFile;
         return $Class = "YAML::XS";
     }
@@ -30,20 +30,11 @@ BEGIN {
 sub class { $Class }
 
 sub _Dump {
-    Encode::decode_utf8( YAML::XS::Dump(@_) );
+    decode_utf8( YAML::XS::Dump(@_) );
 }
 
 sub _Load {
-    my $yaml = shift;
-    $Dve->decode_utf8(
-        YAML::XS::Load( Encode::encode_utf8($yaml) )
-    );
-}
-
-sub _DumpFile {
-    my $path = shift;
-    YAML::XS::DumpFile( $path, map { $Dve->encode_utf8($_) } @_ );
+    YAML::XS::Load( encode_utf8 $_[0] )
 }
 
 1;
-
