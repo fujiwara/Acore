@@ -29,26 +29,20 @@ ok -f "ForTest/$_", "$_ is file"
 
 {
     chdir "ForTest" or die $!;
-    unshift @INC, "lib";
 
-    my $app = do {
-        open my $in, "<", "ForTest.psgi";
-        my $source = join("", grep !/FindBin/, <$in>); # remove FindBin
-        my $code   = eval $source;
-        is $@ => "", ".psgi compile";
-        $code;
-    };
-    isa_ok $app => "CODE";
+    local $0 = "ForTest.psgi"; # fake for FindBin
+    my $app  = do "ForTest.psgi";
 
     test_psgi
         app    => $app,
         client => sub {
             my $cb = shift;
+
             my $res = $cb->(GET "http://localhost/");
             is   $res->code    => 200, "status ok";
             like $res->content => qr{<title>.*?ForTest.*</title>}, "title ok";
 
-            $res = $cb->(GET  "http://localhost/static/anycms-logo.png");
+            $res = $cb->(GET "http://localhost/static/anycms-logo.png");
             is $res->content => file("static/anycms-logo.png")->slurp,
                 "static content body";
             is $res->content_type => "image/png",
