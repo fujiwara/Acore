@@ -9,7 +9,7 @@ use Data::Dumper;
 use Acore::DocumentLoader;
 use Acore::WAF::ConfigLoader;
 use Acore::WAF::Log;
-use HTTP::Engine;
+use Plack::Request;
 eval { require Senna };
 
 do {

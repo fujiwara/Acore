@@ -1,7 +1,7 @@
 # -*- mode:perl -*-
 use strict;
 use warnings;
-use Test::More tests => 21;
+use Test::More;
 use Cwd;
 
 BEGIN {
@@ -17,9 +17,11 @@ ok -d "ForTest/$_", "$_ is dir"
             lib lib/ForTest lib/ForTest/Controller );
 
 ok -f "ForTest/$_", "$_ is file"
-    for qw( script/server.pl script/index.cgi
+    for qw( script/ForTest.psgi
             Makefile.PL
             lib/ForTest.pm lib/ForTest/Controller/Root.pm
             config/ForTest.yaml
             static/favicon.ico static/anycms-logo.png
             t/00_compile.t );
+
+done_testing;

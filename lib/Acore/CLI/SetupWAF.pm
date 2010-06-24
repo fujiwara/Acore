@@ -35,12 +35,9 @@ sub run {
             or die "Can't create dir $name/$dir: $!";
         print "mkdir $name/$dir\n";
     }
-    for my $file (qw/ script_server_pl script_index_cgi
-                      script_fastcgi_pl
-                      script_psgi
+    for my $file (qw/ script_psgi
                       makefile_pl
                       lib_app_pm config_yaml
-                      lib_app_modperl_pm
                       lib_app_controller_pm favicon_ico
                       anycms_logo
                       t_00_compile_t
@@ -87,12 +84,16 @@ use FindBin;
 use lib "$FindBin::Bin/../lib";
 use <?= raw app_name() ?>;
 use Acore::WAF::ConfigLoader;
+use Plack::Builder;
 
 my $config = Acore::WAF::ConfigLoader->new->load(
     $ENV{'<?= raw uc app_name() ?>_CONFIG_FILE'} || "config/<?= raw app_name() ?>.yaml",
     $ENV{'<?= raw uc app_name() ?>_CONFIG_LOCAL'},
 );
-<?= raw app_name ?>->psgi_application($config);
+build {
+    # enable Plack::Middlewares here
+    <?= raw app_name ?>->psgi_application($config);
+};
 
 __END__
 
@@ -102,199 +103,6 @@ __END__
 
     _END_OF_FILE_
     , undef, oct(644));
-}
-
-sub script_server_pl {
-    return ("script/server.pl" => <<'    _END_OF_FILE_'
-#!/usr/bin/perl
-use strict;
-use warnings;
-use FindBin;
-use lib "$FindBin::Bin/../lib";
-use HTTP::Engine;
-use <?= raw app_name() ?>;
-use Getopt::Std;
-use Acore::WAF::ConfigLoader;
-Acore::WAF::Log->color(1);
-
-my $opts = {};
-getopts("p:c:", $opts);
-$opts->{c} ||= "config/<?= raw app_name() ?>.yaml";
-
-my $config = Acore::WAF::ConfigLoader->new->load(
-    $opts->{c}, $ENV{'<?= raw uc app_name() ?>_CONFIG_LOCAL'},
-);
-my $engine = HTTP::Engine->new(
-    interface => {
-        module => 'ServerSimple',
-        args   => {
-            host => "0.0.0.0",
-            port => $opts->{p} || 3000,
-        },
-        request_handler => sub {
-            my $app = <?= raw app_name() ?>->new;
-            $app->handle_request($config, @_);
-        },
-    },
-);
-$engine->run;
-    _END_OF_FILE_
-    , undef, oct(755));
-}
-
-sub script_fastcgi_pl {
-    return ("script/fastcgi.pl" => <<'    _END_OF_FILE_'
-#!/usr/bin/perl
-use strict;
-use warnings;
-use FindBin;
-use lib "$FindBin::Bin/../lib";
-use HTTP::Engine;
-use Acore::WAF::ConfigLoader;
-use Acore::LoadModules;
-use <?= app_name() ?>;
-use utf8;
-
-my $loader = Acore::WAF::ConfigLoader->new();
-my $config = $loader->load(
-    $ENV{'<?= uc app_name() ?>_CONFIG_FILE'},
-    $ENV{'<?= uc app_name() ?>_CONFIG_LOCAL'},
-);
-
-HTTP::Engine->new(
-    interface => {
-        module => 'FCGI',
-        args   => {
-            keep_stderr => 1,
-        },
-        request_handler => sub {
-            my $req = shift;
-            $req = Acore::WAF::Util->adjust_request_fcgi($req);
-            <?= app_name() ?>->new->handle_request($config, $req);
-        },
-    },
-)->run;
-
-__END__
-
-=head1 lighttpd.conf
-
- fastcgi.server    = (
-    "/<?= lc app_name() ?>.fcgi" => (
-        "<?= lc app_name() ?>" => (
-                "bin-path"     => "/path/to/<?= app_name() ?>/script/fastcgi.pl",
-                "socket"       => "/tmp/<?= app_name ?>.socket",
-                "check-local"  => "disable",
-                "max-procs"    => 5,
-                "idle-timeout" => 20,
-                "bin-environment" => (
-                    "<?= uc app_name() ?>_CONFIG_FILE" => "/path/to/App/config/<?= app_name() ?>.yaml",
-                    "<?= uc app_name() ?>_CONFIG_LOCAL" => "/path/to/App/config/local.yaml"
-                ),
-                "bin-copy-environment" => (
-                    "PATH", "SHELL", "USER"
-                ),
-                "broken-scriptfilename" => "enable"
-        )
-    )
-)
-    _END_OF_FILE_
-    );
-}
-
-sub script_index_cgi {
-    return ("script/index.cgi" => <<'    _END_OF_FILE_'
-#!/usr/bin/perl
-use strict;
-use warnings;
-use FindBin;
-use lib "$FindBin::Bin/../lib";
-use HTTP::Engine::MinimalCGI;
-use Acore::WAF::MinimalCGI;
-use Acore::WAF::ConfigLoader;
-use <?= raw app_name() ?>;
-use utf8;
-
-my $loader = Acore::WAF::ConfigLoader->new({ cache_dir => "../db" });
-my $config = $loader->load(
-    $ENV{'<?= raw uc app_name() ?>_CONFIG_FILE'} || "../config/<?= raw app_name() ?>.yaml",
-    $ENV{'<?= raw uc app_name() ?>_CONFIG_LOCAL'},
-);
-$config->{root} = ".." if $config->{root} eq '.';
-
-HTTP::Engine->new(
-    interface => {
-        module => 'MinimalCGI',
-        request_handler => sub {
-            my $app = <?= raw app_name() ?>->new;
-            $app->log->timestamp(0);
-            $app->handle_request($config, @_);
-        },
-    },
-)->run;
-    _END_OF_FILE_
-    , undef, oct(755));
-}
-
-sub lib_app_modperl_pm {
-    return ("lib/${AppName}/ModPerl.pm" => <<'    _END_OF_FILE_'
-package <?= raw app_name() ?>::ModPerl;
-use Any::Moose;
-extends 'HTTP::Engine::Interface::ModPerl';
-use HTTP::Engine;
-use <?= raw app_name() ?>;
-use Acore::WAF::ConfigLoader;
-use HTTP::Engine::Middleware;
-
-my $loader = Acore::WAF::ConfigLoader->new();
-my $config = $loader->load(
-    $ENV{'<?= raw uc app_name() ?>_CONFIG_FILE'},
-    $ENV{'<?= raw uc app_name() ?>_CONFIG_LOCAL'},
-);
-my $mw = HTTP::Engine::Middleware->new;
-my $opt = {};
-$opt->{allowed_remote} = $config->{allowed_remote}
-    if defined $config->{allowed_remote};
-$mw->install('HTTP::Engine::Middleware::ReverseProxy', $opt);
-
-sub create_engine {
-    my($class, $r, $context_key) = @_;
-    HTTP::Engine->new(
-        interface => {
-            module          => 'ModPerl',
-            request_handler => $mw->handler( sub {
-                my $req = shift;
-                $req = Acore::WAF::Util->adjust_request_mod_perl($req);
-                <?= raw app_name() ?>->new->handle_request($config, $req);
-            } ),
-        },
-    );
-}
-__PACKAGE__->meta->make_immutable;
-1;
-__END__
-
-=head1 httpd.conf
-
-  LoadModule env_module  modules/mod_env.so
-  LoadModule perl_module modules/mod_perl.so
-  
-  PerlSwitches -Mlib=/path/to/<?= raw app_name() ?>/lib
-  PerlOptions +SetupEnv
-  PerlModule Acore::LoadModules
-  PerlModule <?= raw app_name() ?>
-  
-  <VirtualHost 127.0.0.1:8080>
-      <Location /<?= raw lc app_name() ?>>
-          PerlSetENV <?= raw uc app_name() ?>_CONFIG_FILE  "/path/to/<?= raw app_name() ?>/config/<?= raw app_name() ?>.yaml"
-          PerlSetENV <?= raw uc app_name() ?>_CONFIG_LOCAL "/path/to/<?= raw app_name() ?>/config/local.yaml"
-          SetHandler modperl
-          PerlResponseHandler <?= raw app_name() ?>::ModPerl
-      </Location>
-  </VirtualHost>
-
-    _END_OF_FILE_
-    );
 }
 
 sub lib_app_controller_pm {

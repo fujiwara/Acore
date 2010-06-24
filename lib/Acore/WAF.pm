@@ -45,9 +45,7 @@ has response => (
     lazy    => 1,
     default => sub {
         my $self = shift;
-        $self->request->can('new_response')
-            ? $self->request->new_response(200)
-            : HTTP::Engine::Response->new;
+        $self->request->new_response(200);
     },
 );
 *res = \&response;
@@ -930,26 +928,17 @@ Acore::WAF - AnyCMS web application framework
      $c->response->body( $utf8_flagged_str );
  }
 
- #!/usr/bin/perl
- use HTTP::Engine;
+ # yourapp.psgi
+ use Plack::Builder;
  use YourApp;
- my $engine = HTTP::Engine->new(
-    interface => {
-        module => 'ServerSimple',
-        args   => {
-            host => "0.0.0.0",
-            port => 3000,
-        },
-        request_handler => sub {
-            YourApp->new->handle_request($config, @_);
-        },
-    },
- );
- $engine->run;
+ my $config = { };
+ build {
+     YourApp->psgi_application($config);
+ };
 
 =head1 DESCRIPTION
 
-Acore::WAF is HTTP::Engine based web application framework, with Acore.
+Acore::WAF is PSGI based web application framework, with Acore.
 
 =head1 ATTRIBUTES
 
@@ -965,21 +954,17 @@ Config hashref.
 
 =item request
 
-HTTP::Engine::Request / Plack::Request object.
+Plack::Request object.
 
  $c->request->param("foo");
  $c->req->param("foo");
 
-If running by PSGI, request is the Plack::Request.
-
 =item response
 
-HTTP::Engine::Response / Plack::Response object.
+Plack::Response object.
 
  $c->response->body("body");
  $c->res->body("body");
-
-If running by PSGI, response is Plack::Response.
 
 =item on_psgi
 
@@ -1025,19 +1010,6 @@ Class method. Setup plugins.
  # load Acore::WAF::Plugin::Session
  YourApp->setup(qw/ Session /);
  @plugins = qw/ Foo Bar +YourApp::Plugin::Baz /;
-
-=item handle_request
-
-Request handler for HTTP::Engine.
-
- HTTP::Engine->new(
-    interface => {
-        module => 'CGI',
-        request_handler => sub {
-            YourApp->new()->handle_request($config, @_);
-        },
-    },
- )->run();
 
 =item path_to
 

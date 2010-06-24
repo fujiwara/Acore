@@ -1,6 +1,6 @@
 # -*- mode:perl -*-
 use strict;
-use Test::More tests => 7;
+use Test::More;
 use Data::Dumper;
 
 BEGIN {
@@ -9,5 +9,7 @@ BEGIN {
 
 ok $INC{$_} => "$_ is loaded"
     for qw{ Acore.pm DBIx/CouchLike.pm
-            HTTP/Engine.pm Any/Moose.pm JSON.pm Path/Class.pm
+            Plack/Request.pm Any/Moose.pm JSON/XS.pm Path/Class.pm
           };
+
+done_testing;

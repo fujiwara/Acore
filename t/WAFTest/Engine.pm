@@ -38,36 +38,29 @@ sub run {
 }
 
 sub create_engine {
-    my $engine = $ENV{TEST_PSGI} ? "t::WAFTest::Engine" : "HTTP::Engine";
+    my $engine = "t::WAFTest::Engine";
     $engine->require;
     $engine;
 }
 
 sub create_request {
     my %args = @_;
-    if ( $ENV{TEST_PSGI} ) {
-        Test::More::diag("Testing PSGI request");
-        require HTTP::Message::PSGI;
-        require Plack::Request;
-        my $method = delete $args{method};
-        my $uri    = delete $args{uri};
-        my $body   = delete $args{body};
-        my $req = HTTP::Request->new(
-            $method => $uri,
-            undef,
-            $body,
-        );
-        for my $name ( keys %args ) {
-            $req->header( $name => $args{$name} );
-        }
-        Plack::Request->new( $req->to_psgi );
-    }
-    else {
-        Test::More::diag("Testing HTTP::Engine request");
-        HTTP::Engine::Test::Request->new(%args);
-    }
-}
 
+    require HTTP::Message::PSGI;
+    require Plack::Request;
+    my $method = delete $args{method};
+    my $uri    = delete $args{uri};
+    my $body   = delete $args{body};
+    my $req = HTTP::Request->new(
+        $method => $uri,
+        undef,
+        $body,
+    );
+    for my $name ( keys %args ) {
+        $req->header( $name => $args{$name} );
+    }
+    Plack::Request->new( $req->to_psgi );
+}
 
 sub run_engine_test {
     my ($config, $block, $ctx, $app_class) = @_;

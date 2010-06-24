@@ -48,18 +48,6 @@ sub adjust_request_fcgi {
 }
 
 {
-    package ## hide for pause
-        HTTP::Engine::Request;
-    sub location {
-        my $self = shift;
-        if (@_) {
-            $self->{location} = shift;
-        }
-        $self->{location};
-    }
-}
-
-{
     package Acore::WAF::Util::RequestForDispatcher;
     use Any::Moose;
 
@@ -71,18 +59,9 @@ sub adjust_request_fcgi {
         my $req   = shift;
 
         my ($location, $path);
-        if ( $req->can('env') ) {
-            # for Plack::Request
-            $path     = $req->env->{PATH_INFO};
-            $location = $req->env->{SCRIPT_NAME};
-        }
-        else {
-            # for H::E::Request
-            $path = ref($req->uri) ? $req->uri->path : $ENV{PATH_INFO};
-            $location = $req->location || "/";
-            $path     =~ s{^$location}{};
-        }
-
+        # for Plack::Request
+        $path     = $req->env->{PATH_INFO};
+        $location = $req->env->{SCRIPT_NAME};
         $class->new({
             method => $req->method,
             uri    => $path,
