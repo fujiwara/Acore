@@ -234,7 +234,11 @@ sub _record_time {
             die $exception if defined $exception;
             return $res;
         }
-        my @pair = _flatten($mine);
+        my @pair = do {
+            # flatten nested array refs
+            my $f; $f = sub { map { ref $_ ? $f->($_) : $_ } @{ $_[0] } };
+            $f->($mine);
+        };
         $self->debug_report->row(shift @pair, shift @pair)
             for @pair;
 
@@ -242,10 +246,6 @@ sub _record_time {
 
         return $res;
     };
-}
-
-sub _flatten {
-    map { ref $_ ? _flatten($_) : $_ } @{ $_[0] };
 }
 
 sub setup {
