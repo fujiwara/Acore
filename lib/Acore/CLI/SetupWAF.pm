@@ -90,12 +90,12 @@ my $config = Acore::WAF::ConfigLoader->new->load(
     $ENV{'<?= raw uc app_name() ?>_CONFIG_FILE'} || "config/<?= raw app_name() ?>.yaml",
     $ENV{'<?= raw uc app_name() ?>_CONFIG_LOCAL'},
 );
-build {
+builder {
     # enable Plack::Middlewares here
     enable "Plack::Middleware::Static",
         path => qr{^/static/}, root => "./";
     enable "Plack::Middleware::Static",
-        path => qr{^/admin_console/static/}, root => "./";
+        path => qr{^/admin_console/static/}, root => "assets/";
 
     <?= raw app_name ?>->psgi_application($config);
 };
