@@ -11,8 +11,8 @@ sub fillform {
     my $body = $c->res->body;
     return unless defined $body;
 
-    require HTML::FillInForm;
-    $body = HTML::FillInForm->fill(\$body, $obj);
+    require HTML::FillInForm::Lite;
+    $body = HTML::FillInForm::Lite->new->fill(\$body, $obj);
     $c->res->body($body);
 }
 
@@ -56,7 +56,7 @@ FUJIWARA E<lt>fujiwara@topicmaker.comE<gt>
 
 =head1 SEE ALSO
 
-HTML::FillInForm
+HTML::FillInForm::Lite
 
 =head1 LICENSE
 

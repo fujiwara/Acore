@@ -97,8 +97,8 @@ sub fillform {
     my ($obj) = @_;
     joint {
         my ($html) = @_;
-        require HTML::FillInForm;
-        HTML::FillInForm->fill(\$html, $obj);
+        require HTML::FillInForm::Lite;
+        HTML::FillInForm::Lite->new->fill(\$html, $obj);
     };
 }
 

@@ -160,8 +160,8 @@ A\tB\n\"C\"\'D\'
 <input type="text" name="foo" value=""/>
 <input type="text" name="bar" value=""/>
 --- expected chomp
-<input value="1" name="foo" type="text" />
-<input value="2" name="bar" type="text" />
+<input type="text" name="foo" value="1"/>
+<input type="text" name="bar" value="2"/>
 
 === sort_by string
 --- input chomp sort_by

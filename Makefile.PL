@@ -37,7 +37,7 @@ requires 'Plack::Builder';
 requires 'Plack::Middleware::Static';
 requires 'Text::MicroTemplate' => 0.07;
 requires 'Sub::Pipe';
-requires 'HTML::FillInForm';
+requires 'HTML::FillInForm::Lite';
 requires 'Text::SimpleTable';
 requires 'Data::Visitor::Encode';
 requires 'String::CamelCase';
