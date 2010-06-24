@@ -37,7 +37,7 @@ sub _entry_to_hashref {
     my $entry = $_[0];
     my $e = {};
     $e->{$_} = _e $entry->$_
-        for qw/ title base link category tags author id /;
+        for qw/ title base link category author id /;
     $e->{content}  = _e $entry->content->body;
     $e->{summary}  = _e $entry->summary->body;
     $e->{issued}   = _e $entry->issued;
