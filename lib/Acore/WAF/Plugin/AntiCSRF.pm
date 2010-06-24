@@ -2,11 +2,22 @@ package Acore::WAF::Plugin::AntiCSRF;
 
 use strict;
 use warnings;
-use Digest::SHA;
 use Any::Moose "::Role";
 
 our $base    = qq{anti_csrf};
 our $VERSION = '0.21.1';
+my $sha256_hex;
+
+BEGIN {
+    eval "use Digest::SHA;";  ## no critic
+    if ($@) {
+        require Digest::SHA::PurePerl;
+        $sha256_hex = sub { Digest::SHA::PurePerl::sha256_hex($_[0]) };
+    }
+    else {
+        $sha256_hex = sub { Digest::SHA::sha256_hex($_[0]) };
+    }
+};
 
 before _dispatch => sub {
     my $c = shift;
@@ -16,9 +27,7 @@ before _dispatch => sub {
 sub onetime_token {
     my $c = shift;
     unless ( $c->session->get("onetime_token") ) {
-        my $token = Digest::SHA::sha256_hex(
-            $c->session->session_id . rand() . time
-        );
+        my $token = $sha256_hex->( $c->session->session_id . rand() . time );
         $c->session->set("onetime_token" => $token);
     }
 

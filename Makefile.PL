@@ -42,9 +42,9 @@ requires 'Text::SimpleTable';
 requires 'String::CamelCase';
 requires 'HTTP::MobileAgent' => 0.27;
 requires 'Encode::JP::Mobile' => 0.26;
-requires 'YAML::Tiny';
+requires 'YAML';
 requires 'Try::Tiny';
-requires 'Digest::SHA';
+requires 'Digest::SHA::PurePerl';
 
 test_requires 'Test::Base';
 test_requires 'Text::Diff';
