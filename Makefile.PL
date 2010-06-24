@@ -21,6 +21,7 @@ requires 'Class::Inspector';
 requires 'DBI';
 requires 'DBIx::CouchLike' => 0.09;
 requires 'DBD::SQLite';
+requires 'DateTime';
 requires 'Devel::StackTrace';
 requires 'Devel::StackTrace::AsHTML';
 requires 'Encode' => 2.13;
