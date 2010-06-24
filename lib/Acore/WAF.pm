@@ -929,7 +929,7 @@ Acore::WAF - AnyCMS web application framework
  use Plack::Builder;
  use YourApp;
  my $config = { };
- build {
+ builder {
      YourApp->psgi_application($config);
  };
 
