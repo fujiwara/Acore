@@ -29,7 +29,6 @@ requires 'Getopt::Long';
 requires 'HTTP::Date';
 requires 'HTTP::Session';
 requires 'HTTPx::Dispatcher';
-requires 'HTML::StickyQuery';
 requires 'MIME::Base64';
 requires 'Path::Class';
 requires 'Plack::Builder';
