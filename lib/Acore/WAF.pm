@@ -234,20 +234,18 @@ sub _record_time {
             die $exception if defined $exception;
             return $res;
         }
-
-        require Data::Visitor::Callback;
-        my @pair;
-        my $visitor = Data::Visitor::Callback->new(
-            value => sub { push @pair, $_[1] },
-        );
-        $visitor->visit($mine);
-        $self->debug_report->row($pair[$_ * 2], $pair[$_ * 2 + 1])
-            for ( 0 .. (@pair / 2) );
+        my @pair = _flatten($mine);
+        $self->debug_report->row(shift @pair, shift @pair)
+            for @pair;
 
         die $exception if defined $exception;
 
         return $res;
     };
+}
+
+sub _flatten {
+    map { ref $_ ? _flatten($_) : $_ } @{ $_[0] };
 }
 
 sub setup {
