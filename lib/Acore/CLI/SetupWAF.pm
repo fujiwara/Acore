@@ -80,8 +80,7 @@ sub app_psgi {
 # -*- mode:perl -*-
 use strict;
 use warnings;
-use FindBin;
-use lib "$FindBin::Bin/lib";
+use lib qw( lib );
 use <?= raw app_name() ?>;
 use Acore::WAF::ConfigLoader;
 use Plack::Builder;
@@ -92,9 +91,9 @@ my $config = Acore::WAF::ConfigLoader->new->load(
 );
 builder {
     # enable Plack::Middlewares here
-    enable "Plack::Middleware::Static",
+    enable "Static",
         path => qr{^/static/}, root => "./";
-    enable "Plack::Middleware::Static",
+    enable "Static",
         path => qr{^/admin_console/static/}, root => "assets/";
 
     <?= raw app_name ?>->psgi_application($config);
@@ -104,7 +103,7 @@ __END__
 
 =head1 Run on Plack
 
-  $ plackup --app script/<?= raw app_name() ?>.psgi
+  $ plackup <?= raw app_name() ?>.psgi
 
     _END_OF_FILE_
     , undef, oct(644));
