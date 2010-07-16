@@ -99,8 +99,8 @@
 ?               }
 
                 </fieldset>
-
-                <?= raw $c->render_string( $doc->html_form_to_update, $doc ) | fillform($doc) ?>
+                <? my $filter = $doc->isa("Acore::Document::Templatize") ? fillform($doc) : raw ?>
+                <?= raw $c->render_string( $doc->html_form_to_update, $doc ) | $filter ?>
                 <fieldset>
                   <legend id="show-document-yaml">Raw</legend>
                   <div>
