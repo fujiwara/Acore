@@ -37,8 +37,8 @@ sub run {
                  "lib/$AppPath", "lib/$AppPath/Controller"
     ) {
         File::Path::mkpath($dir)
-            or die "Can't create dir $name/$dir: $!";
-        print "mkdir $name/$dir\n";
+            or die "Can't create dir $app_name/$dir: $!";
+        print "mkdir $app_name/$dir\n";
     }
     for my $file (qw/ app_psgi
                       makefile_pl
