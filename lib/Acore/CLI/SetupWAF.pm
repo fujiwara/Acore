@@ -9,14 +9,19 @@ use utf8;
 use Encode qw/ encode_utf8 /;
 use MIME::Base64;
 use Path::Class qw/ file dir /;
+use File::Path;
 
 *raw = \&Text::MicroTemplate::encoded_string;
 
-our $AppName;
+our ($AppName, $AppPath, $app_name);
+
 sub run {
     my $class = shift;
     my ($name, $help) = @_;
-    $AppName = $name;
+
+    $AppName   = $name;
+    ($AppPath  = $AppName) =~ s{::}{/}g;
+    ($app_name = $AppName) =~ s{::}{_}g;
 
     if (!$name || $help) {
         usage();
@@ -25,13 +30,13 @@ sub run {
 
     print "creating application $name\n";
 
-    mkdir $name or die "Can't create dir $name: $!";
-    chdir $name;
+    mkdir $app_name or die "Can't create dir $app_name: $!";
+    chdir $app_name or die "Can't chdir $app_name: $!";
 
     for my $dir (qw/ static templates db script lib config t xt /,
-                 "lib/$name", "lib/$name/Controller"
+                 "lib/$AppPath", "lib/$AppPath/Controller"
     ) {
-        mkdir $dir
+        File::Path::mkpath($dir)
             or die "Can't create dir $name/$dir: $!";
         print "mkdir $name/$dir\n";
     }
@@ -53,16 +58,18 @@ sub run {
             $fh->print( encode_utf8( render_mt($tmpl)->as_string ) );
         }
         $fh->close;
-        print "create $name/$filename\n";
+        print "create $app_name/$filename\n";
         chmod $permission, $filename if $permission;
     }
-    my $dsn = sprintf "dbi:SQLite:dbname=db/%s.acore.sqlite", lc $AppName;
+    my $dsn = sprintf "dbi:SQLite:dbname=db/%s.acore.sqlite", lc $app_name;
     Acore::CLI::SetupDB->run($dsn, "", "", "");
     chdir "..";
     1;
 }
 
-sub app_name { $AppName }
+sub AppName  { $AppName  }
+sub AppPath  { $AppPath  }
+sub app_name { $app_name }
 
 sub usage {
     print <<"    _END_OF_USAGE_";
@@ -75,13 +82,13 @@ sub usage {
 }
 
 sub app_psgi {
-    return ("${AppName}.psgi" => <<'    _END_OF_FILE_'
+    return ("${app_name}.psgi" => <<'    _END_OF_FILE_'
 #!/usr/bin/perl
 # -*- mode:perl -*-
 use strict;
 use warnings;
 use lib qw( lib );
-use <?= raw app_name() ?>;
+use <?= raw AppName() ?>;
 use Acore::WAF::ConfigLoader;
 use Plack::Builder;
 
@@ -96,7 +103,7 @@ builder {
     enable "Static",
         path => qr{^/admin_console/static/}, root => "assets/";
 
-    <?= raw app_name ?>->psgi_application($config);
+    <?= raw AppName ?>->psgi_application($config);
 };
 
 __END__
@@ -110,8 +117,8 @@ __END__
 }
 
 sub lib_app_controller_pm {
-    return ("lib/${AppName}/Controller/Root.pm" => <<'    _END_OF_FILE_'
-package <?= raw app_name() ?>::Controller::Root;
+    return ("lib/${AppPath}/Controller/Root.pm" => <<'    _END_OF_FILE_'
+package <?= raw AppName() ?>::Controller::Root;
 
 use strict;
 use warnings;
@@ -128,8 +135,8 @@ sub hello_world {
 }
 
 sub lib_app_pm {
-    return ("lib/${AppName}.pm" => <<'    _END_OF_FILE_'
-package <?= raw app_name() ?>;
+    return ("lib/${AppPath}.pm" => <<'    _END_OF_FILE_'
+package <?= raw AppName() ?>;
 
 use strict;
 use warnings;
@@ -146,12 +153,12 @@ __PACKAGE__->setup(@plugins);
 __PACKAGE__->meta->make_immutable;
 no Any::Moose;
 
-package <?= raw app_name() ?>::Dispatcher;
+package <?= raw AppName() ?>::Dispatcher;
 use Acore::WAF::Util qw/ :dispatcher /;
 use HTTPx::Dispatcher;
 
 connect "", to controller "Root" => "hello_world";
-connect "favicon.ico", to class "<?= raw app_name() ?>" => "dispatch_favicon";
+connect "favicon.ico", to class "<?= raw AppName() ?>" => "dispatch_favicon";
 
 # Admin console
 for (bundled "AdminConsole") {
@@ -169,8 +176,8 @@ connect "sites/:page", to bundled "Sites" => "page";
 }
 
 sub config_yaml {
-    return ("config/${AppName}.yaml" => <<'    _END_OF_FILE_'
-name: <?= raw app_name() ?>
+    return ("config/${app_name}.yaml" => <<'    _END_OF_FILE_'
+name: <?= raw AppName() ?>
 root: .
 log:
   level: debug
