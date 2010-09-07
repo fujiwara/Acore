@@ -38,6 +38,13 @@ sub authenticate_openid {
         args            => $args,
         consumer_secret => $secret,
     );
+    if ( $c->can("cache") ) {
+        $csr->cache( $c->cache );
+    }
+    else {
+        $c->log->warning("no \$c->cache, but it recommended for Net::OpenID::Consumer.");
+    }
+
     local *LWP::Debug::debug = sub { $c->log->debug("LWP::Debug::debug @_") };
     local *LWP::Debug::trace = *LWP::Debug::debug;
 
@@ -109,3 +116,6 @@ Acore::WAF::Plugin::OpenID
    <input type="text" name="openid_identifier" />
  </form>
 
+=head1 NOTE
+
+Using Plugin::Cache is recommended.

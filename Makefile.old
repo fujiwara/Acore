@@ -1,0 +1,1219 @@
+# This Makefile is for the Acore extension to perl.
+#
+# It was generated automatically by MakeMaker version
+# 6.56 (Revision: 65600) from the contents of
+# Makefile.PL. Don't edit this file, edit Makefile.PL instead.
+#
+#       ANY CHANGES MADE HERE WILL BE LOST!
+#
+#   MakeMaker ARGV: ()
+#
+
+#   MakeMaker Parameters:
+
+#     ABSTRACT => q[AnyCMS core]
+#     AUTHOR => q[FUJIWARA <fujiwara@topicmaker.com>]
+#     BUILD_REQUIRES => { ExtUtils::MakeMaker=>q[6.42] }
+#     DISTNAME => q[Acore]
+#     EXE_FILES => [q[script/acore_setupdb.pl], q[script/acore_setupwaf.pl], q[script/acoresh]]
+#     LICENSE => q[perl]
+#     MIN_PERL_VERSION => q[5.008001]
+#     NAME => q[Acore]
+#     NO_META => q[1]
+#     PREREQ_PM => { DateTime=>q[0], HTML::FillInForm::Lite=>q[0], String::CamelCase=>q[0], YAML=>q[0], DBD::SQLite=>q[0], Plack::Middleware::Static=>q[0], Encode::JP::Mobile=>q[0.26], Encode=>q[2.13], HTTP::Session=>q[0], HTTP::MobileAgent=>q[0.27], Filter::Util::Call=>q[0], DBIx::CouchLike=>q[0.09], FormValidator::Lite=>q[0], Plack::Builder=>q[0], DBI=>q[0], Text::MicroTemplate=>q[0.07], HTTPx::Dispatcher=>q[0], Getopt::Long=>q[0], Try::Tiny=>q[0], Devel::StackTrace=>q[0], ExtUtils::MakeMaker=>q[6.42], Sub::Pipe=>q[0], Text::SimpleTable=>q[0], HTTP::Date=>q[0], Crypt::SaltedHash=>q[0], MIME::Base64=>q[0], Any::Moose=>q[0], Devel::StackTrace::AsHTML=>q[0], Digest::SHA::PurePerl=>q[0], Path::Class=>q[0], Class::Inspector=>q[0] }
+#     VERSION => q[35de01ed]
+#     VERSION_FROM => q[lib/Acore.pm]
+#     dist => { PREOP=>q[$(PERL) -I. "-MModule::Install::Admin" -e "dist_preop(q($(DISTVNAME)))"] }
+#     realclean => { FILES=>q[MYMETA.yml] }
+#     test => { TESTS=>q[t/*.t xt/*.t] }
+
+# --- MakeMaker post_initialize section:
+
+
+# --- MakeMaker const_config section:
+
+# These definitions are from config.sh (via /Users/fujiwara/perl5/perlbrew/perls/perl-5.12.1/lib/5.12.1/darwin-2level/Config.pm).
+# They may have been overridden via Makefile.PL or on the command line.
+AR = ar
+CC = cc
+CCCDLFLAGS =  
+CCDLFLAGS =  
+DLEXT = bundle
+DLSRC = dl_dlopen.xs
+EXE_EXT = 
+FULL_AR = /usr/bin/ar
+LD = env MACOSX_DEPLOYMENT_TARGET=10.3 cc
+LDDLFLAGS =  -bundle -undefined dynamic_lookup -L/usr/local/lib -L/opt/local/lib -fstack-protector
+LDFLAGS =  -fstack-protector -L/usr/local/lib -L/opt/local/lib
+LIBC = /usr/lib/libc.dylib
+LIB_EXT = .a
+OBJ_EXT = .o
+OSNAME = darwin
+OSVERS = 10.3.0
+RANLIB = ranlib
+SITELIBEXP = /Users/fujiwara/perl5/perlbrew/perls/perl-5.12.1/lib/site_perl/5.12.1
+SITEARCHEXP = /Users/fujiwara/perl5/perlbrew/perls/perl-5.12.1/lib/site_perl/5.12.1/darwin-2level
+SO = dylib
+VENDORARCHEXP = 
+VENDORLIBEXP = 
+
+
+# --- MakeMaker constants section:
+AR_STATIC_ARGS = cr
+DIRFILESEP = /
+DFSEP = $(DIRFILESEP)
+NAME = Acore
+NAME_SYM = Acore
+VERSION = 0.00000
+VERSION_MACRO = VERSION
+VERSION_SYM = 0_00000
+DEFINE_VERSION = -D$(VERSION_MACRO)=\"$(VERSION)\"
+XS_VERSION = 0.00000
+XS_VERSION_MACRO = XS_VERSION
+XS_DEFINE_VERSION = -D$(XS_VERSION_MACRO)=\"$(XS_VERSION)\"
+INST_ARCHLIB = blib/arch
+INST_SCRIPT = blib/script
+INST_BIN = blib/bin
+INST_LIB = blib/lib
+INST_MAN1DIR = blib/man1
+INST_MAN3DIR = blib/man3
+MAN1EXT = 1
+MAN3EXT = 3
+INSTALLDIRS = site
+DESTDIR = 
+PREFIX = $(SITEPREFIX)
+PERLPREFIX = /Users/fujiwara/perl5/perlbrew/perls/perl-5.12.1
+SITEPREFIX = /Users/fujiwara/perl5/perlbrew/perls/perl-5.12.1
+VENDORPREFIX = 
+INSTALLPRIVLIB = /Users/fujiwara/perl5/perlbrew/perls/perl-5.12.1/lib/5.12.1
+DESTINSTALLPRIVLIB = $(DESTDIR)$(INSTALLPRIVLIB)
+INSTALLSITELIB = /Users/fujiwara/perl5/perlbrew/perls/perl-5.12.1/lib/site_perl/5.12.1
+DESTINSTALLSITELIB = $(DESTDIR)$(INSTALLSITELIB)
+INSTALLVENDORLIB = 
+DESTINSTALLVENDORLIB = $(DESTDIR)$(INSTALLVENDORLIB)
+INSTALLARCHLIB = /Users/fujiwara/perl5/perlbrew/perls/perl-5.12.1/lib/5.12.1/darwin-2level
+DESTINSTALLARCHLIB = $(DESTDIR)$(INSTALLARCHLIB)
+INSTALLSITEARCH = /Users/fujiwara/perl5/perlbrew/perls/perl-5.12.1/lib/site_perl/5.12.1/darwin-2level
+DESTINSTALLSITEARCH = $(DESTDIR)$(INSTALLSITEARCH)
+INSTALLVENDORARCH = 
+DESTINSTALLVENDORARCH = $(DESTDIR)$(INSTALLVENDORARCH)
+INSTALLBIN = /Users/fujiwara/perl5/perlbrew/perls/perl-5.12.1/bin
+DESTINSTALLBIN = $(DESTDIR)$(INSTALLBIN)
+INSTALLSITEBIN = /Users/fujiwara/perl5/perlbrew/perls/perl-5.12.1/bin
+DESTINSTALLSITEBIN = $(DESTDIR)$(INSTALLSITEBIN)
+INSTALLVENDORBIN = 
+DESTINSTALLVENDORBIN = $(DESTDIR)$(INSTALLVENDORBIN)
+INSTALLSCRIPT = /Users/fujiwara/perl5/perlbrew/perls/perl-5.12.1/bin
+DESTINSTALLSCRIPT = $(DESTDIR)$(INSTALLSCRIPT)
+INSTALLSITESCRIPT = /Users/fujiwara/perl5/perlbrew/perls/perl-5.12.1/bin
+DESTINSTALLSITESCRIPT = $(DESTDIR)$(INSTALLSITESCRIPT)
+INSTALLVENDORSCRIPT = 
+DESTINSTALLVENDORSCRIPT = $(DESTDIR)$(INSTALLVENDORSCRIPT)
+INSTALLMAN1DIR = /Users/fujiwara/perl5/perlbrew/perls/perl-5.12.1/man/man1
+DESTINSTALLMAN1DIR = $(DESTDIR)$(INSTALLMAN1DIR)
+INSTALLSITEMAN1DIR = /Users/fujiwara/perl5/perlbrew/perls/perl-5.12.1/man/man1
+DESTINSTALLSITEMAN1DIR = $(DESTDIR)$(INSTALLSITEMAN1DIR)
+INSTALLVENDORMAN1DIR = 
+DESTINSTALLVENDORMAN1DIR = $(DESTDIR)$(INSTALLVENDORMAN1DIR)
+INSTALLMAN3DIR = /Users/fujiwara/perl5/perlbrew/perls/perl-5.12.1/man/man3
+DESTINSTALLMAN3DIR = $(DESTDIR)$(INSTALLMAN3DIR)
+INSTALLSITEMAN3DIR = /Users/fujiwara/perl5/perlbrew/perls/perl-5.12.1/man/man3
+DESTINSTALLSITEMAN3DIR = $(DESTDIR)$(INSTALLSITEMAN3DIR)
+INSTALLVENDORMAN3DIR = 
+DESTINSTALLVENDORMAN3DIR = $(DESTDIR)$(INSTALLVENDORMAN3DIR)
+PERL_LIB =
+PERL_ARCHLIB = /Users/fujiwara/perl5/perlbrew/perls/perl-5.12.1/lib/5.12.1/darwin-2level
+LIBPERL_A = libperl.a
+FIRST_MAKEFILE = Makefile
+MAKEFILE_OLD = Makefile.old
+MAKE_APERL_FILE = Makefile.aperl
+PERLMAINCC = $(CC)
+PERL_INC = /Users/fujiwara/perl5/perlbrew/perls/perl-5.12.1/lib/5.12.1/darwin-2level/CORE
+PERL = /Users/fujiwara/perl5/perlbrew/perls/current/bin/perl "-Iinc"
+FULLPERL = /Users/fujiwara/perl5/perlbrew/perls/current/bin/perl "-Iinc"
+ABSPERL = $(PERL)
+PERLRUN = $(PERL)
+FULLPERLRUN = $(FULLPERL)
+ABSPERLRUN = $(ABSPERL)
+PERLRUNINST = $(PERLRUN) "-I$(INST_ARCHLIB)" "-Iinc" "-I$(INST_LIB)"
+FULLPERLRUNINST = $(FULLPERLRUN) "-I$(INST_ARCHLIB)" "-Iinc" "-I$(INST_LIB)"
+ABSPERLRUNINST = $(ABSPERLRUN) "-I$(INST_ARCHLIB)" "-Iinc" "-I$(INST_LIB)"
+PERL_CORE = 0
+PERM_DIR = 755
+PERM_RW = 644
+PERM_RWX = 755
+
+MAKEMAKER   = /Users/fujiwara/perl5/perlbrew/perls/perl-5.12.1/lib/5.12.1/ExtUtils/MakeMaker.pm
+MM_VERSION  = 6.56
+MM_REVISION = 65600
+
+# FULLEXT = Pathname for extension directory (eg Foo/Bar/Oracle).
+# BASEEXT = Basename part of FULLEXT. May be just equal FULLEXT. (eg Oracle)
+# PARENT_NAME = NAME without BASEEXT and no trailing :: (eg Foo::Bar)
+# DLBASE  = Basename part of dynamic library. May be just equal BASEEXT.
+MAKE = make
+FULLEXT = Acore
+BASEEXT = Acore
+PARENT_NAME = 
+DLBASE = $(BASEEXT)
+VERSION_FROM = lib/Acore.pm
+OBJECT = 
+LDFROM = $(OBJECT)
+LINKTYPE = dynamic
+BOOTDEP = 
+
+# Handy lists of source code files:
+XS_FILES = 
+C_FILES  = 
+O_FILES  = 
+H_FILES  = 
+MAN1PODS = 
+MAN3PODS = lib/Acore.pm \
+	lib/Acore/Authentication/Password.pm \
+	lib/Acore/CLI/SetupWAF.pm \
+	lib/Acore/Document.pm \
+	lib/Acore/Document/Role/AttachmentFile.pm \
+	lib/Acore/Document/Role/FullTextSearch.pm \
+	lib/Acore/Document/Templatize.pm \
+	lib/Acore/DocumentLoader.pm \
+	lib/Acore/Easy.pm \
+	lib/Acore/Storage.pm \
+	lib/Acore/User.pm \
+	lib/Acore/Util.pm \
+	lib/Acore/WAF.pm \
+	lib/Acore/WAF/ConfigLoader.pm \
+	lib/Acore/WAF/Controller/AdminConsole.pm \
+	lib/Acore/WAF/Controller/Feed2Js.pm \
+	lib/Acore/WAF/Controller/REST.pm \
+	lib/Acore/WAF/Controller/Redirector.pm \
+	lib/Acore/WAF/Controller/Role/Locatable.pm \
+	lib/Acore/WAF/Controller/Sites.pm \
+	lib/Acore/WAF/Log.pm \
+	lib/Acore/WAF/Model.pm \
+	lib/Acore/WAF/Model/DBIC.pm \
+	lib/Acore/WAF/Model/Skinny.pm \
+	lib/Acore/WAF/Plugin/AntiCSRF.pm \
+	lib/Acore/WAF/Plugin/Cache.pm \
+	lib/Acore/WAF/Plugin/FillInForm.pm \
+	lib/Acore/WAF/Plugin/FormValidator.pm \
+	lib/Acore/WAF/Plugin/OpenID.pm \
+	lib/Acore/WAF/Plugin/PageCache.pm \
+	lib/Acore/WAF/Plugin/Session.pm \
+	lib/Acore/WAF/Plugin/TT.pm \
+	lib/Acore/WAF/Render.pm \
+	lib/Acore/WAF/Request.pm \
+	lib/Acore/WAF/Request/Upload.pm \
+	lib/Acore/WAF/Response.pm \
+	lib/Acore/WAF/View.pm \
+	lib/Acore/WAF/View/JSON.pm \
+	lib/AcoreX/Inquiry.pm
+
+# Where is the Config information that we are using/depend on
+CONFIGDEP = $(PERL_ARCHLIB)$(DFSEP)Config.pm $(PERL_INC)$(DFSEP)config.h
+
+# Where to build things
+INST_LIBDIR      = $(INST_LIB)
+INST_ARCHLIBDIR  = $(INST_ARCHLIB)
+
+INST_AUTODIR     = $(INST_LIB)/auto/$(FULLEXT)
+INST_ARCHAUTODIR = $(INST_ARCHLIB)/auto/$(FULLEXT)
+
+INST_STATIC      = 
+INST_DYNAMIC     = 
+INST_BOOT        = 
+
+# Extra linker info
+EXPORT_LIST        = 
+PERL_ARCHIVE       = 
+PERL_ARCHIVE_AFTER = 
+
+
+TO_INST_PM = lib/Acore.pm \
+	lib/Acore/Authentication/Password.pm \
+	lib/Acore/CLI/SetupDB.pm \
+	lib/Acore/CLI/SetupWAF.pm \
+	lib/Acore/DateTime.pm \
+	lib/Acore/Document.pm \
+	lib/Acore/Document/File.pm \
+	lib/Acore/Document/Role/AttachmentFile.pm \
+	lib/Acore/Document/Role/FullTextSearch.pm \
+	lib/Acore/Document/Struct.pm \
+	lib/Acore/Document/Templatize.pm \
+	lib/Acore/DocumentLoader.pm \
+	lib/Acore/Easy.pm \
+	lib/Acore/LoadModules.pm \
+	lib/Acore/MIME/Types.pm \
+	lib/Acore/Storage.pm \
+	lib/Acore/Transaction.pm \
+	lib/Acore/User.pm \
+	lib/Acore/Util.pm \
+	lib/Acore/WAF.pm \
+	lib/Acore/WAF/ConfigLoader.pm \
+	lib/Acore/WAF/Controller/AdminConsole.pm \
+	lib/Acore/WAF/Controller/AdminConsole/BareBone.pm \
+	lib/Acore/WAF/Controller/AdminConsole/BareBone/Model.pm \
+	lib/Acore/WAF/Controller/AdminConsole/BareBone/Model/Schema.pm \
+	lib/Acore/WAF/Controller/Feed2Js.pm \
+	lib/Acore/WAF/Controller/REST.pm \
+	lib/Acore/WAF/Controller/Redirector.pm \
+	lib/Acore/WAF/Controller/Role/Locatable.pm \
+	lib/Acore/WAF/Controller/Sites.pm \
+	lib/Acore/WAF/Dispatcher.pm \
+	lib/Acore/WAF/Log.pm \
+	lib/Acore/WAF/Model.pm \
+	lib/Acore/WAF/Model/DBIC.pm \
+	lib/Acore/WAF/Model/Skinny.pm \
+	lib/Acore/WAF/Plugin/AntiCSRF.pm \
+	lib/Acore/WAF/Plugin/Cache.pm \
+	lib/Acore/WAF/Plugin/FillInForm.pm \
+	lib/Acore/WAF/Plugin/FormValidator.pm \
+	lib/Acore/WAF/Plugin/OpenID.pm \
+	lib/Acore/WAF/Plugin/PageCache.pm \
+	lib/Acore/WAF/Plugin/Sample.pm \
+	lib/Acore/WAF/Plugin/Session.pm \
+	lib/Acore/WAF/Plugin/TT.pm \
+	lib/Acore/WAF/Render.pm \
+	lib/Acore/WAF/Request.pm \
+	lib/Acore/WAF/Request/BodyParser.pm \
+	lib/Acore/WAF/Request/Upload.pm \
+	lib/Acore/WAF/Response.pm \
+	lib/Acore/WAF/Util.pm \
+	lib/Acore/WAF/View.pm \
+	lib/Acore/WAF/View/JSON.pm \
+	lib/Acore/YAML.pm \
+	lib/AcoreX/Inquiry.pm \
+	lib/AcoreX/Inquiry/Controller/Root.pm
+
+PM_TO_BLIB = lib/Acore/WAF/View.pm \
+	blib/lib/Acore/WAF/View.pm \
+	lib/Acore/WAF/Controller/AdminConsole/BareBone/Model.pm \
+	blib/lib/Acore/WAF/Controller/AdminConsole/BareBone/Model.pm \
+	lib/Acore/WAF/Request/BodyParser.pm \
+	blib/lib/Acore/WAF/Request/BodyParser.pm \
+	lib/Acore/WAF/Plugin/FormValidator.pm \
+	blib/lib/Acore/WAF/Plugin/FormValidator.pm \
+	lib/Acore/Util.pm \
+	blib/lib/Acore/Util.pm \
+	lib/Acore/WAF/Model/Skinny.pm \
+	blib/lib/Acore/WAF/Model/Skinny.pm \
+	lib/Acore/WAF/ConfigLoader.pm \
+	blib/lib/Acore/WAF/ConfigLoader.pm \
+	lib/Acore/WAF/Plugin/Sample.pm \
+	blib/lib/Acore/WAF/Plugin/Sample.pm \
+	lib/Acore/WAF/Plugin/PageCache.pm \
+	blib/lib/Acore/WAF/Plugin/PageCache.pm \
+	lib/Acore/WAF/Plugin/AntiCSRF.pm \
+	blib/lib/Acore/WAF/Plugin/AntiCSRF.pm \
+	lib/Acore/Authentication/Password.pm \
+	blib/lib/Acore/Authentication/Password.pm \
+	lib/Acore/WAF.pm \
+	blib/lib/Acore/WAF.pm \
+	lib/Acore/WAF/Plugin/Session.pm \
+	blib/lib/Acore/WAF/Plugin/Session.pm \
+	lib/Acore/WAF/Plugin/FillInForm.pm \
+	blib/lib/Acore/WAF/Plugin/FillInForm.pm \
+	lib/Acore/WAF/Controller/AdminConsole/BareBone.pm \
+	blib/lib/Acore/WAF/Controller/AdminConsole/BareBone.pm \
+	lib/Acore/WAF/Controller/Sites.pm \
+	blib/lib/Acore/WAF/Controller/Sites.pm \
+	lib/Acore/WAF/Model/DBIC.pm \
+	blib/lib/Acore/WAF/Model/DBIC.pm \
+	lib/Acore/WAF/Log.pm \
+	blib/lib/Acore/WAF/Log.pm \
+	lib/Acore/Document/Templatize.pm \
+	blib/lib/Acore/Document/Templatize.pm \
+	lib/Acore/WAF/Request.pm \
+	blib/lib/Acore/WAF/Request.pm \
+	lib/Acore.pm \
+	blib/lib/Acore.pm \
+	lib/Acore/WAF/View/JSON.pm \
+	blib/lib/Acore/WAF/View/JSON.pm \
+	lib/Acore/WAF/Plugin/TT.pm \
+	blib/lib/Acore/WAF/Plugin/TT.pm \
+	lib/Acore/WAF/Controller/AdminConsole.pm \
+	blib/lib/Acore/WAF/Controller/AdminConsole.pm \
+	lib/AcoreX/Inquiry/Controller/Root.pm \
+	blib/lib/AcoreX/Inquiry/Controller/Root.pm \
+	lib/Acore/WAF/Controller/REST.pm \
+	blib/lib/Acore/WAF/Controller/REST.pm \
+	lib/Acore/Document/Struct.pm \
+	blib/lib/Acore/Document/Struct.pm \
+	lib/Acore/WAF/Response.pm \
+	blib/lib/Acore/WAF/Response.pm \
+	lib/Acore/User.pm \
+	blib/lib/Acore/User.pm \
+	lib/Acore/WAF/Plugin/Cache.pm \
+	blib/lib/Acore/WAF/Plugin/Cache.pm \
+	lib/Acore/WAF/Request/Upload.pm \
+	blib/lib/Acore/WAF/Request/Upload.pm \
+	lib/Acore/WAF/Render.pm \
+	blib/lib/Acore/WAF/Render.pm \
+	lib/Acore/WAF/Plugin/OpenID.pm \
+	blib/lib/Acore/WAF/Plugin/OpenID.pm \
+	lib/Acore/LoadModules.pm \
+	blib/lib/Acore/LoadModules.pm \
+	lib/Acore/YAML.pm \
+	blib/lib/Acore/YAML.pm \
+	lib/Acore/DateTime.pm \
+	blib/lib/Acore/DateTime.pm \
+	lib/Acore/CLI/SetupWAF.pm \
+	blib/lib/Acore/CLI/SetupWAF.pm \
+	lib/Acore/WAF/Dispatcher.pm \
+	blib/lib/Acore/WAF/Dispatcher.pm \
+	lib/Acore/WAF/Controller/Feed2Js.pm \
+	blib/lib/Acore/WAF/Controller/Feed2Js.pm \
+	lib/Acore/Storage.pm \
+	blib/lib/Acore/Storage.pm \
+	lib/Acore/WAF/Model.pm \
+	blib/lib/Acore/WAF/Model.pm \
+	lib/AcoreX/Inquiry.pm \
+	blib/lib/AcoreX/Inquiry.pm \
+	lib/Acore/DocumentLoader.pm \
+	blib/lib/Acore/DocumentLoader.pm \
+	lib/Acore/WAF/Controller/Role/Locatable.pm \
+	blib/lib/Acore/WAF/Controller/Role/Locatable.pm \
+	lib/Acore/WAF/Controller/AdminConsole/BareBone/Model/Schema.pm \
+	blib/lib/Acore/WAF/Controller/AdminConsole/BareBone/Model/Schema.pm \
+	lib/Acore/Document/File.pm \
+	blib/lib/Acore/Document/File.pm \
+	lib/Acore/Transaction.pm \
+	blib/lib/Acore/Transaction.pm \
+	lib/Acore/Document/Role/AttachmentFile.pm \
+	blib/lib/Acore/Document/Role/AttachmentFile.pm \
+	lib/Acore/WAF/Util.pm \
+	blib/lib/Acore/WAF/Util.pm \
+	lib/Acore/WAF/Controller/Redirector.pm \
+	blib/lib/Acore/WAF/Controller/Redirector.pm \
+	lib/Acore/Easy.pm \
+	blib/lib/Acore/Easy.pm \
+	lib/Acore/Document/Role/FullTextSearch.pm \
+	blib/lib/Acore/Document/Role/FullTextSearch.pm \
+	lib/Acore/MIME/Types.pm \
+	blib/lib/Acore/MIME/Types.pm \
+	lib/Acore/CLI/SetupDB.pm \
+	blib/lib/Acore/CLI/SetupDB.pm \
+	lib/Acore/Document.pm \
+	blib/lib/Acore/Document.pm
+
+
+# --- MakeMaker platform_constants section:
+MM_Unix_VERSION = 6.56
+PERL_MALLOC_DEF = -DPERL_EXTMALLOC_DEF -Dmalloc=Perl_malloc -Dfree=Perl_mfree -Drealloc=Perl_realloc -Dcalloc=Perl_calloc
+
+
+# --- MakeMaker tool_autosplit section:
+# Usage: $(AUTOSPLITFILE) FileToSplit AutoDirToSplitInto
+AUTOSPLITFILE = $(ABSPERLRUN)  -e 'use AutoSplit;  autosplit($$ARGV[0], $$ARGV[1], 0, 1, 1)' --
+
+
+
+# --- MakeMaker tool_xsubpp section:
+
+
+# --- MakeMaker tools_other section:
+SHELL = /bin/sh
+CHMOD = chmod
+CP = cp
+MV = mv
+NOOP = $(TRUE)
+NOECHO = @
+RM_F = rm -f
+RM_RF = rm -rf
+TEST_F = test -f
+TOUCH = touch
+UMASK_NULL = umask 0
+DEV_NULL = > /dev/null 2>&1
+MKPATH = $(ABSPERLRUN) -MExtUtils::Command -e 'mkpath' --
+EQUALIZE_TIMESTAMP = $(ABSPERLRUN) -MExtUtils::Command -e 'eqtime' --
+FALSE = false
+TRUE = true
+ECHO = echo
+ECHO_N = echo -n
+UNINST = 0
+VERBINST = 0
+MOD_INSTALL = $(ABSPERLRUN) -MExtUtils::Install -e 'install([ from_to => {@ARGV}, verbose => '\''$(VERBINST)'\'', uninstall_shadows => '\''$(UNINST)'\'', dir_mode => '\''$(PERM_DIR)'\'' ]);' --
+DOC_INSTALL = $(ABSPERLRUN) -MExtUtils::Command::MM -e 'perllocal_install' --
+UNINSTALL = $(ABSPERLRUN) -MExtUtils::Command::MM -e 'uninstall' --
+WARN_IF_OLD_PACKLIST = $(ABSPERLRUN) -MExtUtils::Command::MM -e 'warn_if_old_packlist' --
+MACROSTART = 
+MACROEND = 
+USEMAKEFILE = -f
+FIXIN = $(ABSPERLRUN) -MExtUtils::MY -e 'MY->fixin(shift)' --
+
+
+# --- MakeMaker makemakerdflt section:
+makemakerdflt : all
+	$(NOECHO) $(NOOP)
+
+
+# --- MakeMaker dist section:
+TAR = COPY_EXTENDED_ATTRIBUTES_DISABLE=1 COPYFILE_DISABLE=1 tar
+TARFLAGS = cvf
+ZIP = zip
+ZIPFLAGS = -r
+COMPRESS = gzip --best
+SUFFIX = .gz
+SHAR = shar
+PREOP = $(PERL) -I. "-MModule::Install::Admin" -e "dist_preop(q($(DISTVNAME)))"
+POSTOP = $(NOECHO) $(NOOP)
+TO_UNIX = $(NOECHO) $(NOOP)
+CI = ci -u
+RCS_LABEL = rcs -Nv$(VERSION_SYM): -q
+DIST_CP = best
+DIST_DEFAULT = tardist
+DISTNAME = Acore
+DISTVNAME = Acore-0.00000
+
+
+# --- MakeMaker macro section:
+
+
+# --- MakeMaker depend section:
+
+
+# --- MakeMaker cflags section:
+
+
+# --- MakeMaker const_loadlibs section:
+
+
+# --- MakeMaker const_cccmd section:
+
+
+# --- MakeMaker post_constants section:
+
+
+# --- MakeMaker pasthru section:
+
+PASTHRU = LIBPERL_A="$(LIBPERL_A)"\
+	LINKTYPE="$(LINKTYPE)"\
+	PREFIX="$(PREFIX)"
+
+
+# --- MakeMaker special_targets section:
+.SUFFIXES : .xs .c .C .cpp .i .s .cxx .cc $(OBJ_EXT)
+
+.PHONY: all config static dynamic test linkext manifest blibdirs clean realclean disttest distdir
+
+
+
+# --- MakeMaker c_o section:
+
+
+# --- MakeMaker xs_c section:
+
+
+# --- MakeMaker xs_o section:
+
+
+# --- MakeMaker top_targets section:
+all :: pure_all manifypods
+	$(NOECHO) $(NOOP)
+
+
+pure_all :: config pm_to_blib subdirs linkext
+	$(NOECHO) $(NOOP)
+
+subdirs :: $(MYEXTLIB)
+	$(NOECHO) $(NOOP)
+
+config :: $(FIRST_MAKEFILE) blibdirs
+	$(NOECHO) $(NOOP)
+
+help :
+	perldoc ExtUtils::MakeMaker
+
+
+# --- MakeMaker blibdirs section:
+blibdirs : $(INST_LIBDIR)$(DFSEP).exists $(INST_ARCHLIB)$(DFSEP).exists $(INST_AUTODIR)$(DFSEP).exists $(INST_ARCHAUTODIR)$(DFSEP).exists $(INST_BIN)$(DFSEP).exists $(INST_SCRIPT)$(DFSEP).exists $(INST_MAN1DIR)$(DFSEP).exists $(INST_MAN3DIR)$(DFSEP).exists
+	$(NOECHO) $(NOOP)
+
+# Backwards compat with 6.18 through 6.25
+blibdirs.ts : blibdirs
+	$(NOECHO) $(NOOP)
+
+$(INST_LIBDIR)$(DFSEP).exists :: Makefile.PL
+	$(NOECHO) $(MKPATH) $(INST_LIBDIR)
+	$(NOECHO) $(CHMOD) $(PERM_DIR) $(INST_LIBDIR)
+	$(NOECHO) $(TOUCH) $(INST_LIBDIR)$(DFSEP).exists
+
+$(INST_ARCHLIB)$(DFSEP).exists :: Makefile.PL
+	$(NOECHO) $(MKPATH) $(INST_ARCHLIB)
+	$(NOECHO) $(CHMOD) $(PERM_DIR) $(INST_ARCHLIB)
+	$(NOECHO) $(TOUCH) $(INST_ARCHLIB)$(DFSEP).exists
+
+$(INST_AUTODIR)$(DFSEP).exists :: Makefile.PL
+	$(NOECHO) $(MKPATH) $(INST_AUTODIR)
+	$(NOECHO) $(CHMOD) $(PERM_DIR) $(INST_AUTODIR)
+	$(NOECHO) $(TOUCH) $(INST_AUTODIR)$(DFSEP).exists
+
+$(INST_ARCHAUTODIR)$(DFSEP).exists :: Makefile.PL
+	$(NOECHO) $(MKPATH) $(INST_ARCHAUTODIR)
+	$(NOECHO) $(CHMOD) $(PERM_DIR) $(INST_ARCHAUTODIR)
+	$(NOECHO) $(TOUCH) $(INST_ARCHAUTODIR)$(DFSEP).exists
+
+$(INST_BIN)$(DFSEP).exists :: Makefile.PL
+	$(NOECHO) $(MKPATH) $(INST_BIN)
+	$(NOECHO) $(CHMOD) $(PERM_DIR) $(INST_BIN)
+	$(NOECHO) $(TOUCH) $(INST_BIN)$(DFSEP).exists
+
+$(INST_SCRIPT)$(DFSEP).exists :: Makefile.PL
+	$(NOECHO) $(MKPATH) $(INST_SCRIPT)
+	$(NOECHO) $(CHMOD) $(PERM_DIR) $(INST_SCRIPT)
+	$(NOECHO) $(TOUCH) $(INST_SCRIPT)$(DFSEP).exists
+
+$(INST_MAN1DIR)$(DFSEP).exists :: Makefile.PL
+	$(NOECHO) $(MKPATH) $(INST_MAN1DIR)
+	$(NOECHO) $(CHMOD) $(PERM_DIR) $(INST_MAN1DIR)
+	$(NOECHO) $(TOUCH) $(INST_MAN1DIR)$(DFSEP).exists
+
+$(INST_MAN3DIR)$(DFSEP).exists :: Makefile.PL
+	$(NOECHO) $(MKPATH) $(INST_MAN3DIR)
+	$(NOECHO) $(CHMOD) $(PERM_DIR) $(INST_MAN3DIR)
+	$(NOECHO) $(TOUCH) $(INST_MAN3DIR)$(DFSEP).exists
+
+
+
+# --- MakeMaker linkext section:
+
+linkext :: $(LINKTYPE)
+	$(NOECHO) $(NOOP)
+
+
+# --- MakeMaker dlsyms section:
+
+
+# --- MakeMaker dynamic section:
+
+dynamic :: $(FIRST_MAKEFILE) $(INST_DYNAMIC) $(INST_BOOT)
+	$(NOECHO) $(NOOP)
+
+
+# --- MakeMaker dynamic_bs section:
+
+BOOTSTRAP =
+
+
+# --- MakeMaker dynamic_lib section:
+
+
+# --- MakeMaker static section:
+
+## $(INST_PM) has been moved to the all: target.
+## It remains here for awhile to allow for old usage: "make static"
+static :: $(FIRST_MAKEFILE) $(INST_STATIC)
+	$(NOECHO) $(NOOP)
+
+
+# --- MakeMaker static_lib section:
+
+
+# --- MakeMaker manifypods section:
+
+POD2MAN_EXE = $(PERLRUN) "-MExtUtils::Command::MM" -e pod2man "--"
+POD2MAN = $(POD2MAN_EXE)
+
+
+manifypods : pure_all  \
+	lib/Acore/WAF/View.pm \
+	lib/Acore/WAF/Plugin/FormValidator.pm \
+	lib/Acore/Util.pm \
+	lib/Acore/WAF/Model/Skinny.pm \
+	lib/Acore/WAF/ConfigLoader.pm \
+	lib/Acore/WAF/Plugin/PageCache.pm \
+	lib/Acore/WAF/Plugin/AntiCSRF.pm \
+	lib/Acore/Authentication/Password.pm \
+	lib/Acore/WAF.pm \
+	lib/Acore/WAF/Plugin/Session.pm \
+	lib/Acore/WAF/Plugin/FillInForm.pm \
+	lib/Acore/WAF/Controller/Sites.pm \
+	lib/Acore/WAF/Model/DBIC.pm \
+	lib/Acore/WAF/Log.pm \
+	lib/Acore/Document/Templatize.pm \
+	lib/Acore/WAF/Request.pm \
+	lib/Acore.pm \
+	lib/Acore/WAF/View/JSON.pm \
+	lib/Acore/WAF/Plugin/TT.pm \
+	lib/Acore/WAF/Controller/AdminConsole.pm \
+	lib/Acore/WAF/Controller/REST.pm \
+	lib/Acore/WAF/Response.pm \
+	lib/Acore/User.pm \
+	lib/Acore/WAF/Plugin/Cache.pm \
+	lib/Acore/WAF/Request/Upload.pm \
+	lib/Acore/WAF/Render.pm \
+	lib/Acore/WAF/Plugin/OpenID.pm \
+	lib/Acore/CLI/SetupWAF.pm \
+	lib/Acore/WAF/Controller/Feed2Js.pm \
+	lib/Acore/Storage.pm \
+	lib/Acore/WAF/Model.pm \
+	lib/AcoreX/Inquiry.pm \
+	lib/Acore/DocumentLoader.pm \
+	lib/Acore/WAF/Controller/Role/Locatable.pm \
+	lib/Acore/Document/Role/AttachmentFile.pm \
+	lib/Acore/WAF/Controller/Redirector.pm \
+	lib/Acore/Easy.pm \
+	lib/Acore/Document/Role/FullTextSearch.pm \
+	lib/Acore/Document.pm
+	$(NOECHO) $(POD2MAN) --section=3 --perm_rw=$(PERM_RW) \
+	  lib/Acore/WAF/View.pm $(INST_MAN3DIR)/Acore::WAF::View.$(MAN3EXT) \
+	  lib/Acore/WAF/Plugin/FormValidator.pm $(INST_MAN3DIR)/Acore::WAF::Plugin::FormValidator.$(MAN3EXT) \
+	  lib/Acore/Util.pm $(INST_MAN3DIR)/Acore::Util.$(MAN3EXT) \
+	  lib/Acore/WAF/Model/Skinny.pm $(INST_MAN3DIR)/Acore::WAF::Model::Skinny.$(MAN3EXT) \
+	  lib/Acore/WAF/ConfigLoader.pm $(INST_MAN3DIR)/Acore::WAF::ConfigLoader.$(MAN3EXT) \
+	  lib/Acore/WAF/Plugin/PageCache.pm $(INST_MAN3DIR)/Acore::WAF::Plugin::PageCache.$(MAN3EXT) \
+	  lib/Acore/WAF/Plugin/AntiCSRF.pm $(INST_MAN3DIR)/Acore::WAF::Plugin::AntiCSRF.$(MAN3EXT) \
+	  lib/Acore/Authentication/Password.pm $(INST_MAN3DIR)/Acore::Authentication::Password.$(MAN3EXT) \
+	  lib/Acore/WAF.pm $(INST_MAN3DIR)/Acore::WAF.$(MAN3EXT) \
+	  lib/Acore/WAF/Plugin/Session.pm $(INST_MAN3DIR)/Acore::WAF::Plugin::Session.$(MAN3EXT) \
+	  lib/Acore/WAF/Plugin/FillInForm.pm $(INST_MAN3DIR)/Acore::WAF::Plugin::FillInForm.$(MAN3EXT) \
+	  lib/Acore/WAF/Controller/Sites.pm $(INST_MAN3DIR)/Acore::WAF::Controller::Sites.$(MAN3EXT) \
+	  lib/Acore/WAF/Model/DBIC.pm $(INST_MAN3DIR)/Acore::WAF::Model::DBIC.$(MAN3EXT) \
+	  lib/Acore/WAF/Log.pm $(INST_MAN3DIR)/Acore::WAF::Log.$(MAN3EXT) \
+	  lib/Acore/Document/Templatize.pm $(INST_MAN3DIR)/Acore::Document::Templatize.$(MAN3EXT) \
+	  lib/Acore/WAF/Request.pm $(INST_MAN3DIR)/Acore::WAF::Request.$(MAN3EXT) \
+	  lib/Acore.pm $(INST_MAN3DIR)/Acore.$(MAN3EXT) \
+	  lib/Acore/WAF/View/JSON.pm $(INST_MAN3DIR)/Acore::WAF::View::JSON.$(MAN3EXT) \
+	  lib/Acore/WAF/Plugin/TT.pm $(INST_MAN3DIR)/Acore::WAF::Plugin::TT.$(MAN3EXT) \
+	  lib/Acore/WAF/Controller/AdminConsole.pm $(INST_MAN3DIR)/Acore::WAF::Controller::AdminConsole.$(MAN3EXT) \
+	  lib/Acore/WAF/Controller/REST.pm $(INST_MAN3DIR)/Acore::WAF::Controller::REST.$(MAN3EXT) \
+	  lib/Acore/WAF/Response.pm $(INST_MAN3DIR)/Acore::WAF::Response.$(MAN3EXT) \
+	  lib/Acore/User.pm $(INST_MAN3DIR)/Acore::User.$(MAN3EXT) \
+	  lib/Acore/WAF/Plugin/Cache.pm $(INST_MAN3DIR)/Acore::WAF::Plugin::Cache.$(MAN3EXT) \
+	  lib/Acore/WAF/Request/Upload.pm $(INST_MAN3DIR)/Acore::WAF::Request::Upload.$(MAN3EXT) \
+	  lib/Acore/WAF/Render.pm $(INST_MAN3DIR)/Acore::WAF::Render.$(MAN3EXT) \
+	  lib/Acore/WAF/Plugin/OpenID.pm $(INST_MAN3DIR)/Acore::WAF::Plugin::OpenID.$(MAN3EXT) \
+	  lib/Acore/CLI/SetupWAF.pm $(INST_MAN3DIR)/Acore::CLI::SetupWAF.$(MAN3EXT) \
+	  lib/Acore/WAF/Controller/Feed2Js.pm $(INST_MAN3DIR)/Acore::WAF::Controller::Feed2Js.$(MAN3EXT) \
+	  lib/Acore/Storage.pm $(INST_MAN3DIR)/Acore::Storage.$(MAN3EXT) \
+	  lib/Acore/WAF/Model.pm $(INST_MAN3DIR)/Acore::WAF::Model.$(MAN3EXT) \
+	  lib/AcoreX/Inquiry.pm $(INST_MAN3DIR)/AcoreX::Inquiry.$(MAN3EXT) \
+	  lib/Acore/DocumentLoader.pm $(INST_MAN3DIR)/Acore::DocumentLoader.$(MAN3EXT) \
+	  lib/Acore/WAF/Controller/Role/Locatable.pm $(INST_MAN3DIR)/Acore::WAF::Controller::Role::Locatable.$(MAN3EXT) \
+	  lib/Acore/Document/Role/AttachmentFile.pm $(INST_MAN3DIR)/Acore::Document::Role::AttachmentFile.$(MAN3EXT) \
+	  lib/Acore/WAF/Controller/Redirector.pm $(INST_MAN3DIR)/Acore::WAF::Controller::Redirector.$(MAN3EXT) \
+	  lib/Acore/Easy.pm $(INST_MAN3DIR)/Acore::Easy.$(MAN3EXT) \
+	  lib/Acore/Document/Role/FullTextSearch.pm $(INST_MAN3DIR)/Acore::Document::Role::FullTextSearch.$(MAN3EXT) \
+	  lib/Acore/Document.pm $(INST_MAN3DIR)/Acore::Document.$(MAN3EXT) 
+
+
+
+
+# --- MakeMaker processPL section:
+
+
+# --- MakeMaker installbin section:
+
+EXE_FILES = script/acore_setupdb.pl script/acore_setupwaf.pl script/acoresh
+
+pure_all :: $(INST_SCRIPT)/acore_setupwaf.pl $(INST_SCRIPT)/acoresh $(INST_SCRIPT)/acore_setupdb.pl
+	$(NOECHO) $(NOOP)
+
+realclean ::
+	$(RM_F) \
+	  $(INST_SCRIPT)/acore_setupwaf.pl $(INST_SCRIPT)/acoresh \
+	  $(INST_SCRIPT)/acore_setupdb.pl 
+
+$(INST_SCRIPT)/acore_setupwaf.pl : script/acore_setupwaf.pl $(FIRST_MAKEFILE) $(INST_SCRIPT)$(DFSEP).exists $(INST_BIN)$(DFSEP).exists
+	$(NOECHO) $(RM_F) $(INST_SCRIPT)/acore_setupwaf.pl
+	$(CP) script/acore_setupwaf.pl $(INST_SCRIPT)/acore_setupwaf.pl
+	$(FIXIN) $(INST_SCRIPT)/acore_setupwaf.pl
+	-$(NOECHO) $(CHMOD) $(PERM_RWX) $(INST_SCRIPT)/acore_setupwaf.pl
+
+$(INST_SCRIPT)/acoresh : script/acoresh $(FIRST_MAKEFILE) $(INST_SCRIPT)$(DFSEP).exists $(INST_BIN)$(DFSEP).exists
+	$(NOECHO) $(RM_F) $(INST_SCRIPT)/acoresh
+	$(CP) script/acoresh $(INST_SCRIPT)/acoresh
+	$(FIXIN) $(INST_SCRIPT)/acoresh
+	-$(NOECHO) $(CHMOD) $(PERM_RWX) $(INST_SCRIPT)/acoresh
+
+$(INST_SCRIPT)/acore_setupdb.pl : script/acore_setupdb.pl $(FIRST_MAKEFILE) $(INST_SCRIPT)$(DFSEP).exists $(INST_BIN)$(DFSEP).exists
+	$(NOECHO) $(RM_F) $(INST_SCRIPT)/acore_setupdb.pl
+	$(CP) script/acore_setupdb.pl $(INST_SCRIPT)/acore_setupdb.pl
+	$(FIXIN) $(INST_SCRIPT)/acore_setupdb.pl
+	-$(NOECHO) $(CHMOD) $(PERM_RWX) $(INST_SCRIPT)/acore_setupdb.pl
+
+
+
+# --- MakeMaker subdirs section:
+
+# none
+
+# --- MakeMaker clean_subdirs section:
+clean_subdirs :
+	$(NOECHO) $(NOOP)
+
+
+# --- MakeMaker clean section:
+
+# Delete temporary files but do not touch installed files. We don't delete
+# the Makefile here so a later make realclean still has a makefile to use.
+
+clean :: clean_subdirs
+	- $(RM_F) \
+	  *$(LIB_EXT) core \
+	  core.[0-9] $(INST_ARCHAUTODIR)/extralibs.all \
+	  core.[0-9][0-9] $(BASEEXT).bso \
+	  pm_to_blib.ts core.[0-9][0-9][0-9][0-9] \
+	  $(BASEEXT).x $(BOOTSTRAP) \
+	  perl$(EXE_EXT) tmon.out \
+	  *$(OBJ_EXT) pm_to_blib \
+	  $(INST_ARCHAUTODIR)/extralibs.ld blibdirs.ts \
+	  core.[0-9][0-9][0-9][0-9][0-9] *perl.core \
+	  core.*perl.*.? $(MAKE_APERL_FILE) \
+	  perl $(BASEEXT).def \
+	  core.[0-9][0-9][0-9] mon.out \
+	  lib$(BASEEXT).def perlmain.c \
+	  perl.exe so_locations \
+	  $(BASEEXT).exp 
+	- $(RM_RF) \
+	  blib 
+	- $(MV) $(FIRST_MAKEFILE) $(MAKEFILE_OLD) $(DEV_NULL)
+
+
+# --- MakeMaker realclean_subdirs section:
+realclean_subdirs :
+	$(NOECHO) $(NOOP)
+
+
+# --- MakeMaker realclean section:
+# Delete temporary files (via clean) and also delete dist files
+realclean purge ::  clean realclean_subdirs
+	- $(RM_F) \
+	  $(MAKEFILE_OLD) $(FIRST_MAKEFILE) 
+	- $(RM_RF) \
+	  MYMETA.yml $(DISTVNAME) 
+
+
+# --- MakeMaker metafile section:
+metafile :
+	$(NOECHO) $(NOOP)
+
+
+# --- MakeMaker signature section:
+signature :
+	cpansign -s
+
+
+# --- MakeMaker dist_basics section:
+distclean :: realclean distcheck
+	$(NOECHO) $(NOOP)
+
+distcheck :
+	$(PERLRUN) "-MExtUtils::Manifest=fullcheck" -e fullcheck
+
+skipcheck :
+	$(PERLRUN) "-MExtUtils::Manifest=skipcheck" -e skipcheck
+
+manifest :
+	$(PERLRUN) "-MExtUtils::Manifest=mkmanifest" -e mkmanifest
+
+veryclean : realclean
+	$(RM_F) *~ */*~ *.orig */*.orig *.bak */*.bak *.old */*.old 
+
+
+
+# --- MakeMaker dist_core section:
+
+dist : $(DIST_DEFAULT) $(FIRST_MAKEFILE)
+	$(NOECHO) $(ABSPERLRUN) -l -e 'print '\''Warning: Makefile possibly out of date with $(VERSION_FROM)'\''' \
+	  -e '    if -e '\''$(VERSION_FROM)'\'' and -M '\''$(VERSION_FROM)'\'' < -M '\''$(FIRST_MAKEFILE)'\'';' --
+
+tardist : $(DISTVNAME).tar$(SUFFIX)
+	$(NOECHO) $(NOOP)
+
+uutardist : $(DISTVNAME).tar$(SUFFIX)
+	uuencode $(DISTVNAME).tar$(SUFFIX) $(DISTVNAME).tar$(SUFFIX) > $(DISTVNAME).tar$(SUFFIX)_uu
+
+$(DISTVNAME).tar$(SUFFIX) : distdir
+	$(PREOP)
+	$(TO_UNIX)
+	$(TAR) $(TARFLAGS) $(DISTVNAME).tar $(DISTVNAME)
+	$(RM_RF) $(DISTVNAME)
+	$(COMPRESS) $(DISTVNAME).tar
+	$(POSTOP)
+
+zipdist : $(DISTVNAME).zip
+	$(NOECHO) $(NOOP)
+
+$(DISTVNAME).zip : distdir
+	$(PREOP)
+	$(ZIP) $(ZIPFLAGS) $(DISTVNAME).zip $(DISTVNAME)
+	$(RM_RF) $(DISTVNAME)
+	$(POSTOP)
+
+shdist : distdir
+	$(PREOP)
+	$(SHAR) $(DISTVNAME) > $(DISTVNAME).shar
+	$(RM_RF) $(DISTVNAME)
+	$(POSTOP)
+
+
+# --- MakeMaker distdir section:
+create_distdir :
+	$(RM_RF) $(DISTVNAME)
+	$(PERLRUN) "-MExtUtils::Manifest=manicopy,maniread" \
+		-e "manicopy(maniread(),'$(DISTVNAME)', '$(DIST_CP)');"
+
+distdir : create_distdir  
+	$(NOECHO) $(NOOP)
+
+
+
+# --- MakeMaker dist_test section:
+disttest : distdir
+	cd $(DISTVNAME) && $(ABSPERLRUN) Makefile.PL 
+	cd $(DISTVNAME) && $(MAKE) $(PASTHRU)
+	cd $(DISTVNAME) && $(MAKE) test $(PASTHRU)
+
+
+
+# --- MakeMaker dist_ci section:
+
+ci :
+	$(PERLRUN) "-MExtUtils::Manifest=maniread" \
+	  -e "@all = keys %{ maniread() };" \
+	  -e "print(qq{Executing $(CI) @all\n}); system(qq{$(CI) @all});" \
+	  -e "print(qq{Executing $(RCS_LABEL) ...\n}); system(qq{$(RCS_LABEL) @all});"
+
+
+# --- MakeMaker distmeta section:
+distmeta : create_distdir metafile
+	$(NOECHO) cd $(DISTVNAME) && $(ABSPERLRUN) -MExtUtils::Manifest=maniadd -e 'eval { maniadd({q{META.yml} => q{Module meta-data (added by MakeMaker)}}) } ' \
+	  -e '    or print "Could not add META.yml to MANIFEST: $${'\''@'\''}\n"' --
+
+
+
+# --- MakeMaker distsignature section:
+distsignature : create_distdir
+	$(NOECHO) cd $(DISTVNAME) && $(ABSPERLRUN) -MExtUtils::Manifest=maniadd -e 'eval { maniadd({q{SIGNATURE} => q{Public-key signature (added by MakeMaker)}}) } ' \
+	  -e '    or print "Could not add SIGNATURE to MANIFEST: $${'\''@'\''}\n"' --
+	$(NOECHO) cd $(DISTVNAME) && $(TOUCH) SIGNATURE
+	cd $(DISTVNAME) && cpansign -s
+
+
+
+# --- MakeMaker install section:
+
+install :: pure_install doc_install
+	$(NOECHO) $(NOOP)
+
+install_perl :: pure_perl_install doc_perl_install
+	$(NOECHO) $(NOOP)
+
+install_site :: pure_site_install doc_site_install
+	$(NOECHO) $(NOOP)
+
+install_vendor :: pure_vendor_install doc_vendor_install
+	$(NOECHO) $(NOOP)
+
+pure_install :: pure_$(INSTALLDIRS)_install
+	$(NOECHO) $(NOOP)
+
+doc_install :: doc_$(INSTALLDIRS)_install
+	$(NOECHO) $(NOOP)
+
+pure__install : pure_site_install
+	$(NOECHO) $(ECHO) INSTALLDIRS not defined, defaulting to INSTALLDIRS=site
+
+doc__install : doc_site_install
+	$(NOECHO) $(ECHO) INSTALLDIRS not defined, defaulting to INSTALLDIRS=site
+
+pure_perl_install :: all
+	$(NOECHO) $(MOD_INSTALL) \
+		read $(PERL_ARCHLIB)/auto/$(FULLEXT)/.packlist \
+		write $(DESTINSTALLARCHLIB)/auto/$(FULLEXT)/.packlist \
+		$(INST_LIB) $(DESTINSTALLPRIVLIB) \
+		$(INST_ARCHLIB) $(DESTINSTALLARCHLIB) \
+		$(INST_BIN) $(DESTINSTALLBIN) \
+		$(INST_SCRIPT) $(DESTINSTALLSCRIPT) \
+		$(INST_MAN1DIR) $(DESTINSTALLMAN1DIR) \
+		$(INST_MAN3DIR) $(DESTINSTALLMAN3DIR)
+	$(NOECHO) $(WARN_IF_OLD_PACKLIST) \
+		$(SITEARCHEXP)/auto/$(FULLEXT)
+
+
+pure_site_install :: all
+	$(NOECHO) $(MOD_INSTALL) \
+		read $(SITEARCHEXP)/auto/$(FULLEXT)/.packlist \
+		write $(DESTINSTALLSITEARCH)/auto/$(FULLEXT)/.packlist \
+		$(INST_LIB) $(DESTINSTALLSITELIB) \
+		$(INST_ARCHLIB) $(DESTINSTALLSITEARCH) \
+		$(INST_BIN) $(DESTINSTALLSITEBIN) \
+		$(INST_SCRIPT) $(DESTINSTALLSITESCRIPT) \
+		$(INST_MAN1DIR) $(DESTINSTALLSITEMAN1DIR) \
+		$(INST_MAN3DIR) $(DESTINSTALLSITEMAN3DIR)
+	$(NOECHO) $(WARN_IF_OLD_PACKLIST) \
+		$(PERL_ARCHLIB)/auto/$(FULLEXT)
+
+pure_vendor_install :: all
+	$(NOECHO) $(MOD_INSTALL) \
+		read $(VENDORARCHEXP)/auto/$(FULLEXT)/.packlist \
+		write $(DESTINSTALLVENDORARCH)/auto/$(FULLEXT)/.packlist \
+		$(INST_LIB) $(DESTINSTALLVENDORLIB) \
+		$(INST_ARCHLIB) $(DESTINSTALLVENDORARCH) \
+		$(INST_BIN) $(DESTINSTALLVENDORBIN) \
+		$(INST_SCRIPT) $(DESTINSTALLVENDORSCRIPT) \
+		$(INST_MAN1DIR) $(DESTINSTALLVENDORMAN1DIR) \
+		$(INST_MAN3DIR) $(DESTINSTALLVENDORMAN3DIR)
+
+doc_perl_install :: all
+	$(NOECHO) $(ECHO) Appending installation info to $(DESTINSTALLARCHLIB)/perllocal.pod
+	-$(NOECHO) $(MKPATH) $(DESTINSTALLARCHLIB)
+	-$(NOECHO) $(DOC_INSTALL) \
+		"Module" "$(NAME)" \
+		"installed into" "$(INSTALLPRIVLIB)" \
+		LINKTYPE "$(LINKTYPE)" \
+		VERSION "$(VERSION)" \
+		EXE_FILES "$(EXE_FILES)" \
+		>> $(DESTINSTALLARCHLIB)/perllocal.pod
+
+doc_site_install :: all
+	$(NOECHO) $(ECHO) Appending installation info to $(DESTINSTALLARCHLIB)/perllocal.pod
+	-$(NOECHO) $(MKPATH) $(DESTINSTALLARCHLIB)
+	-$(NOECHO) $(DOC_INSTALL) \
+		"Module" "$(NAME)" \
+		"installed into" "$(INSTALLSITELIB)" \
+		LINKTYPE "$(LINKTYPE)" \
+		VERSION "$(VERSION)" \
+		EXE_FILES "$(EXE_FILES)" \
+		>> $(DESTINSTALLARCHLIB)/perllocal.pod
+
+doc_vendor_install :: all
+	$(NOECHO) $(ECHO) Appending installation info to $(DESTINSTALLARCHLIB)/perllocal.pod
+	-$(NOECHO) $(MKPATH) $(DESTINSTALLARCHLIB)
+	-$(NOECHO) $(DOC_INSTALL) \
+		"Module" "$(NAME)" \
+		"installed into" "$(INSTALLVENDORLIB)" \
+		LINKTYPE "$(LINKTYPE)" \
+		VERSION "$(VERSION)" \
+		EXE_FILES "$(EXE_FILES)" \
+		>> $(DESTINSTALLARCHLIB)/perllocal.pod
+
+
+uninstall :: uninstall_from_$(INSTALLDIRS)dirs
+	$(NOECHO) $(NOOP)
+
+uninstall_from_perldirs ::
+	$(NOECHO) $(UNINSTALL) $(PERL_ARCHLIB)/auto/$(FULLEXT)/.packlist
+
+uninstall_from_sitedirs ::
+	$(NOECHO) $(UNINSTALL) $(SITEARCHEXP)/auto/$(FULLEXT)/.packlist
+
+uninstall_from_vendordirs ::
+	$(NOECHO) $(UNINSTALL) $(VENDORARCHEXP)/auto/$(FULLEXT)/.packlist
+
+
+# --- MakeMaker force section:
+# Phony target to force checking subdirectories.
+FORCE :
+	$(NOECHO) $(NOOP)
+
+
+# --- MakeMaker perldepend section:
+
+
+# --- MakeMaker makefile section:
+# We take a very conservative approach here, but it's worth it.
+# We move Makefile to Makefile.old here to avoid gnu make looping.
+$(FIRST_MAKEFILE) : Makefile.PL $(CONFIGDEP)
+	$(NOECHO) $(ECHO) "Makefile out-of-date with respect to $?"
+	$(NOECHO) $(ECHO) "Cleaning current config before rebuilding Makefile..."
+	-$(NOECHO) $(RM_F) $(MAKEFILE_OLD)
+	-$(NOECHO) $(MV)   $(FIRST_MAKEFILE) $(MAKEFILE_OLD)
+	- $(MAKE) $(USEMAKEFILE) $(MAKEFILE_OLD) clean $(DEV_NULL)
+	$(PERLRUN) Makefile.PL 
+	$(NOECHO) $(ECHO) "==> Your Makefile has been rebuilt. <=="
+	$(NOECHO) $(ECHO) "==> Please rerun the $(MAKE) command.  <=="
+	$(FALSE)
+
+
+
+# --- MakeMaker staticmake section:
+
+# --- MakeMaker makeaperl section ---
+MAP_TARGET    = perl
+FULLPERL      = /Users/fujiwara/perl5/perlbrew/perls/current/bin/perl
+
+$(MAP_TARGET) :: static $(MAKE_APERL_FILE)
+	$(MAKE) $(USEMAKEFILE) $(MAKE_APERL_FILE) $@
+
+$(MAKE_APERL_FILE) : $(FIRST_MAKEFILE) pm_to_blib
+	$(NOECHO) $(ECHO) Writing \"$(MAKE_APERL_FILE)\" for this $(MAP_TARGET)
+	$(NOECHO) $(PERLRUNINST) \
+		Makefile.PL DIR= \
+		MAKEFILE=$(MAKE_APERL_FILE) LINKTYPE=static \
+		MAKEAPERL=1 NORECURS=1 CCCDLFLAGS=
+
+
+# --- MakeMaker test section:
+
+TEST_VERBOSE=0
+TEST_TYPE=test_$(LINKTYPE)
+TEST_FILE = test.pl
+TEST_FILES = t/*.t xt/*.t
+TESTDB_SW = -d
+
+testdb :: testdb_$(LINKTYPE)
+
+test :: $(TEST_TYPE) subdirs-test
+
+subdirs-test ::
+	$(NOECHO) $(NOOP)
+
+
+test_dynamic :: pure_all
+	PERL_DL_NONLAZY=1 $(FULLPERLRUN) "-MExtUtils::Command::MM" "-e" "test_harness($(TEST_VERBOSE), 'inc', '$(INST_LIB)', '$(INST_ARCHLIB)')" $(TEST_FILES)
+
+testdb_dynamic :: pure_all
+	PERL_DL_NONLAZY=1 $(FULLPERLRUN) $(TESTDB_SW) "-Iinc" "-I$(INST_LIB)" "-I$(INST_ARCHLIB)" $(TEST_FILE)
+
+test_ : test_dynamic
+
+test_static :: test_dynamic
+testdb_static :: testdb_dynamic
+
+
+# --- MakeMaker ppd section:
+# Creates a PPD (Perl Package Description) for a binary distribution.
+ppd :
+	$(NOECHO) $(ECHO) '<SOFTPKG NAME="$(DISTNAME)" VERSION="0.00000">' > $(DISTNAME).ppd
+	$(NOECHO) $(ECHO) '    <ABSTRACT>AnyCMS core</ABSTRACT>' >> $(DISTNAME).ppd
+	$(NOECHO) $(ECHO) '    <AUTHOR>FUJIWARA &lt;fujiwara@topicmaker.com&gt;</AUTHOR>' >> $(DISTNAME).ppd
+	$(NOECHO) $(ECHO) '    <IMPLEMENTATION>' >> $(DISTNAME).ppd
+	$(NOECHO) $(ECHO) '        <PERLCORE VERSION="5,008001,0,0" />' >> $(DISTNAME).ppd
+	$(NOECHO) $(ECHO) '        <REQUIRE NAME="Any::Moose" />' >> $(DISTNAME).ppd
+	$(NOECHO) $(ECHO) '        <REQUIRE NAME="Class::Inspector" />' >> $(DISTNAME).ppd
+	$(NOECHO) $(ECHO) '        <REQUIRE NAME="Crypt::SaltedHash" />' >> $(DISTNAME).ppd
+	$(NOECHO) $(ECHO) '        <REQUIRE NAME="DBD::SQLite" />' >> $(DISTNAME).ppd
+	$(NOECHO) $(ECHO) '        <REQUIRE NAME="DBI::" />' >> $(DISTNAME).ppd
+	$(NOECHO) $(ECHO) '        <REQUIRE NAME="DBIx::CouchLike" VERSION="0.09" />' >> $(DISTNAME).ppd
+	$(NOECHO) $(ECHO) '        <REQUIRE NAME="DateTime::" />' >> $(DISTNAME).ppd
+	$(NOECHO) $(ECHO) '        <REQUIRE NAME="Devel::StackTrace" />' >> $(DISTNAME).ppd
+	$(NOECHO) $(ECHO) '        <REQUIRE NAME="Devel::StackTrace::AsHTML" />' >> $(DISTNAME).ppd
+	$(NOECHO) $(ECHO) '        <REQUIRE NAME="Digest::SHA::PurePerl" />' >> $(DISTNAME).ppd
+	$(NOECHO) $(ECHO) '        <REQUIRE NAME="Encode::" VERSION="2.13" />' >> $(DISTNAME).ppd
+	$(NOECHO) $(ECHO) '        <REQUIRE NAME="Encode::JP::Mobile" VERSION="0.26" />' >> $(DISTNAME).ppd
+	$(NOECHO) $(ECHO) '        <REQUIRE NAME="Filter::Util::Call" />' >> $(DISTNAME).ppd
+	$(NOECHO) $(ECHO) '        <REQUIRE NAME="FormValidator::Lite" />' >> $(DISTNAME).ppd
+	$(NOECHO) $(ECHO) '        <REQUIRE NAME="Getopt::Long" />' >> $(DISTNAME).ppd
+	$(NOECHO) $(ECHO) '        <REQUIRE NAME="HTML::FillInForm::Lite" />' >> $(DISTNAME).ppd
+	$(NOECHO) $(ECHO) '        <REQUIRE NAME="HTTP::Date" />' >> $(DISTNAME).ppd
+	$(NOECHO) $(ECHO) '        <REQUIRE NAME="HTTP::MobileAgent" VERSION="0.27" />' >> $(DISTNAME).ppd
+	$(NOECHO) $(ECHO) '        <REQUIRE NAME="HTTP::Session" />' >> $(DISTNAME).ppd
+	$(NOECHO) $(ECHO) '        <REQUIRE NAME="HTTPx::Dispatcher" />' >> $(DISTNAME).ppd
+	$(NOECHO) $(ECHO) '        <REQUIRE NAME="MIME::Base64" />' >> $(DISTNAME).ppd
+	$(NOECHO) $(ECHO) '        <REQUIRE NAME="Path::Class" />' >> $(DISTNAME).ppd
+	$(NOECHO) $(ECHO) '        <REQUIRE NAME="Plack::Builder" />' >> $(DISTNAME).ppd
+	$(NOECHO) $(ECHO) '        <REQUIRE NAME="Plack::Middleware::Static" />' >> $(DISTNAME).ppd
+	$(NOECHO) $(ECHO) '        <REQUIRE NAME="String::CamelCase" />' >> $(DISTNAME).ppd
+	$(NOECHO) $(ECHO) '        <REQUIRE NAME="Sub::Pipe" />' >> $(DISTNAME).ppd
+	$(NOECHO) $(ECHO) '        <REQUIRE NAME="Text::MicroTemplate" VERSION="0.07" />' >> $(DISTNAME).ppd
+	$(NOECHO) $(ECHO) '        <REQUIRE NAME="Text::SimpleTable" />' >> $(DISTNAME).ppd
+	$(NOECHO) $(ECHO) '        <REQUIRE NAME="Try::Tiny" />' >> $(DISTNAME).ppd
+	$(NOECHO) $(ECHO) '        <REQUIRE NAME="YAML::" />' >> $(DISTNAME).ppd
+	$(NOECHO) $(ECHO) '        <ARCHITECTURE NAME="darwin-2level-5.12" />' >> $(DISTNAME).ppd
+	$(NOECHO) $(ECHO) '        <CODEBASE HREF="" />' >> $(DISTNAME).ppd
+	$(NOECHO) $(ECHO) '    </IMPLEMENTATION>' >> $(DISTNAME).ppd
+	$(NOECHO) $(ECHO) '</SOFTPKG>' >> $(DISTNAME).ppd
+
+
+# --- MakeMaker pm_to_blib section:
+
+pm_to_blib : $(FIRST_MAKEFILE) $(TO_INST_PM)
+	$(NOECHO) $(ABSPERLRUN) -MExtUtils::Install -e 'pm_to_blib({@ARGV}, '\''$(INST_LIB)/auto'\'', q[$(PM_FILTER)], '\''$(PERM_DIR)'\'')' -- \
+	  lib/Acore/WAF/View.pm blib/lib/Acore/WAF/View.pm \
+	  lib/Acore/WAF/Controller/AdminConsole/BareBone/Model.pm blib/lib/Acore/WAF/Controller/AdminConsole/BareBone/Model.pm \
+	  lib/Acore/WAF/Request/BodyParser.pm blib/lib/Acore/WAF/Request/BodyParser.pm \
+	  lib/Acore/WAF/Plugin/FormValidator.pm blib/lib/Acore/WAF/Plugin/FormValidator.pm \
+	  lib/Acore/Util.pm blib/lib/Acore/Util.pm \
+	  lib/Acore/WAF/Model/Skinny.pm blib/lib/Acore/WAF/Model/Skinny.pm \
+	  lib/Acore/WAF/ConfigLoader.pm blib/lib/Acore/WAF/ConfigLoader.pm \
+	  lib/Acore/WAF/Plugin/Sample.pm blib/lib/Acore/WAF/Plugin/Sample.pm \
+	  lib/Acore/WAF/Plugin/PageCache.pm blib/lib/Acore/WAF/Plugin/PageCache.pm \
+	  lib/Acore/WAF/Plugin/AntiCSRF.pm blib/lib/Acore/WAF/Plugin/AntiCSRF.pm \
+	  lib/Acore/Authentication/Password.pm blib/lib/Acore/Authentication/Password.pm \
+	  lib/Acore/WAF.pm blib/lib/Acore/WAF.pm \
+	  lib/Acore/WAF/Plugin/Session.pm blib/lib/Acore/WAF/Plugin/Session.pm \
+	  lib/Acore/WAF/Plugin/FillInForm.pm blib/lib/Acore/WAF/Plugin/FillInForm.pm \
+	  lib/Acore/WAF/Controller/AdminConsole/BareBone.pm blib/lib/Acore/WAF/Controller/AdminConsole/BareBone.pm \
+	  lib/Acore/WAF/Controller/Sites.pm blib/lib/Acore/WAF/Controller/Sites.pm \
+	  lib/Acore/WAF/Model/DBIC.pm blib/lib/Acore/WAF/Model/DBIC.pm \
+	  lib/Acore/WAF/Log.pm blib/lib/Acore/WAF/Log.pm \
+	  lib/Acore/Document/Templatize.pm blib/lib/Acore/Document/Templatize.pm \
+	  lib/Acore/WAF/Request.pm blib/lib/Acore/WAF/Request.pm \
+	  lib/Acore.pm blib/lib/Acore.pm \
+	  lib/Acore/WAF/View/JSON.pm blib/lib/Acore/WAF/View/JSON.pm \
+	  lib/Acore/WAF/Plugin/TT.pm blib/lib/Acore/WAF/Plugin/TT.pm \
+	  lib/Acore/WAF/Controller/AdminConsole.pm blib/lib/Acore/WAF/Controller/AdminConsole.pm \
+	  lib/AcoreX/Inquiry/Controller/Root.pm blib/lib/AcoreX/Inquiry/Controller/Root.pm \
+	  lib/Acore/WAF/Controller/REST.pm blib/lib/Acore/WAF/Controller/REST.pm \
+	  lib/Acore/Document/Struct.pm blib/lib/Acore/Document/Struct.pm \
+	  lib/Acore/WAF/Response.pm blib/lib/Acore/WAF/Response.pm \
+	  lib/Acore/User.pm blib/lib/Acore/User.pm \
+	  lib/Acore/WAF/Plugin/Cache.pm blib/lib/Acore/WAF/Plugin/Cache.pm \
+	  lib/Acore/WAF/Request/Upload.pm blib/lib/Acore/WAF/Request/Upload.pm \
+	  lib/Acore/WAF/Render.pm blib/lib/Acore/WAF/Render.pm \
+	  lib/Acore/WAF/Plugin/OpenID.pm blib/lib/Acore/WAF/Plugin/OpenID.pm \
+	  lib/Acore/LoadModules.pm blib/lib/Acore/LoadModules.pm \
+	  lib/Acore/YAML.pm blib/lib/Acore/YAML.pm \
+	  lib/Acore/DateTime.pm blib/lib/Acore/DateTime.pm \
+	  lib/Acore/CLI/SetupWAF.pm blib/lib/Acore/CLI/SetupWAF.pm \
+	  lib/Acore/WAF/Dispatcher.pm blib/lib/Acore/WAF/Dispatcher.pm \
+	  lib/Acore/WAF/Controller/Feed2Js.pm blib/lib/Acore/WAF/Controller/Feed2Js.pm \
+	  lib/Acore/Storage.pm blib/lib/Acore/Storage.pm \
+	  lib/Acore/WAF/Model.pm blib/lib/Acore/WAF/Model.pm \
+	  lib/AcoreX/Inquiry.pm blib/lib/AcoreX/Inquiry.pm \
+	  lib/Acore/DocumentLoader.pm blib/lib/Acore/DocumentLoader.pm \
+	  lib/Acore/WAF/Controller/Role/Locatable.pm blib/lib/Acore/WAF/Controller/Role/Locatable.pm \
+	  lib/Acore/WAF/Controller/AdminConsole/BareBone/Model/Schema.pm blib/lib/Acore/WAF/Controller/AdminConsole/BareBone/Model/Schema.pm \
+	  lib/Acore/Document/File.pm blib/lib/Acore/Document/File.pm \
+	  lib/Acore/Transaction.pm blib/lib/Acore/Transaction.pm \
+	  lib/Acore/Document/Role/AttachmentFile.pm blib/lib/Acore/Document/Role/AttachmentFile.pm \
+	  lib/Acore/WAF/Util.pm blib/lib/Acore/WAF/Util.pm \
+	  lib/Acore/WAF/Controller/Redirector.pm blib/lib/Acore/WAF/Controller/Redirector.pm \
+	  lib/Acore/Easy.pm blib/lib/Acore/Easy.pm \
+	  lib/Acore/Document/Role/FullTextSearch.pm blib/lib/Acore/Document/Role/FullTextSearch.pm \
+	  lib/Acore/MIME/Types.pm blib/lib/Acore/MIME/Types.pm \
+	  lib/Acore/CLI/SetupDB.pm blib/lib/Acore/CLI/SetupDB.pm \
+	  lib/Acore/Document.pm blib/lib/Acore/Document.pm 
+	$(NOECHO) $(TOUCH) pm_to_blib
+
+
+# --- MakeMaker selfdocument section:
+
+
+# --- MakeMaker postamble section:
+
+
+# End.
+# Postamble by Module::Install 1.00
+# --- Module::Install::Admin::Makefile section:
+
+realclean purge ::
+	$(RM_F) $(DISTVNAME).tar$(SUFFIX)
+	$(RM_F) MANIFEST.bak _build
+	$(PERL) "-Ilib" "-MModule::Install::Admin" -e "remove_meta()"
+	$(RM_RF) inc
+
+reset :: purge
+
+upload :: test dist
+	cpan-upload -verbose $(DISTVNAME).tar$(SUFFIX)
+
+grok ::
+	perldoc Module::Install
+
+distsign ::
+	cpansign -s
+
+test_dynamic :: test_test_psgi_1
+
+test_test_psgi_1 :: pure_all
+	TEST_PSGI=1 $(FULLPERLRUN) -MExtUtils::Command::MM -e"test_harness($(TEST_VERBOSE), '$(INST_LIB)', '$(INST_ARCHLIB)')" $(TEST_FILES)
+test_dynamic :: test_any_moose_moose
+
+test_any_moose_moose :: pure_all
+	ANY_MOOSE=Moose $(FULLPERLRUN) -MExtUtils::Command::MM -e"test_harness($(TEST_VERBOSE), '$(INST_LIB)', '$(INST_ARCHLIB)')" $(TEST_FILES)
+test_dynamic :: test_debug_1
+
+test_debug_1 :: pure_all
+	DEBUG=1 $(FULLPERLRUN) -MExtUtils::Command::MM -e"test_harness($(TEST_VERBOSE), '$(INST_LIB)', '$(INST_ARCHLIB)')" $(TEST_FILES)
