@@ -17,7 +17,7 @@ our @EXPORT = qw/ acore init Dump reset log config now /;
 
 {
     no warnings "redefine";
-    *Acore::WAF::Log::DESTROY = sub { $_[0]->flush };
+    *Acore::WAF::Log::DEMOLISH = sub { $_[0]->flush };
 
     for my $sub (@{ Class::Inspector->methods("Acore") }) {
         next if $sub =~ /^(?:_.+|[A-Z_]+|new|meta|carp|confess

@@ -27,6 +27,6 @@ sub AUTOLOAD {
     $self->$method(@_);
 }
 
-sub DESTROY {}
+sub DEMOLISH {}
 
 1;

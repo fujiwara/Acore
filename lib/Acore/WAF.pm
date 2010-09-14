@@ -149,7 +149,7 @@ has psgi_env => (
     default => sub { +{ } },
 );
 
-sub DESTROY {
+sub DEMOLISH {
     my $self = shift;
     if ( $self->{acore} ) {
         $self->{acore}->dbh->disconnect;
