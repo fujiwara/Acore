@@ -57,7 +57,7 @@ sub _allow_eval {
 
 sub index {
     my ($self, $c) = @_;
-    my @all_users = $c->acore->all_users;
+    my @all_users = $c->acore->search_users_has_role("AdminConsoleLogin");
     if (@all_users) {
         $c->redirect( $c->uri_for("/$Location/login_form") );
     }
@@ -112,7 +112,7 @@ sub menu_GET {
 sub setup_at_first_GET {
     my ($self, $c) = @_;
 
-    my @all_users = $c->acore->all_users;
+    my @all_users = $c->acore->search_users_has_role("AdminConsoleLogin");
     if (@all_users) {
         $c->stash->{user_exists} = 1;
     }
