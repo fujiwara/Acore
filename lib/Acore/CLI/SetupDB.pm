@@ -20,7 +20,7 @@ sub run {
     $storage->setup();
 
     $dbh->commit;
-    1;
+    $dbh;
 }
 
 sub usage {
