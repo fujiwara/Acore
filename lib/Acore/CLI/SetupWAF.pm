@@ -181,7 +181,7 @@ name: <?= raw AppName() ?>
 root: .
 log:
   level: debug
-debug: on
+debug: 1
 dsn:
   - dbi:SQLite:dbname=db/<?= raw lc app_name() ?>.acore.sqlite
   -
