@@ -87,6 +87,15 @@ before user_class => sub {
         or croak "Can't require $user_class. $@";
 };
 
+has auto_transaction => (
+    is      => "rw",
+    default => 0,
+);
+
+around put_document_multi => \&_wrap_txn;
+around put_document       => \&_wrap_txn;
+around delete_document    => \&_wrap_txn;
+
 __PACKAGE__->meta->make_immutable;
 no Any::Moose;
 
@@ -566,19 +575,35 @@ sub txn_rollback {
     delete $self->{lock_senna_index};
 }
 
+sub _wrap_txn {
+    my ($next, $self, @args) = @_;
+    if ($self->auto_transaction) {
+        $self->txn_do(sub { $next->($self, @args) });
+    }
+    else {
+        $next->($self, @args);
+    }
+}
+
 sub txn_do {
     my $self = shift;
     my $sub  = shift;
-    my $txn  = $self->txn;
 
+    return $sub->() if $self->in_transaction;
+
+    my $txn = $self->txn;
+    my (@r, $r);
+    my $array_context = wantarray;
     try {
-        $sub->();
+        $array_context ? @r = $sub->()
+                       : $r = $sub->();
     }
     catch {
         $txn->rollback;
         die $_;
     };
     $txn->commit;
+    $array_context ? @r : $r;
 }
 
 sub txn {
@@ -810,6 +835,12 @@ Do coderef in transcation scope.
  if ( $exception = $@ ) {
      # rollbacked
  }
+
+=item auto_transaction
+
+If true, automaticaly wrap by txn_do for methods delete_document, put_document(_multi).
+
+default false.
 
 =back
 
