@@ -143,6 +143,10 @@ Status: 404
 Not Found
 
 === static not found
+--- preprocess
+{
+    mkdir "t/static";
+}
 --- uri
 http://localhost/static/not_found.txt
 --- response
