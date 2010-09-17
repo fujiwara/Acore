@@ -521,9 +521,9 @@ sub _dispatch {
 }
 
 sub error {
-    my ($self, $status, $message) = @_;
+    my ($self, $status, $message, @message_args) = @_;
     my (undef, $file, $line) = caller;
-    $self->log->error($message . " at $file line $line");
+    $self->log->error($message . " at $file line $line", @message_args);
     require HTTP::Status;
     $status ||= 500;
     $self->res->status($status);

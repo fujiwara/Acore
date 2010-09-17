@@ -307,6 +307,11 @@ sub forward_to_2 {
     $c->error( 500 => 'error' );
 }
 
+sub error_message_args {
+    my ($self, $c) = @_;
+    $c->error( 500 => "Error message %s", $c->req->param("uniq") );
+}
+
 package t::WAFTest::Controller::X;
 
 sub xyz {
