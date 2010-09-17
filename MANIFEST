@@ -1257,6 +1257,7 @@ t/107_waf_config_loader.t
 t/108_waf_welcome.t
 t/109_waf_stacktrace.t
 t/10_cli_setup_waf.t
+t/10_cli_setup_waf_deep.t
 t/10_document_templatize.t
 t/110_waf_plugin_cache.t
 t/110_waf_render.t
@@ -1272,6 +1273,7 @@ t/119_waf_plugin_page_cache.t
 t/11_document_search.t
 t/121_waf_forward_error.t
 t/122_waf_model_skinny.t
+t/123_waf_error_message_args.t
 t/12_document_loader.t
 t/13_document_senna.t
 t/14_txn.t
@@ -1332,4 +1334,5 @@ xt/01_podspell.t
 xt/02_perlcritic.t
 xt/03_pod.t
 xt/04_document_bench.t
+xt/05_txn_bench.t
 xt/perlcriticrc
