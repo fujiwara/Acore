@@ -119,6 +119,20 @@ for my $cache ( undef, t::Cache->new({}) )
 
     $gotdoc = $ac->get_document({ id => $mydoc->id, isa => "SomeDocument" });
     ok !$gotdoc, "returns only is SomeDocument";
+
+    # update_timestamp option
+    {
+        my $doc = $ac->put_document( MyDocument->new() );
+        my $orig_epoch = $doc->updated_on->epoch;
+        sleep 2;
+
+        my $updated_doc = $ac->put_document($doc, { update_timestamp => 0 });
+        ok $updated_doc->updated_on->epoch == $orig_epoch, "not update timestamp";
+
+        $updated_doc = $ac->put_document($doc);
+        ok $updated_doc->updated_on->epoch > $orig_epoch, "update timestamp";
+
+    }
 }
 
 done_testing;

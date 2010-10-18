@@ -732,6 +732,7 @@ Argument 'isa' has set, returns only $doc->isa($args->{isa})
 Store Acore::Document to storage.
 
  $doc = $acore->put_document($doc);
+ $doc = $acore->put_document($doc, { update_timestamp => 0 }); # keep updated_on
 
 =item search_documents
 
