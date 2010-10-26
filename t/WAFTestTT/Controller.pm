@@ -19,4 +19,15 @@ sub render_broken_tt {
     $c->render_tt("broken.tt");
 }
 
+sub render_xslate {
+    my ($self, $c) = @_;
+    $c->stash->{value} = "<html>";
+    $c->render_xs("test.xs");
+}
+
+sub render_broken_xslate {
+    my ($self, $c) = @_;
+    $c->render_xs("broken.tt");
+}
+
 1;

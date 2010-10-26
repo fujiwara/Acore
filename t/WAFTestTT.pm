@@ -8,7 +8,7 @@ extends 'Acore::WAF';
 __PACKAGE__->meta->make_immutable;
 no Any::Moose;
 
-__PACKAGE__->setup(qw/ TT /);
+__PACKAGE__->setup(qw/ TT Xslate /);
 
 {
     package t::WAFTestTT::Dispatcher;
