@@ -46,12 +46,13 @@ index
 --- uri
 http://localhost/act/render_xslate
 --- response
-Content-Length: 108
+Content-Length: 120
 Content-Type: text/html; charset=utf-8
 Status: 200
 
 uri: http://localhost/act/render_xslate
 html: &lt;html&gt;
+raw: <html>
 日本語は UTF-8 で書きます
 include file
 
