@@ -178,6 +178,7 @@ connect "sites/:page", to bundled "Sites" => "page";
 
 sub config_pl {
     return ("config/${app_name}.pl" => <<'    _END_OF_FILE_'
+use utf8;
 +{
     name => "<?= raw AppName() ?>",
     root => ".",
@@ -219,6 +220,7 @@ sub config_pl {
 
 sub config_development_pl {
     return ("config/${app_name}_development.pl" => <<'    _END_OF_FILE_'
+use utf8;
 +{
     root => ".",
 };
