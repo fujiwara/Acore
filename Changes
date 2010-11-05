@@ -1,5 +1,8 @@
 Revision history for Perl extension Acore
 
+0.1002  Fri Nov 02 16:15:12 2010 +0900
+        - Now using config.pl, instead of config.yaml
+
 0.1001  Tue Oct 26 04:25:05 2010 +0000
         - Add Plugin::Xslate
 

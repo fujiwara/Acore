@@ -42,7 +42,7 @@ sub run {
     }
     for my $file (qw/ app_psgi
                       makefile_pl
-                      lib_app_pm config_yaml config_development_yaml
+                      lib_app_pm config_pl config_development_pl
                       lib_app_controller_pm favicon_ico
                       anycms_logo
                       t_00_compile_t
@@ -93,9 +93,9 @@ use Acore::WAF::ConfigLoader;
 use Plack::Builder;
 
 my $config = Acore::WAF::ConfigLoader->new->load(
-    $ENV{'<?= raw uc app_name() ?>_CONFIG_FILE'}  || "config/<?= raw app_name() ?>.yaml",
+    $ENV{'<?= raw uc app_name() ?>_CONFIG_FILE'}  || "config/<?= raw app_name() ?>.pl",
     $ENV{'<?= raw uc app_name() ?>_CONFIG_LOCAL'},
-    defined $ENV{PLACK_ENV} ? "config/<?= raw app_name() ?>_$ENV{PLACK_ENV}.yaml" : undef,
+    defined $ENV{PLACK_ENV} ? "config/<?= raw app_name() ?>_$ENV{PLACK_ENV}.pl" : undef,
 );
 builder {
     # enable Plack::Middlewares here
@@ -176,40 +176,52 @@ connect "sites/:page", to bundled "Sites" => "page";
     );
 }
 
-sub config_yaml {
-    return ("config/${app_name}.yaml" => <<'    _END_OF_FILE_'
-name: <?= raw AppName() ?>
-root: .
-log:
-  level: debug
-debug: 1
-dsn:
-  - dbi:SQLite:dbname=db/<?= raw lc app_name() ?>.acore.sqlite
-  -
-  -
-  - AutoCommit: 1
-    RaiseError: 1
-session:
-  store:
-    class: DBM
-    args:
-      file: db/<?= raw lc app_name() ?>.session.dbm
-      dbm_class: DB_File
-  state:
-    class: Cookie
-    args:
-      name: <?= raw lc app_name() ?>_session_id
-
-admin_console:
-  disable_eval_functions:
-
+sub config_pl {
+    return ("config/${app_name}.pl" => <<'    _END_OF_FILE_'
++{
+    name => "<?= raw AppName() ?>",
+    root => ".",
+    log  => {
+        level => "debug",
+        debug => 1,
+    },
+    dsn => [
+        "dbi:SQLite:dbname=db/<?= raw lc app_name() ?>.acore.sqlite",
+        "",
+        "",
+        {
+            AutoCommit => 1,
+            RaiseError => 1,
+        },
+    ],
+    session => {
+        store => {
+            class => "DBM",
+            args  => {
+                file      => "db/<?= raw lc app_name() ?>.session.dbm",
+                dbm_class => "DB_File",
+            },
+        },
+        state => {
+            class => "Cookie",
+            args  => {
+                name => "<?= raw lc app_name() ?>_session_id",
+            },
+        },
+    },
+    admin_console => {
+        disable_eval_functions => "",
+    },
+};
     _END_OF_FILE_
     );
 }
 
-sub config_development_yaml {
-    return ("config/${app_name}_development.yaml" => <<'    _END_OF_FILE_'
-root: .
+sub config_development_pl {
+    return ("config/${app_name}_development.pl" => <<'    _END_OF_FILE_'
++{
+    root => ".",
+};
     _END_OF_FILE_
     );
 }

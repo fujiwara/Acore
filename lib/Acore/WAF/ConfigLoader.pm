@@ -31,40 +31,45 @@ sub load {
 
 sub _load_file {
     my $self      = shift;
-    my $yaml_file = shift;
-    $yaml_file = file($yaml_file) unless ref $yaml_file;
+    my $file = shift;
+    $file = file($file) unless ref $file;
+
+    if ($file =~ /\.pl$/) {
+        $self->from->{$file} = "pl. no cache";
+        return do $file;
+    }
 
     my $config;
     my $dir = $self->cache_dir;
     if ($dir) {
-        my $cache_file = dir($dir)->file( $yaml_file->basename . ".cache" );
+        my $cache_file = dir($dir)->file( $file->basename . ".cache" );
         if (   $cache_file->stat
-            && $cache_file->stat->mtime >= $yaml_file->stat->mtime
+            && $cache_file->stat->mtime >= $file->stat->mtime
         ) {
             $config = eval { Storable::retrieve("$cache_file"); };
             if ($@ || ref $config ne "HASH") {
                 carp("Can't load config cache file $cache_file : $@");
             }
             else {
-                $self->from->{$yaml_file} = "cache.";
+                $self->from->{$file} = "cache.";
                 return $config;
             }
         }
-        $config = LoadFile($yaml_file);
+        $config = LoadFile($file);
 
         eval {
             Storable::nstore($config, "$cache_file");
         };
         if ($@) {
             carp("Can't open config cache file $cache_file to write: $!");
-            $self->from->{$yaml_file} = "file. no cache";
+            $self->from->{$file} = "file. no cache";
             return $config;
         }
-        $self->from->{$yaml_file} = "file. cache created";
+        $self->from->{$file} = "file. cache created";
     }
     else {
-        $config = LoadFile($yaml_file);
-        $self->from->{$yaml_file} = "file. no cache";
+        $config = LoadFile($file);
+        $self->from->{$file} = "file. no cache";
     }
     return $config;
 }

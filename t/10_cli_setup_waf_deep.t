@@ -23,7 +23,8 @@ ok -f "For_Test/$_", "$_ is file"
     for qw( For_Test.psgi
             Makefile.PL
             lib/For/Test.pm lib/For/Test/Controller/Root.pm
-            config/For_Test.yaml
+            config/For_Test.pl
+            config/For_Test_development.pl
             static/favicon.ico static/anycms-logo.png
             t/00_compile.t );
 
