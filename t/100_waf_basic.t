@@ -98,6 +98,7 @@ sub create_user {
 unlink $_ for qw( t/tmp/test.sqlite
                   t/tmp/session.dbm.dir
                   t/tmp/test_config.yaml
+                  t/tmp/test_config_development.yaml
                   t/tmp/session.dbm.pag );
 
 __END__
