@@ -1,4 +1,10 @@
 Revision history for Perl extension Acore
 
+0.1001  Tue Oct 26 04:25:05 2010 +0000
+        - Add Plugin::Xslate
+
+0.1000  Fri Sep 17 09:14:14 2010 +0000
+        - version 0.1000
+
 0.01    Wed Apr 15 19:35:30 2009
         - original version
