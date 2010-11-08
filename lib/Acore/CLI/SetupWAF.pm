@@ -33,7 +33,7 @@ sub run {
     mkdir $app_name or die "Can't create dir $app_name: $!";
     chdir $app_name or die "Can't chdir $app_name: $!";
 
-    for my $dir (qw/ static templates db script lib config t xt /,
+    for my $dir (qw/ static templates db script lib config t tmp xt /,
                  "lib/$AppPath", "lib/$AppPath/Controller"
     ) {
         File::Path::mkpath($dir)

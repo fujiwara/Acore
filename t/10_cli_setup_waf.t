@@ -16,7 +16,7 @@ qx{ rm -rf ForTest };
 Acore::CLI::SetupWAF->run("ForTest");
 
 ok -d "ForTest/$_", "$_ is dir"
-    for qw( static templates db script lib config t xt
+    for qw( static templates db script lib config t tmp xt
             lib lib/ForTest lib/ForTest/Controller );
 
 ok -f "ForTest/$_", "$_ is file"

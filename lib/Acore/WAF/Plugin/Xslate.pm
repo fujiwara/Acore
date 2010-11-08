@@ -19,7 +19,7 @@ sub _build_renderer_xs {
     $config->{module} ||= [ "Text::Xslate::Bridge::TT2Like" ];
 
     $config->{cache}     = 1;
-    $config->{cache_dir} = sprintf "%s/.xslate_cache", $c->path_to('db');
+    $config->{cache_dir} = sprintf "%s/.xslate_cache", $c->path_to('tmp');
 
     Text::Xslate->new($config);
 }
