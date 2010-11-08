@@ -1,5 +1,8 @@
 Revision history for Perl extension Acore
 
+0.1006  Mon Nov 8 17:21:10 2010 +0900
+        - Add test for generated Makefile.PL
+
 0.1005  Mon Nov 8 16:22:40 2010 +0900
         - Fix config.pl log configurations.
         - update MANIFEST
