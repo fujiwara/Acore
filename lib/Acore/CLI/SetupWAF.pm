@@ -193,8 +193,7 @@ use utf8;
     name => "<?= raw AppName() ?>",
     root => ".",
     log  => {
-        level => "debug",
-        debug => 1,
+        level => "error",
     },
     dsn => [
         "dbi:SQLite:dbname=db/<?= raw lc app_name() ?>.acore.sqlite",
@@ -232,7 +231,12 @@ sub config_development_pl {
     return ("config/${app_name}_development.pl" => <<'    _END_OF_FILE_'
 use utf8;
 +{
-    root => ".",
+    root  => ".",
+    debug => 1,
+    log   => {
+        color => 1,
+        level => "debug",
+    },
 };
     _END_OF_FILE_
     );
