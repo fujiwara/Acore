@@ -43,7 +43,9 @@ sub run {
     for my $file (qw/ app_psgi
                       makefile_pl
                       lib_app_pm config_pl config_development_pl
-                      lib_app_controller_pm favicon_ico
+                      lib_app_controller_pm
+                      lib_app_dispatcher_pm
+                      favicon_ico
                       anycms_logo
                       t_00_compile_t
                     /)
@@ -143,6 +145,7 @@ use strict;
 use warnings;
 use Any::Moose;
 extends 'Acore::WAF';
+use <?= raw AppName() ?>::Dispatcher;
 
 my @plugins = qw/
     Session
@@ -154,6 +157,13 @@ __PACKAGE__->setup(@plugins);
 __PACKAGE__->meta->make_immutable;
 no Any::Moose;
 
+1;
+    _END_OF_FILE_
+    );
+}
+
+sub lib_app_dispatcher_pm {
+    return ("lib/${AppPath}/Dispatcher.pm" => <<'    _END_OF_FILE_'
 package <?= raw AppName() ?>::Dispatcher;
 use Acore::WAF::Util qw/ :dispatcher /;
 use HTTPx::Dispatcher;

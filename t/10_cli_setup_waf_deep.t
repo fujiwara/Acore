@@ -22,7 +22,9 @@ ok -d "For_Test/$_", "$_ is dir"
 ok -f "For_Test/$_", "$_ is file"
     for qw( For_Test.psgi
             Makefile.PL
-            lib/For/Test.pm lib/For/Test/Controller/Root.pm
+            lib/For/Test.pm
+            lib/For/Test/Controller/Root.pm
+            lib/For/Test/Dispatcher.pm
             config/For_Test.pl
             config/For_Test_development.pl
             static/favicon.ico static/anycms-logo.png
