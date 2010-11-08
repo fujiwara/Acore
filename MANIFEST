@@ -1219,6 +1219,7 @@ lib/Acore/WAF/Plugin/PageCache.pm
 lib/Acore/WAF/Plugin/Sample.pm
 lib/Acore/WAF/Plugin/Session.pm
 lib/Acore/WAF/Plugin/TT.pm
+lib/Acore/WAF/Plugin/Xslate.pm
 lib/Acore/WAF/Render.pm
 lib/Acore/WAF/Request.pm
 lib/Acore/WAF/Request/BodyParser.pm
@@ -1254,6 +1255,8 @@ t/103_waf_uri_for.t
 t/104_waf_plugin.t
 t/105_waf_plugin_tt.t
 t/107_waf_config_loader.t
+t/107_waf_config_loader_pl.t
+t/107_waf_config_loader_utf8.t
 t/108_waf_welcome.t
 t/109_waf_stacktrace.t
 t/10_cli_setup_waf.t
@@ -1274,6 +1277,7 @@ t/11_document_search.t
 t/121_waf_forward_error.t
 t/122_waf_model_skinny.t
 t/123_waf_error_message_args.t
+t/124_waf_plugin_xslate.t
 t/12_document_loader.t
 t/13_document_senna.t
 t/14_txn.t
@@ -1315,6 +1319,7 @@ t/templates/sites/page.mt
 t/templates/sites/page/foo/bar.mt
 t/templates/test.mt
 t/templates/test.tt
+t/templates/test.xs
 t/tmp/.gitignore
 t/WAFTest.pm
 t/WAFTest/Controller.pm
