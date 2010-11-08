@@ -1,5 +1,9 @@
 Revision history for Perl extension Acore
 
+0.1004  Mon Nov 8 12:35:14 2010 +0900
+        - Refactor $c->uri_for more faster.
+        - Split YouApp::Dispatcher to single file.
+
 0.1003  Fri Nov 5 16:54:08 2010 +0900
         - "use utf8" in config.pl
 
