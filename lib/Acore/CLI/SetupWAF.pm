@@ -156,6 +156,15 @@ my @plugins = qw/
 /;
 __PACKAGE__->setup(@plugins);
 
+{
+    my $renderer;
+    sub renderer { $renderer ||= $_[0]->_build_renderer }
+
+    # if use Plugin::Xslate, uncomment below.
+    # my $renderer_xs;
+    # sub renderer_xs { $renderer_xs ||= $_[0]->_build_renderer_xs }
+}
+
 __PACKAGE__->meta->make_immutable;
 no Any::Moose;
 
