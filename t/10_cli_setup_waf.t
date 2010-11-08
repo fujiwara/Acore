@@ -33,6 +33,10 @@ ok -f "ForTest/$_", "$_ is file"
 {
     chdir "ForTest" or die $!;
 
+    is system("$^X Makefile.PL 2>&1 |tee ../makefile.log") => 0, "$^X Makefile.PL";
+    is system("make 2>&1 >> ../makefile.log") => 0, "make";
+    is system("make test 2>&1 |tee -a ../makefile.log") => 0, "make test";
+
     local $0 = "ForTest.psgi"; # fake for FindBin
     my $app  = do "ForTest.psgi";
 

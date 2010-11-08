@@ -147,6 +147,8 @@ use Any::Moose;
 extends 'Acore::WAF';
 use <?= raw AppName() ?>::Dispatcher;
 
+our $VERSION = "0.1";
+
 my @plugins = qw/
     Session
     FormValidator
@@ -256,6 +258,7 @@ sub makefile_pl {
     return ("Makefile.PL", <<'    _END_OF_FILE_'
 use inc::Module::Install;
 name '<?= raw app_name() ?>';
+version_from 'lib/<?= raw AppPath() ?>.pm';
 build_requires 'Module::Install' => 0.77;
 build_requires 'Test::More';
 test_requires 'DBD::SQLite';
@@ -274,7 +277,7 @@ use strict;
 use Test::More tests => 1;
 
 BEGIN {
-    use_ok '<?= app_name() ?>';
+    use_ok '<?= AppName() ?>';
 }
     _END_OF_FILE_
     );
