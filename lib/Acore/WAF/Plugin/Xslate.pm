@@ -6,22 +6,23 @@ use Text::Xslate 0.2;
 use Any::Moose "::Role";
 
 has renderer_xs => (
-    is      => "rw",
-    lazy    => 1,
-    default => sub {
-        my $c = shift;
-        my $config = $c->config->{xslate} || {};
-
-        $config->{path}   ||= [ $c->path_to('templates')->stringify ];
-        $config->{syntax} ||= "TTerse";
-        $config->{module} ||= [ "Text::Xslate::Bridge::TT2Like" ];
-
-        $config->{cache}     = 1;
-        $config->{cache_dir} = sprintf "%s/.xslate_cache", $c->path_to('db');
-
-        Text::Xslate->new($config);
-    },
+    is         => "rw",
+    lazy_build => 1,
 );
+
+sub _build_renderer_xs {
+    my $c = shift;
+    my $config = $c->config->{xslate} || {};
+
+    $config->{path}   ||= [ $c->path_to('templates')->stringify ];
+    $config->{syntax} ||= "TTerse";
+    $config->{module} ||= [ "Text::Xslate::Bridge::TT2Like" ];
+
+    $config->{cache}     = 1;
+    $config->{cache_dir} = sprintf "%s/.xslate_cache", $c->path_to('db');
+
+    Text::Xslate->new($config);
+}
 
 sub render_xs {
     my ($self, $tmpl) = @_;
