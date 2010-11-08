@@ -630,7 +630,7 @@ sub redirect {
     $to;
 }
 
-sub _uri_for {
+sub _uri_for_abs {
     my $self = shift;
     my $base = shift;
     my $path = shift;
@@ -648,17 +648,42 @@ sub _uri_for {
     return $uri;
 }
 
+sub _uri_for {
+    my $self = shift;
+    my $base = shift;
+    my $path = shift;
+    my $q    = ref $_[-1] eq 'HASH' ? pop @_ : {};
+
+    my $n = scalar @_ ? 0 : -1;
+    my @path = split "/", $path, $n;
+    shift @path if $path[0] eq "";
+
+    $path = join("/", map { uri_escape_utf8 $_ } @path, @_);
+
+    my @q;
+    for my $key (keys %$q) {
+        push @q, "$key=" .  uri_escape( $self->encoder->encode($q->{$key}) );
+    }
+    my $uri = $base . $path . (@q ? "?" . join("&", @q) : "");
+    bless \$uri, ref $base;
+}
+
 sub uri_for {
     my $self = shift;
-    my $base = ( $_[0] =~ m{/static/} && defined $self->config->{static_base} )
-             ? URI->new( $self->config->{static_base} )
-             : $self->req->base;
+    my $base;
+    my $static_base = $self->config->{static_base};
+    if ( $_[0] =~ m{/static/} && defined $static_base && !ref $static_base ) {
+        $base = $self->config->{static_base} = URI->new($static_base);
+    }
+    else {
+        $base = $self->req->base;
+    }
     $self->_uri_for( $base, @_ );
 }
 
 sub rel_uri_for {
     my $self = shift;
-    $self->_uri_for( $self->req->uri, @_ );
+    $self->_uri_for_abs( $self->req->uri, @_ );
 }
 
 sub render {
