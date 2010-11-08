@@ -5,8 +5,6 @@ use warnings;
 use Any::Moose;
 use Carp;
 use Path::Class qw/ file dir /;
-use Storable;
-use Acore::YAML;
 
 has cache_dir => (
     is => "rw",
@@ -38,6 +36,9 @@ sub _load_file {
         $self->from->{$file} = "pl. no cache";
         return do $file;
     }
+
+    require Storable;    Storable->import;
+    require Acore::YAML; Acore::YAML->import;
 
     my $config;
     my $dir = $self->cache_dir;
@@ -88,11 +89,12 @@ Acore::WAF::ConfigLoader - AnyCMS config file loader
 
  $loader = Acore::WAF::ConfigLoader->new;
  $loader->cache_dir("/path/to/cach");
+ $config = $loader->load("config.pl", "local_config.pl");
  $config = $loader->load("config.yaml", "local_config.yaml");
 
 =head1 DESCRIPTION
 
-YAML file loader with cache.
+YAML / .pl file loader with cache.
 
 =head1 ATTRIBUTES
 
