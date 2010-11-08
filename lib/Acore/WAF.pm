@@ -345,7 +345,7 @@ sub _begin_debug_log {
     return unless $self->debug;
 
     my $req = $self->request;
-    $self->log->debug("*** Request $COUNT");
+    $self->log->info("*** Request $COUNT");
     $self->log->debug(sprintf(
         q{"%s" request for "%s" from "%s"},
         $req->method, $req->uri, $req->address
