@@ -1167,7 +1167,6 @@ inc/Module/Install/Scripts.pm
 inc/Module/Install/TestBase.pm
 inc/Module/Install/TestTarget.pm
 inc/Module/Install/Win32.pm
-inc/Module/Install/With.pm
 inc/Module/Install/WriteAll.pm
 inc/Spiffy.pm
 inc/Test/Base.pm
