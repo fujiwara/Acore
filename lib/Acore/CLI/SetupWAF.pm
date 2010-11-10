@@ -166,7 +166,7 @@ __PACKAGE__->setup(@plugins);
 
     # if use Plugin::TT, uncomment below.
     # my $renderer_tt;
-    # sub renderer_tt { $renderer_xs ||= $_[0]->_build_renderer_tt }
+    # sub renderer_tt { $renderer_tt ||= $_[0]->_build_renderer_tt }
 }
 
 __PACKAGE__->meta->make_immutable;
