@@ -1,4 +1,6 @@
 use inc::Module::Install;
+use Module::Install::TestTarget;
+
 name 'Acore';
 all_from 'lib/Acore.pm';
 build_requires 'Module::Install' => 0.77;
@@ -46,21 +48,12 @@ install_script 'acore_setupdb.pl';
 install_script 'acore_setupwaf.pl';
 install_script 'acoresh';
 
-if (author_context) {
-    for my $pair ([ TEST_PSGI => 1 ], [ ANY_MOOSE => "Moose" ], [ DEBUG => 1 ]) {
-        my $env   = $pair->[0];
-        my $value = $pair->[1];
+test_target moose => (
+    env => { ANY_MOOSE => "Moose" },
+);
 
-        my $test = qq{$env=$value }
-                 . q{$(FULLPERLRUN) -MExtUtils::Command::MM -e}
-                 . q{"test_harness($(TEST_VERBOSE), '$(INST_LIB)', '$(INST_ARCHLIB)')"}
-                 . q{ $(TEST_FILES)} . "\n";
-
-        my $name = lc "${env}_${value}";
-        postamble qq{test_dynamic :: test_${name}\n\n}
-                . qq{test_${name} :: pure_all\n}
-                . qq{\t} . $test;
-    }
-}
+test_target debug => (
+    env   => { DEBUG => 1 },
+);
 
 WriteAll;
