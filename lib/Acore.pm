@@ -3,7 +3,7 @@ package Acore;
 use strict;
 use warnings;
 use 5.008_001;
-our $VERSION = "0.1006";
+our $VERSION = "0.1007";
 use Acore::Storage;
 use Acore::User;
 use Acore::Document;
