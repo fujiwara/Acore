@@ -240,7 +240,7 @@ sub _record_time {
             $f->($mine);
         };
         $self->debug_report->row(shift @pair, shift @pair)
-            for @pair;
+            while @pair;
 
         die $exception if defined $exception;
 
@@ -291,10 +291,14 @@ sub _wrap_methods_for_debug {
     my $class = ref $_[0];
     return if $Wrapped->{$class};
 
-    around "render_part" => _record_time(
-        sub { sprintf "render('%s')", $_[1] }
-    );
-    around "forward"     => _record_time(
+    my @funcs = grep /^render_part/, $class->meta->get_all_method_names;
+    for my $func (@funcs) {
+        (my $name = $func) =~ s/^render_part/render/;
+        around $func => _record_time(
+            sub { sprintf "$name('%s')", $_[1] }
+        );
+    }
+    around "forward" => _record_time(
         sub { sprintf "%s->%s", map { blessed($_) || $_ } @_[1,2] }
     );
 
