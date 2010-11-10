@@ -163,6 +163,10 @@ __PACKAGE__->setup(@plugins);
     # if use Plugin::Xslate, uncomment below.
     # my $renderer_xs;
     # sub renderer_xs { $renderer_xs ||= $_[0]->_build_renderer_xs }
+
+    # if use Plugin::TT, uncomment below.
+    # my $renderer_tt;
+    # sub renderer_tt { $renderer_xs ||= $_[0]->_build_renderer_tt }
 }
 
 __PACKAGE__->meta->make_immutable;

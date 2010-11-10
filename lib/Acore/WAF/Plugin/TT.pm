@@ -6,16 +6,17 @@ use Template 2.20;
 use Any::Moose "::Role";
 
 has renderer_tt => (
-    is      => "rw",
-    lazy    => 1,
-    default => sub {
-        my $c = shift;
-        my $config = $c->config->{tt} || {};
-        $config->{ENCODING}     ||= 'utf-8';
-        $config->{INCLUDE_PATH} ||= $c->path_to('templates')->stringify;
-        Template->new($config);
-    },
+    is         => "rw",
+    lazy_build => 1,
 );
+
+sub _build_renderer_tt {
+    my $c = shift;
+    my $config = $c->config->{tt} || {};
+    $config->{ENCODING}     ||= 'utf-8';
+    $config->{INCLUDE_PATH} ||= $c->path_to('templates')->stringify;
+    Template->new($config);
+}
 
 sub render_tt {
     my ($self, $tmpl) = @_;
