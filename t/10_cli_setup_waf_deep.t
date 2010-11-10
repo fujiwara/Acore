@@ -32,10 +32,12 @@ ok -f "For_Test/$_", "$_ is file"
 
 {
     chdir "For_Test" or die $!;
-
-    is system("$^X Makefile.PL 2>&1 |tee ../makefile.log") => 0, "$^X Makefile.PL";
-    is system("make 2>&1 >> ../makefile.log") => 0, "make";
-    is system("make test 2>&1 |tee -a ../makefile.log") => 0, "make test";
+    {
+        local $ENV{"PERL5LIB"} = "../../../lib";
+        is system("$^X Makefile.PL 2>&1 |tee ../makefile.log") => 0, "$^X Makefile.PL";
+        is system("make 2>&1 >> ../makefile.log") => 0, "make";
+        is system("make test 2>&1 |tee -a ../makefile.log") => 0, "make test";
+    }
 
     local $0 = "For_Test.psgi"; # fake for FindBin
     my $app  = do "For_Test.psgi";
