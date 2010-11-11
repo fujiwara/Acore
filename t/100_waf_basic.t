@@ -721,19 +721,15 @@ OK
 === rest get
 --- uri
 http://localhost/rest/document/id/12345
---- preprocess
+--- handle_response
 {
-    require DateTime;
-    my $d = DateTime->now(time_zone=>"local")->strftime('%Y-%m-%dT%H:%M:%S');
-    ($d, $d);
+    is $response->code => 200;
+    is $response->content_type => "application/json";
+    my $json = JSON->new;
+    my $expect = $json->decode(q|{"baz":"英語","_class":"Acore::Document","tags":[],"updated_on":"2009-02-14T08:31:30+09:00","content_type":"text/plain","bar":[2,3,4],"created_on":"2009-02-14T08:31:30+09:00","id":"12345"}|);
+    my $got    = $json->decode( $response->content );
+    is_deeply $got => $expect, "same json";
 }
---- response
-Content-Length: 190
-Content-Type: application/json; charset=utf-8
-Status: 200
-
-{"baz":"英語","_class":"Acore::Document","tags":[],"updated_on":"%s+09:00","content_type":"text/plain","bar":[2,3,4],"created_on":"%s+09:00","id":"12345"}
-
 === rest delete
 --- method
 DELETE
