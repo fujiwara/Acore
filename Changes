@@ -1,5 +1,8 @@
 Revision history for Perl extension Acore
 
+0.1008  Thu Nov 11 04:17:23 2010 +0900
+        - Refactor tests.
+
 0.1007  Wed Nov 10 16:19:09 2010 +0900
         - Fix: debugging action log table rows.
         - Fix: Plugin::Xslate cache dirs in tmp/.
