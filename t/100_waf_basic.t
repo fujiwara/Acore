@@ -677,12 +677,6 @@ Status: 201
 === rest get
 --- uri
 http://localhost/rest/document/id/12345
---- preprocess
-{
-    require DateTime;
-    my $d = DateTime->now(time_zone=>"local")->strftime('%Y-%m-%dT%H:%M:%S');
-    ($d, $d);
-}
 --- handle_response
 {
     is $response->code => 200;
