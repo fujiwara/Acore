@@ -683,12 +683,16 @@ http://localhost/rest/document/id/12345
     my $d = DateTime->now(time_zone=>"local")->strftime('%Y-%m-%dT%H:%M:%S');
     ($d, $d);
 }
---- response
-Content-Length: 205
-Content-Type: application/json; charset=utf-8
-Status: 200
+--- handle_response
+{
+    is $response->code => 200;
+    is $response->content_type => "application/json";
 
-{"baz":"日本語","_class":"Acore::Document","tags":[],"updated_on":"%s+09:00","content_type":"text/plain","bar":[1,2,3],"created_on":"%s+09:00","id":"12345","foo":"FOO"}
+    my $json = JSON->new;
+    my $expect = $json->decode(q|{"baz":"日本語","_class":"Acore::Document","tags":[],"updated_on":"2009-02-14T08:31:30+09:00","content_type":"text/plain","bar":[1,2,3],"created_on":"2009-02-14T08:31:30+09:00","id":"12345","foo":"FOO"}|);
+    my $got = $json->decode( $response->content );
+    is_deeply $got => $expect, "same json";
+}
 
 === rest get not found
 --- uri
