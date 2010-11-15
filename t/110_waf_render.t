@@ -152,8 +152,9 @@ A<br/>B<br/>C
 --- input chomp js
 A	B
 "C"'D'
+</script>
 --- expected chomp
-A\tB\n\"C\"\'D\'
+A\tB\n\u0022C\u0022\u0027D\u0027\n\u003c\/script\u003e
 
 === fillform
 --- input chomp fillform

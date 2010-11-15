@@ -79,18 +79,29 @@ sub html_line_break() { ## no critic
     };
 }
 
-sub js {
-    joint {
-        local $_ = shift;
-        return '' unless defined $_;
-
-        s{(['"])}{\\$1}g;
-        s{\n}{\\n}g;
-        s{\f}{\\f}g;
-        s{\r}{\\r}g;
-        s{\t}{\\t}g;
-        $_;
-    };
+{
+    # https://github.com/kazeburo/JavaScript-Value-Escape/
+    my $bs = '\\';
+    my %e = (
+        q!\\!  => $bs,
+        q!"!   => 'u0022',
+        q!'!   => 'u0027',
+        q!/!   => '/',
+        q!<!   => 'u003c',
+        q!>!   => 'u003e',
+        q!&!   => 'u0026',
+        "\x0D" => "r",
+        "\x0A" => "n",
+        "\x09" => "t",
+    );
+    sub js {
+        joint {
+            local $_ = shift;
+            return '' unless defined $_;
+            s!([\\"'/<>&]|\x0D|\x0A|\x09)!${bs}$e{$1}!g;
+            $_;
+        };
+    }
 }
 
 sub fillform {
