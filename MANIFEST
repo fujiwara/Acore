@@ -1174,6 +1174,7 @@ inc/Test/Base/Filter.pm
 inc/Test/Builder.pm
 inc/Test/Builder/Module.pm
 inc/Test/More.pm
+inc/Test/Output.pm
 inc/Text/Diff.pm
 lib/Acore.pm
 lib/Acore/Authentication/Password.pm
