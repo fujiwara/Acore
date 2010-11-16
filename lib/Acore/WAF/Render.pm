@@ -99,6 +99,7 @@ sub html_line_break() { ## no critic
             local $_ = shift;
             return '' unless defined $_;
             s!([\\"'/<>&]|\x0D|\x0A|\x09)!${bs}$e{$1}!g;
+            s!([\x00-\x20])!sprintf "%su%04x", $bs, ord($1)!eg;
             $_;
         };
     }
