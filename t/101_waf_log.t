@@ -1,6 +1,7 @@
 # -*- mode:perl -*-
 use strict;
 use Test::More;
+use Test::Output;
 use Path::Class qw/ file /;
 
 BEGIN {
@@ -121,5 +122,15 @@ for my $color ( 0, 1 ) {
     }
     $log->flush;
 }
+
+{
+    stderr_like sub {
+        do {
+            my $log = Acore::WAF::Log->new;
+            $log->error("error message");
+        };
+    }, qr{error message}, "flash on DESTROY";
+}
+
 
 done_testing;

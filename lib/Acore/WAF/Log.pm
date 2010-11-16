@@ -125,6 +125,11 @@ sub color {
     return $Color;
 };
 
+sub DEMOLISH {
+    my $self = shift;
+    $self->flush;
+}
+
 1;
 
 __END__
