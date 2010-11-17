@@ -33,6 +33,7 @@ requires 'Encode::JP::Mobile' => 0.26;
 requires 'YAML';
 requires 'Try::Tiny';
 requires 'Digest::SHA::PurePerl';
+requires 'HTML::StickyQuery';
 
 test_requires 'Test::Base';
 test_requires 'Text::Diff';
