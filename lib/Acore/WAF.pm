@@ -461,7 +461,7 @@ sub finalize {
         $charset = "charset=" . $self->charset;
     }
     $res->content_type( $c_type . ( $charset ? "; $charset" : "" ) );
-    $res->body( $self->encode($res->body) ) if utf8::is_utf8($res->body);
+    $res->body( $self->encode($res->body) ) if Encode::is_utf8($res->body);
     1;
 }
 

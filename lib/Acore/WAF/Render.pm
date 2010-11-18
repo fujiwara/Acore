@@ -46,16 +46,13 @@ sub uri() {  ## no critic
 sub utf8() { ## no critic
     joint {
         my $input = $_[0];
-        $input = Encode::decode_utf8($input)
-            unless utf8::is_utf8($input);
-        $input;
+        Encode::decode_utf8($input);
     };
 }
 
 sub uri_unescape() {  ## no critic
     joint {
-        my $input = $_[0];
-        utf8::encode($input) if utf8::is_utf8($input);
+        my $input = Encode::encode_utf8($_[0]);
         Encode::decode_utf8(
             URI::Escape::uri_unescape($input)
         );

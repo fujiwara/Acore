@@ -1089,8 +1089,7 @@ sub explorer_save_file_POST {
     {
         my $fh = $file->openw or $c->error( 405 => "permission denied" );
         my $body = $c->req->param('body');
-        utf8::encode($body);
-        $fh->print($body);
+        $fh->print( Encode::encode_utf8($body) );
     }
     $c->req->param( body => undef );
     $c->forward( $self => "explorer_file_info_GET" );

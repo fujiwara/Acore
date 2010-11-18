@@ -57,8 +57,6 @@ sub process {
 
     my $cb_param = $self->allow_callback ? $self->callback_param : undef;
     my $cb       = $cb_param ? $c->req->param($cb_param) : undef;
-    utf8::encode($cb) if defined $cb;
-
     $self->validate_callback_param($cb) if $cb;
 
     my $encoding = $self->encoding;

@@ -84,7 +84,7 @@ sub _load_from_stream {
     my @docs;
  LINE:
     while ( my $line = <$handle> ) {
-        utf8::decode($line);
+        Encode::decode_utf8($line);
         $count++;
         if ( $line =~ /^$Separator$/ && $buffer ) {
             push @docs, $self->_load_object($buffer, $count);
