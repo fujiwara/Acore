@@ -39,6 +39,7 @@ test_requires 'Test::Base';
 test_requires 'Text::Diff';
 test_requires 'Math::BigInt';
 test_requires 'Test::Output';
+test_requires 'Module::Install::AuthorTests';
 
 tests 't/*.t';
 author_tests 'xt';
