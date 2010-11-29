@@ -51,11 +51,11 @@ install_script 'acore_setupdb.pl';
 install_script 'acore_setupwaf.pl';
 install_script 'acoresh';
 
-test_target moose => (
-    env => { ANY_MOOSE => "Moose" },
+test_target test_moose => (
+    env   => { ANY_MOOSE => "Moose" },
 );
 
-test_target debug => (
+test_target test_debug => (
     env   => { DEBUG => 1 },
 );
 
